@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>儿童羽毛球专业训练方案（中）— 阶段四至阶段七 + 辅助模块</title>
+<style>
+        :root{--bg:#09090b;--surface:#18181b;--surface-2:#27272a;--border:#3f3f46;--text:#fafafa;--text-2:#a1a1aa;--accent:#f43f5e;--accent-2:#fb7185;--green:#22c55e;--blue:#3b82f6;--purple:#a855f7;--orange:#f97316;--yellow:#eab308;--teal:#14b8a6;--pink:#ec4899}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Noto Sans SC',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}
+        .content{max-width:960px;margin:0 auto;padding:2rem}
+        h1{font-size:2.2rem;font-weight:900;margin:2rem 0 0.5rem;text-align:center}
+        .subtitle{text-align:center;color:var(--text-2);margin-bottom:2rem;font-size:1rem}
+        .badge{display:inline-block;padding:0.3rem 0.8rem;background:rgba(244,63,94,0.15);border-radius:4px;font-size:0.8rem;color:var(--accent);font-family:'JetBrains Mono',monospace}
+        .divider{height:1px;background:var(--border);margin:3rem 0}
+        h2{font-size:1.6rem;font-weight:700;margin:2.5rem 0 1rem;padding-bottom:0.5rem;border-bottom:2px solid var(--accent);display:flex;align-items:center;gap:0.6rem}
+        h3{font-size:1.2rem;font-weight:600;margin:2rem 0 0.75rem;color:var(--accent-2)}
+        h4{font-size:1rem;font-weight:600;margin:1.5rem 0 0.5rem;color:var(--text)}
+        p{margin-bottom:0.8rem;color:var(--text-2)}
+        strong{color:var(--text)}
+        .hl{color:var(--accent);font-weight:600}
+        .hl-g{color:var(--green);font-weight:600}
+        .hl-b{color:var(--blue);font-weight:600}
+        .hl-p{color:var(--purple);font-weight:600}
+        .callout{background:var(--surface);border-left:3px solid var(--accent);padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1rem 0}
+        .callout p{margin:0;color:var(--text)}
+        .callout.info{border-left-color:var(--blue)}
+        .callout.success{border-left-color:var(--green)}
+        .callout.warn{border-left-color:var(--orange)}
+        .callout.purple{border-left-color:var(--purple)}
+        .callout.teal{border-left-color:var(--teal)}
+        table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.9rem}
+        th,td{padding:0.6rem 0.8rem;text-align:left;border-bottom:1px solid var(--border)}
+        th{background:var(--surface);font-weight:600;font-size:0.8rem}
+        td{color:var(--text-2)}
+        ul,ol{margin:0.8rem 0;padding-left:1.5rem;color:var(--text-2)}
+        li{margin-bottom:0.3rem}
+        .phase{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin:1.5rem 0;position:relative;overflow:hidden}
+        .phase::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%}
+        .phase.p3::before{background:var(--orange)}
+        .phase.p4::before{background:var(--accent)}
+        .phase.p5::before{background:var(--teal)}
+        .phase.p6::before{background:var(--pink)}
+        .ph{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+        .ph-n{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700}
+        .p3 .ph-n{color:var(--orange)}.p4 .ph-n{color:var(--accent)}.p5 .ph-n{color:var(--teal)}.p6 .ph-n{color:var(--pink)}
+        .ph-t{font-weight:700;font-size:1.1rem}
+        .ph-m{font-size:0.8rem;color:var(--text-2);margin-left:auto}
+        .drill{border:1px solid var(--border);border-radius:8px;padding:1rem;margin:1rem 0}
+        .drill-title{font-weight:600;font-size:0.9rem;margin-bottom:0.5rem;color:var(--teal)}
+        .joy{background:linear-gradient(135deg,rgba(234,179,8,0.06),rgba(236,72,153,0.06));border:1px solid var(--yellow);border-radius:8px;padding:1rem;margin:1rem 0}
+        .joy-title{font-weight:600;font-size:0.9rem;margin-bottom:0.5rem;color:var(--yellow)}
+        .joy-item{font-size:0.85rem;color:var(--text-2);padding:0.25rem 0}
+        .joy-item::before{content:'✨ ';color:var(--yellow)}
+        .check{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.6rem;margin:1rem 0}
+        .check-i{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.8rem;font-size:0.85rem}
+        .check-i .l{color:var(--text-2);font-size:0.75rem}
+        .check-i .v{color:var(--green);font-weight:600;font-family:'JetBrains Mono',monospace}
+        .review{border:1px solid var(--border);border-radius:8px;padding:1rem;margin:1rem 0}
+        .review .s{display:inline-block;padding:0.15rem 0.5rem;border-radius:3px;font-size:0.75rem;font-weight:600}
+        .s-pass{background:rgba(34,197,94,0.15);color:var(--green)}
+        .s-fix{background:rgba(244,63,94,0.15);color:var(--accent)}
+        .s-note{background:rgba(59,130,246,0.15);color:var(--blue)}
+        .game{border:1px solid var(--border);border-radius:8px;padding:1rem;margin:0.8rem 0;display:flex;gap:0.8rem}
+        .game-icon{font-size:1.8rem;flex-shrink:0}
+        .gt{font-weight:600;margin-bottom:0.2rem}
+        .gd{font-size:0.85rem;color:var(--text-2)}
+        .module-box{border:1px solid var(--border);border-radius:10px;padding:1.2rem;margin:1rem 0}
+        .module-box.m-psy{border-left:3px solid var(--purple)}
+        .module-box.m-phy{border-left:3px solid var(--green)}
+        .module-box.m-tech{border-left:3px solid var(--blue)}
+        .module-box.m-game{border-left:3px solid var(--yellow)}
+        @media(max-width:768px){
+            .check{grid-template-columns:1fr 1fr}
+            .ph-m{width:100%;margin-left:0}
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+
+<div style="text-align:center;padding:2rem 0">
+    <div class="badge">🏸 中卷</div>
+    <h1>精准打击 → 全面进阶</h1>
+    <div class="subtitle">阶段四至阶段七 · 辅助模块全解</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 阶段四 -->
+<!-- ============================================================ -->
+<h2>🎯 阶段四：精准打击 · Level 3→4</h2>
+<div class="phase p3">
+<div class="ph"><div class="ph-n">L3→4</div><div class="ph-t">技术精进 —— 打得准、跑得快</div><div class="ph-m">8-10岁 · 2-3年</div></div>
+
+<h3>🎯 目标</h3>
+<p>技术动作<strong>精细化</strong>：杀球(原地/一步起跳)、吊球(正手)、平抽挡(正手)、反手过渡球。步法<strong>手法融合</strong>：全场6点连贯移动+击球组合。开始<strong>简单对抗</strong>。</p>
+
+<h4>训练结构</h4>
+<p>每周3-4次×90分钟 = 动态热身(15min) + 多球技术(35min) + 对抗/步法(25min) + 体能(10min) + 心理(5min)</p>
+
+<h3>🏸 技术新增</h3>
+
+<div class="module-box m-tech">
+<h4>1. 正手杀球入门</h4>
+<p><strong>前提条件：</strong>正手高远球能稳定打到底线。</p>
+<p><strong>儿童化教学：</strong>杀球=高远球的"用力版"+"角度向下版"。不要一开始就追求力量。</p>
+<p><strong>分解步骤：</strong></p>
+<ol>
+    <li><strong>原地"压拍"（2周）：</strong>站在网前1米，教练抛高球到头顶上方，用向下压拍的动作把球压到对方场地。只动手腕和前臂。目标是"感受向下打"而非力量。</li>
+    <li><strong>原地杀球（4周）：</strong>退到中场，原地杀球。重点：①击球点在前上方 ②手腕下压 ③拍面朝下。</li>
+    <li><strong>一步起跳杀球（4周）：</strong>右脚蹬地起跳，空中转体发力。先做"跳起不杀球"的起跳练习，再加挥拍。</li>
+</ol>
+<p><strong>安全红线：</strong>儿童肩关节和腰椎尚未发育完全，每次课杀球不超过30个。出现肩痛要立即停止并冰敷。</p>
+</div>
+
+<div class="module-box m-tech">
+<h4>2. 正手吊球</h4>
+<p><strong>口诀：</strong>"高远球是打球托正后面，吊球是切球托的侧面。"</p>
+<p><strong>教学方法：</strong></p>
+<ul>
+    <li>先用球拍做"切"的动作——拍面斜着下压，像刀切蛋糕一样</li>
+    <li>站在网前1米，教练抛球到头顶上方，用切的动作把球送到对方网前</li>
+    <li>退到中场做吊球：挥拍动作前半段和高远球完全一致（迷惑对手），后半段变切</li>
+</ul>
+<p><strong>检测标准：</strong>吊球落点在对方发球线以内，球过网高度不超过网带50cm。</p>
+</div>
+
+<div class="module-box m-tech">
+<h4>3. 正手平抽挡 + 反手过渡球</h4>
+<p><strong>平抽挡：</strong>半场对抽练习。重点：引拍幅度小、手腕发力快、拍面控制。儿童常用问题：引拍太大导致来不及→"平抽是手腕打架，不是手臂打架"。</p>
+<p><strong>反手过渡球：</strong>当来不及转身用正手时，用反手把球过渡到对方后场。重点：大拇指顶宽面，前臂外旋发力。先学"够球"的步法——背对网时如何用交叉步到达位置。</p>
+</div>
+
+<h3>🎯 多球训练(精进版)</h3>
+<table>
+<thead><tr><th>项目</th><th>内容</th><th>组×球</th><th>关键要求</th></tr></thead>
+<tbody>
+<tr><td><strong>杀球多球</strong></td><td>教练送中后场高球→原地杀</td><td>4×10</td><td>不超30球/课，落点中后场</td></tr>
+<tr><td><strong>吊球多球</strong></td><td>送后场→吊网前</td><td>4×10</td><td>80%落到发球线内</td></tr>
+<tr><td><strong>高吊杀组合</strong></td><td>教练喊"高/吊/杀"→按指令打</td><td>3×12</td><td>三种技术切换流畅</td></tr>
+<tr><td><strong>全场两点</strong></td><td>后场+前场交替(正手位)</td><td>3×10</td><td>前后连贯不脱节</td></tr>
+<tr><td><strong>全场6点</strong></td><td>随机送6个位置</td><td>3×8</td><td>所有球都到位(慢速→中速)</td></tr>
+</tbody>
+</table>
+
+<h3>🎮 内源性快乐反馈</h3>
+<div class="joy">
+<div class="joy-title">🌈 L3-L4快乐设计</div>
+<div class="joy-item"><strong>"战术谜题"：</strong>每周设置一个"谜题"——"对手总是回网前，你应该怎么打？"孩子自己找到答案并在训练中实践，答对获得"战术师"积分。</div>
+<div class="joy-item"><strong>能力雷达图：</strong>每月一次，在技术/体能/步法/战术/心理五个维度上自评+教练评。雷达图面积的扩大是最直观的进步可视化。</div>
+<div class="joy-item"><strong>"小教练"日：</strong>每月一次，让孩子当5分钟"小教练"——教其他同学一个动作。这既是知识巩固，也是领导力培养。研究证明：教别人是内在动机最强的驱动形式之一。</div>
+<div class="joy-item"><strong>挑战联赛：</strong>不是对手赛，是"挑战自我赛"——本月和上月比，设定个人挑战目标，完成者获"突破者"徽章。</div>
+</div>
+
+<h3>🧠 心理训练</h3>
+<div class="drill">
+<div class="drill-title">比赛心理基础</div>
+<ul>
+    <li><strong>蝴蝶呼吸(赛前/课前)：</strong>双手放在胸前做翅膀状，深呼吸时"翅膀张开"，呼气时"合拢"。做5次，降低焦虑。</li>
+    <li><strong>自我对话训练：</strong>把"我要打好"换成具体的指令型自我对话——"看球头""侧身""压拍"。训练中教练示范并督促使用。</li>
+    <li><strong>情景模拟(每次课5min)：</strong>设置假想比分场景——"现在是14-13，你领先一分，发球"。让孩子体验压力下的决策。</li>
+    <li><strong>赛后复盘习惯：</strong>"说三个好的+一个改进"——每次课后说出3个做得好的地方和1个需要改进的地方。培养成长型思维。</li>
+</ul>
+</div>
+
+<h3>💪 体能训练</h3>
+<table>
+<thead><tr><th>素质</th><th>内容</th><th>量</th><th>频率</th></tr></thead>
+<tbody>
+<tr><td>下肢爆发力</td><td>跳箱(低)、深蹲跳、弓步跳</td><td>3×6</td><td>每周2次</td></tr>
+<tr><td>核心力量</td><td>平板支撑(标准)、俄罗斯转体、仰卧举腿</td><td>3×45秒</td><td>每次课</td></tr>
+<tr><td>速度灵敏</td><td>绳梯进阶、6点折返跑、反应球</td><td>6-8组</td><td>每周2次</td></tr>
+<tr><td>专项耐力</td><td>间歇跑(30s跑/30s走)、多球连续跑动(40球/组)</td><td>4-6组</td><td>每周2次</td></tr>
+<tr><td>力量(上肢)</td><td>弹力带肩旋转、俯卧撑(跪姿)、TRX划船</td><td>3×8-10</td><td>每周1-2次</td></tr>
+</tbody>
+</table>
+
+<h3>✅ 验收标准</h3>
+<div class="check">
+<div class="check-i"><span class="l">原地杀球</span><span class="v">50%落点中后场</span></div>
+<div class="check-i"><span class="l">正手吊球</span><span class="v">60%过网高度<50cm</span></div>
+<div class="check-i"><span class="l">平抽挡对打</span><span class="v">连续5回合</span></div>
+<div class="check-i"><span class="l">反手过渡球</span><span class="v">60%到后场发球线</span></div>
+<div class="check-i"><span class="l">全场6点(中速)</span><span class="v">所有球到位+回中</span></div>
+<div class="check-i"><span class="l">简单对抗(1/4场)</span><span class="v">能完成多拍回合</span></div>
+</div>
+
+<div class="callout info"><p><strong>📌 进阶衔接：</strong>L4→L5标志：①能稳定打出高远+吊球+杀球三种落点变化 ②全场6点中速连贯 ③能在1/4场地打5拍以上回合。衔接期1个月，重点引入网前搓球概念和全场攻防轮转意识。</p></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 阶段五 -->
+<!-- ============================================================ -->
+<h2>🧠 阶段五：战场指挥官 · Level 4→5</h2>
+<div class="phase p4">
+<div class="ph"><div class="ph-n">L4→5</div><div class="ph-t">战术应用 —— 学会打球</div><div class="ph-m">9-11岁 · 3-4年</div></div>
+
+<h3>🎯 目标</h3>
+<p>建立<strong>战术意识</strong>：拉吊战术、杀吊结合、网前争夺。比赛能力：正式比赛规则适应性、发接发套路。心理韧性：比分压力应对、逆境翻盘。</p>
+
+<h4>训练结构</h4>
+<p>每周4次×90-105分钟 = 热身(15min) + 技术(25min) + 战术/对抗(30min) + 多球(15min) + 体能(15min) + 心理(5min)</p>
+
+<h3>🧠 战术训练四大模块</h3>
+
+<div class="module-box m-tech">
+<h4>模块A：拉吊战术 · "磨死对手"</h4>
+<p><strong>核心概念：</strong>把球打到对手最难受的位置，迫使对手失误或回球不到位。</p>
+<p><strong>训练方法：</strong></p>
+<ul>
+    <li><strong>两点拉吊：</strong>正手后场底线→正手网前，反复调动对手前后跑。教练喂球，孩子执行。</li>
+    <li><strong>四点拉吊：</strong>正手后场→反手后场→正手网前→反手网前。孩子连续跑4个点打4拍。</li>
+    <li><strong>对角战术：</strong>正手后场高远到对方反手后场→对方回直线→放网到对方正手网前。</li>
+</ul>
+<p><strong>儿童口诀：</strong>"让他跑，等他累，他就失误了。"</p>
+</div>
+
+<div class="module-box m-tech">
+<h4>模块B：杀吊结合 · "杀吊一体化"</h4>
+<p><strong>核心：</strong>同样的准备动作，最后一刻决定是杀还是吊。</p>
+<p><strong>训练：</strong></p>
+<ul>
+    <li>教练送后场高球，孩子做"假动作训练"——挥拍到击球前一刻变吊球</li>
+    <li>实战练习：教练喊"杀"或"吊"，孩子必须在1秒内做出反应</li>
+    <li>自由选择：孩子自己根据对手站位决定杀还是吊</li>
+</ul>
+<p><strong>决策原则：</strong>对手站位偏后→吊球；对手站位偏前→杀球；对手在中间→拉后场。</p>
+</div>
+
+<div class="module-box m-tech">
+<h4>模块C：网前争夺 · "寸土必争"</h4>
+<p><strong>核心技术：</strong>正手/反手搓球、网前扑球、挑球结合。</p>
+<p><strong>训练：</strong></p>
+<ul>
+    <li><strong>搓球：</strong>拍面要平，轻轻切球头的侧面。口诀："刀切蛋糕——轻轻的"</li>
+    <li><strong>网前扑球：</strong>对手回网前过高→直接扑压。动作要小、要快。</li>
+    <li><strong>网前对抗：</strong>两人在网前对搓/对挑/对扑。30秒一轮换。</li>
+</ul>
+</div>
+
+<div class="module-box m-tech">
+<h4>模块D：发接发套路</h4>
+<p><strong>发球套路(每人至少掌握2套)：</strong></p>
+<ul>
+    <li>反手发网前小球→接发球推后场→防反</li>
+    <li>反手发后场平快球(偶尔变换)→打对手措手不及</li>
+</ul>
+<p><strong>接发球套路：</strong></p>
+<ul>
+    <li>接网前球→推后场(正手/反手)</li>
+    <li>接网前球→放网(贴网球争夺)</li>
+    <li>接后场球→杀球/吊球/高远球(三种选择)</li>
+</ul>
+<p><strong>训练方式：</strong>规定回合制——制定"这10分你必须使用套路A"，然后再换套路B。</p>
+</div>
+
+<h3>🎮 内源性快乐反馈</h3>
+<div class="joy">
+<div class="joy-title">🌈 L4-L5快乐设计</div>
+<div class="joy-item"><strong>"战术棋局"：</strong>每2周一场录像分析课——用平板看自己的比赛录像，教练引导孩子自己发现战术问题。"你看这里，对手站位偏后，你如果吊球会怎样？"自我发现比被告诉更有力。</div>
+<div class="joy-item"><strong>"套路进化树"：</strong>每人一张"战术套路进化图"，每学会一种套路贴一枚标记。从"单一打法"到"打法多样性"的演变过程本身就是成就感来源。</div>
+<div class="joy-item"><strong>队内循环赛制：</strong>每月一次队内比赛，但重点不在胜负——赛前制定"个人目标"(如"今天我要用至少3次搓球")，赛后复盘是否达成目标。达成高于胜负。</div>
+<div class="joy-item"><strong>"声援文化"：</strong>建立队友间互相加油的仪式——每场比赛不论输赢，队友都要给出3个鼓励(具体反馈，非空洞的"加油")。</div>
+</div>
+
+<h3>🧠 心理训练</h3>
+<div class="drill">
+<div class="drill-title">压力适应 · 每课5分钟</div>
+<ul>
+    <li><strong>比分压力训练：</strong>模拟"14-13""12-12""9-15落后"等关键比分情景。孩子必须在压力情景下完成发球/接发球/击球任务。每次课的比分情景轮换。</li>
+    <li><strong>呼吸锚定：</strong>建立"呼吸锚"——每次关键分前做一次4-7-8呼吸，用这个动作"锚定"冷静状态。</li>
+    <li><strong>"IT法则"：</strong>教孩子区分可控和不可控——可控的是自己的准备、努力、态度；不可控的是对手、裁判、观众。聚焦可控，放下不可控。</li>
+    <li><strong>赛前流程建立：</strong>固定赛前15分钟流程——到场地→做热身→听音乐→呼吸→自我对话。建立仪式感。</li>
+</ul>
+</div>
+
+<h3>💪 体能训练</h3>
+<p>此阶段体能训练向<strong>专项化</strong>过渡，与羽毛球运动特点紧密结合。</p>
+<table>
+<thead><tr><th>素质</th><th>内容</th><th>量</th></tr></thead>
+<tbody>
+<tr><td>爆发力(下肢)</td><td>跳箱(中)、跨步跳、负重弓步</td><td>3×6-8</td></tr>
+<tr><td>核心抗旋转</td><td>伐木式(弹力带)、俄罗斯转体(负重)、侧平板</td><td>3×10/侧</td></tr>
+<tr><td>速度</td><td>冲刺跑(20-30米)、全场4点计时、反应灯</td><td>6×</td></tr>
+<tr><td>力量(肩袖)</td><td>弹力带外旋/内旋、肩胛骨激活、YTW训练</td><td>3×10</td></tr>
+<tr><td>专项耐力</td><td>多球连续40-50球/组、间歇全场跑</td><td>3-4组</td></tr>
+</tbody>
+</table>
+
+<h3>✅ 验收标准</h3>
+<div class="check">
+<div class="check-i"><span class="l">拉吊战术执行</span><span class="v">连续调动对手5拍</span></div>
+<div class="check-i"><span class="l">杀吊结合</span><span class="v">根据站位选对技术≥70%</span></div>
+<div class="check-i"><span class="l">网前搓球</span><span class="v">60%贴网+翻滚</span></div>
+<div class="check-i"><span class="l">发接发套路</span><span class="v">掌握至少2套</span></div>
+<div class="check-i"><span class="l">比赛适应性</span><span class="v">理解规则+能打完整局</span></div>
+<div class="check-i"><span class="l">压力下稳定性</span><span class="v">关键分手型不变形</span></div>
+</div>
+
+<div class="callout info"><p><strong>📌 进阶衔接：</strong>L5→L6标志：①能自主运用2种以上战术 ②网前搓球有质量 ③能打完整局(半场或全场)且得分>5分。衔接期2个月，重点：全场攻防转换节奏、多拍相持能力、体能储备提升。</p></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 阶段六 -->
+<!-- ============================================================ -->
+<h2>⚡ 阶段六：全面进阶 · Level 5→6</h2>
+<div class="phase p5">
+<div class="ph"><div class="ph-n">L5→6</div><div class="ph-t">准专业冲刺 —— 向专业靠拢</div><div class="ph-m">10-12岁 · 4-5年</div></div>
+
+<h3>🎯 目标</h3>
+<p>技术<strong>自动化</strong>：所有基本技术在高速对抗中自动执行。战术<strong>体系化</strong>：构建个人打法风格。体能<strong>巅峰化</strong>：进入体能发展快车道。比赛<strong>常态化</strong>：参加市级青少年比赛。</p>
+
+<h4>训练结构</h4>
+<p>每周5次×105-120分钟 = 热身(15min) + 技术(20min) + 战术对抗(40min) + 多球(15min) + 体能(20min) + 心理/复盘(10min)</p>
+
+<h3>🏸🏃🧠 三线融合训练</h3>
+
+<table>
+<thead><tr><th>维度</th><th>训练重点</th><th>方法</th><th>量化目标</th></tr></thead>
+<tbody>
+<tr><td><strong>技术自动化</strong></td><td>高速对抗中动作不变形</td><td>高节奏多球(1.5秒/球)、对抗训练限时(20秒/分)</td><td>失误率<15%</td></tr>
+<tr><td><strong>战术体系</strong></td><td>个人风格定位(进攻型/拉吊型/全面型)</td><td>录像分析+教练一对一指导+风格定制训练</td><td>形成明确打法</td></tr>
+<tr><td><strong>体能力量</strong></td><td>速度耐力+力量</td><td>间歇训练(高强度)、力量训练(自重→轻负重)</td><td>全场6点<4秒</td></tr>
+<tr><td><strong>比赛能力</strong></td><td>战术执行+心理韧性</td><td>每周1场教学赛+每月1场对外赛</td><td>比赛胜率>50%(同级)</td></tr>
+</tbody>
+</table>
+
+<h3>🎮 内源性快乐反馈</h3>
+<div class="joy">
+<div class="joy-title">🌈 L5-L6快乐设计</div>
+<div class="joy-item"><strong>"职业化体验"：</strong>每月一次"职业选手日"——穿正式比赛服、走运动员通道出场、赛后记者采访(队友互访)。通过仪式感提升职业认同感。</div>
+<div class="joy-item"><strong>数据驱动成长：</strong>用简单App记录每场比赛数据——得分/失分/失误类型/制胜分类型。每月做一次"数据复盘"，孩子亲手看到"这月我的网前得分率提高了10%"——数据是最好的内源性反馈。</div>
+<div class="joy-item"><strong>师徒制：</strong>高年级指导低年级的训练(如大孩子教小孩子握拍/颠球)。"教别人"是最有效的学习方式，同时也满足归属感和价值感需求。</div>
+</div>
+
+<h3>🧠 心理训练</h3>
+<div class="drill">
+<div class="drill-title">高水平心理技能</div>
+<ul>
+    <li><strong>心流状态训练：</strong>通过"最佳挑战难度匹配"——训练难度刚好略高于孩子当前水平5-10%，这是进入心流状态的条件。</li>
+    <li><strong>逆境应对训练：</strong>模拟"连输5分"的情景——教练中断比赛制造不利判罚/干扰/比分落后，孩子需要在逆境中重新聚焦并追分。</li>
+    <li><strong>比赛心理流程卡：</strong>孩子自己制作一张"心理流程卡"，写在自己的比赛笔记本上——"发球前：深呼吸+看目标→接发球：看球头+小跳→失误后：放下拍+呼吸+想下一步→得分后：握拳+看下个球"</li>
+</ul>
+</div>
+
+<h3>💪 体能训练</h3>
+<p>加入系统性力量训练，但仍以<strong>自重+弹力带</strong>为主，不进行大重量训练。</p>
+<table>
+<thead><tr><th>训练模块</th><th>内容</th><th>周期安排</th></tr></thead>
+<tbody>
+<tr><td>速度爆发力</td><td>冲刺跑30m/60m、跨步跳、跳箱</td><td>周一/周四</td></tr>
+<tr><td>力量(上肢+核心)</td><td>俯卧撑(标准)、TRX划船、弹力带肩训练、平板支撑(负重)</td><td>周二/周五</td></tr>
+<tr><td>专项耐力</td><td>间歇跑(1min跑/1min走×8)、多球高强度(60球/组)</td><td>周一/周三/周五</td></tr>
+<tr><td>灵敏协调</td><td>绳梯(复杂步法)、变向冲刺、反应训练</td><td>每次课前热身</td></tr>
+<tr><td>恢复</td><td>拉伸+泡沫轴+冷热水交替</td><td>每次课后</td></tr>
+</tbody>
+</table>
+
+<h3>✅ 验收标准</h3>
+<div class="check">
+<div class="check-i"><span class="l">全场6点(高速)</span><span class="v"><4秒</span></div>
+<div class="check-i"><span class="l">高节奏多球失误率</span><span class="v"><15%</span></div>
+<div class="check-i"><span class="l">个人打法风格</span><span class="v">明确+能执行</span></div>
+<div class="check-i"><span class="l">教学赛(同水平)</span><span class="v">胜率>50%</span></div>
+<div class="check-i"><span class="l">心理流程</span><span class="v">比赛中能自主使用</span></div>
+</div>
+
+<div class="callout info"><p><strong>📌 进阶衔接：</strong>L6→L7标志：①高速对抗中技术稳定 ②明确个人打法 ③能参加市级比赛。衔接期3个月，重点：竞赛期训练节奏调整、赛前减量安排、心理状态调控。</p></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 阶段七 -->
+<!-- ============================================================ -->
+<h2>🏆 阶段七：准专业 · Level 6→7</h2>
+<div class="phase p6">
+<div class="ph"><div class="ph-n">L6→7</div><div class="ph-t">职业水准 —— 走向赛场</div><div class="ph-m">12岁+ · 5年+</div></div>
+
+<h3>🎯 目标</h3>
+<p>综合素质达到<strong>省级青少年比赛参赛水准</strong>。技术可在比赛中充分发挥，体能支撑高强度多局比赛，心理能够自主调节，战术能根据对手灵活调整。</p>
+
+<h4>训练结构</h4>
+<p>每周5-6次×120-150分钟。采用<strong>周期化训练</strong>：备战期(技术体能)+ 赛前期(战术对抗)+ 比赛期(保持)+ 恢复期(调整)。</p>
+
+<h3>📋 周期化训练安排</h3>
+
+<table>
+<thead><tr><th>周期</th><th>时长</th><th>特点</th><th>技术分配</th><th>体能分配</th><th>战术分配</th></tr></thead>
+<tbody>
+<tr><td><strong>备战期</strong></td><td>8-12周</td><td>大容量，打基础</td><td>40%</td><td>35%</td><td>25%</td></tr>
+<tr><td><strong>赛前期</strong></td><td>4-6周</td><td>高强度，精战术</td><td>25%</td><td>25%</td><td>50%</td></tr>
+<tr><td><strong>比赛期</strong></td><td>1-4周</td><td>低量高质，保状态</td><td>30%</td><td>20%</td><td>50%</td></tr>
+<tr><td><strong>恢复期</strong></td><td>1-2周</td><td>主动恢复，查漏补缺</td><td>30%</td><td>20%</td><td>50%</td></tr>
+</tbody>
+</table>
+
+<h3>🎮 内源性快乐反馈</h3>
+<div class="joy">
+<div class="joy-title">🌈 L6-L7快乐设计</div>
+<div class="joy-item"><strong>自主训练计划：</strong>每周让孩子自己制定一次的训练计划（教练审核调整）。自主权是最高级别的内在动机催化剂。当孩子感受到"这是我的训练"而非"教练的训练"时，投入度最高。</div>
+<div class="joy-item"><strong>比赛目标体系：</strong>每场比赛设定三级目标——①学习目标(我要学会什么) ②表现目标(我要打出什么水平) ③结果目标(我要赢)。优先关注①和②的达成。</div>
+<div class="joy-item"><strong>运动生涯回忆录：</strong>建立自己的"羽毛球成长档案"——从第一次握拍、第一场比赛到现在的所有里程碑记录。每隔半年翻看，看到自己的成长轨迹本身就是巨大的内源性奖励。</div>
+</div>
+
+<h3>✅ 验收标准</h3>
+<div class="check">
+<div class="check-i"><span class="l">省级青少年比赛参赛</span><span class="v">完成报名并参赛</span></div>
+<div class="check-i"><span class="l">第一轮通过</span><span class="v">晋级次轮</span></div>
+<div class="check-i"><span class="l">比赛心理调控</span><span class="v">比分波动<情绪波动</span></div>
+<div class="check-i"><span class="l">技术对抗稳定性</span><span class="v">高速对抗失误率<12%</span></div>
+<div class="check-i"><span class="l">战术自主调整</span><span class="v">比赛中能自主变阵</span></div>
+</div>
+
+<div class="callout success"><p><strong>🏁 终极终点：</strong>7年路径的终点不是"学完了"，而是"孩子真正爱上了羽毛球，拥有了持续自我提升的能力和意愿"。即使不走职业道路，这7年积累的运动能力、心理韧性、自我管理能力将伴随一生。</p></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============================================================ -->
+<!-- 辅助模块 -->
+<!-- ============================================================ -->
+<h2>📚 辅助模块 · 全解析</h2>
+
+<!-- ====== 心理训练总谱 ====== -->
+<h3>🧠 心理训练全谱系（贯穿7年）</h3>
+
+<table>
+<thead><tr><th>层级</th><th>阶段</th><th>核心技能</th><th>方法</th><th>时间</th></tr></thead>
+<tbody>
+<tr><td><strong>L0</strong></td><td>注意力基础</td><td>专注、倾听</td><td>星星凝视、听指令游戏</td><td>课前1-2min</td></tr>
+<tr><td><strong>L1</strong></td><td>自信建立</td><td>自我效能、错误接纳</td><td>"今天我做到了"、信息性反馈</td><td>课后2min</td></tr>
+<tr><td><strong>L2</strong></td><td>情绪调节</td><td>呼吸调节、过程目标</td><td>4-7-8呼吸、过程目标设定</td><td>课前1min+训练中</td></tr>
+<tr><td><strong>L3</strong></td><td>专注力深化</td><td>抗干扰、自我对话</td><td>干扰训练、指令型自我对话</td><td>训练中</td></tr>
+<tr><td><strong>L4</strong></td><td>比赛心理</td><td>压力适应、情景应对</td><td>比分模拟、蝴蝶呼吸、赛后复盘</td><td>5min/课</td></tr>
+<tr><td><strong>L5</strong></td><td>心理韧性</td><td>逆境应对、可控聚焦</td><td>比分压力训练、IT法则、赛前流程</td><td>5min/课</td></tr>
+<tr><td><strong>L6</strong></td><td>心流与自主</td><td>心流状态、自主调节</td><td>最佳挑战匹配、逆境模拟、心理流程卡</td><td>10min/课</td></tr>
+<tr><td><strong>L7</strong></td><td>自主心理调控</td><td>自主调控、赛时心理</td><td>自主心理热身、实时调整</td><td>自主使用</td></tr>
+</tbody>
+</table>
+
+<div class="callout purple"><p><strong>核心公式：</strong>心理训练不是"额外的训练"，而是嵌入每一个技术动作和战术决策中的底层能力。最好的心理训练是：<strong>孩子在打球的过程中不知不觉地练到了心理</strong>——比如多球训练的最后一组就是抗疲劳训练，比分模拟就是压力适应训练。</p></div>
+
+<!-- ====== 多球训练全流程 ====== -->
+<h3>🎯 多球训练全流程规程</h3>
+
+<table>
+<thead><tr><th>阶段</th><th>模式</th><th>球速</th><th>组间歇</th><th>每组球数</th><th>核心目标</th></tr></thead>
+<tbody>
+<tr><td>K0</td><td>手抛(不碰拍)</td><td>慢</td><td>30s</td><td>5-8个</td><td>接球感/空间判断</td></tr>
+<tr><td>K1</td><td>手抛→拍送</td><td>慢-中</td><td>45s</td><td>8-12个</td><td>动作定型+击球感</td></tr>
+<tr><td>L2</td><td>拍送定点</td><td>中(3s/球)</td><td>45s</td><td>12-15个</td><td>技术巩固</td></tr>
+<tr><td>L3</td><td>拍送+移动</td><td>中(2.5s/球)</td><td>45s</td><td>12-15个</td><td>移动中技术</td></tr>
+<tr><td>L4</td><td>组合多球</td><td>中快(2s/球)</td><td>1min</td><td>10-12个</td><td>技术组合+连贯</td></tr>
+<tr><td>L5</td><td>战术多球</td><td>快(1.5s/球)</td><td>1min</td><td>8-10个</td><td>战术执行</td></tr>
+<tr><td>L6</td><td>高速多球</td><td>快(1.2s/球)</td><td>1.5min</td><td>10-12个</td><td>抗压+自动化</td></tr>
+<tr><td>L7</td><td>比赛模拟多球</td><td>可变</td><td>2min</td><td>8-10个</td><td>比赛情景</td></tr>
+</tbody>
+</table>
+
+<div class="drill">
+<div class="drill-title">多球训练安全和质量守则</div>
+<ol>
+    <li><strong>热身原则：</strong>多球前必须完成10分钟动态热身（含专项热身），禁止无热身直接上多球</li>
+    <li><strong>疲劳监测：</strong>★每5组检查一次——"你的腿还有力吗？"若孩子说"有点累"→减量10%；"很累"→结束多球转入恢复性内容</li>
+    <li><strong>技术红线：</strong>连续3个球动作变形→降速或暂停纠错；连续5个→结束本节多球</li>
+    <li><strong>水分补充：</strong>每完成一组必须喝水（小口多次，每次2-3口）</li>
+    <li><strong>心理安全：</strong>教练的反馈语言必须70%以上是正面的——"好球""对""漂亮"占多数，纠错用"下次可以..."而非"不对"</li>
+    <li><strong>儿童多球黄金比：</strong>有效训练：无效训练 = 80% : 20%——80%的球孩子能打到位（或接近到位），20%超出能力作为挑战。若倒过来说明难度过大。</li>
+</ol>
+</div>
+
+<!-- ====== 体能训练全解 ====== -->
+<h3>💪 体能训练全解（发育适配版）</h3>
+
+<p>基于儿童运动发育科学，不同年龄段体能训练的侧重点完全不同：</p>
+
+<table>
+<thead><tr><th>年龄段</th><th>发育特点</th><th>训练重点</th><th>禁区</th></tr></thead>
+<tbody>
+<tr><td><strong>5-7岁</strong></td><td>神经肌肉控制形成期<br>注意力集中时间短(5-8min)</td><td>基础动作技能(FMS)<br>平衡·协调·反应</td><td>❌ 大力量训练<br>❌ 长时间重复<br>❌ 高压训练</td></tr>
+<tr><td><strong>7-9岁</strong></td><td>速度素质敏感期<br>学习模仿能力强</td><td>速度·灵敏·基本力量(自重)<br>技术动作学习</td><td>❌ 大负重<br>❌ 高强度间歇</td></tr>
+<tr><td><strong>9-11岁</strong></td><td>有氧耐力发展窗口<br>力量素质开始提高</td><td>有氧耐力·速度·力量(弹力带/轻负)</td><td>❌ 极限负重<br>❌ 超量恢复训练</td></tr>
+<tr><td><strong>11-13岁</strong></td><td>力量可训练期(青春前期)<br>神经发育接近成熟</td><td>力量耐力·爆发力入门·全面体能</td><td>❌ 1RM测试<br>❌ 高强度专注的腰腹训练</td></tr>
+</tbody>
+</table>
+
+<div class="module-box m-phy">
+<h4>儿童体能训练游戏库（按素质分类）</h4>
+<p><strong>速度类：</strong></p>
+<ul>
+    <li><strong>追击游戏：</strong>两人隔1米站，教练发信号"左/右"→一方追一方逃，跑5米线。训练启动速度和反应速度。</li>
+    <li><strong>颜色跑：</strong>地面放4种颜色标志盘，教练喊颜色→孩子跑向对应颜色并返回。训练变向速度+听信号反应。</li>
+</ul>
+<p><strong>力量类：</strong></p>
+<ul>
+    <li><strong>青蛙过河：</strong>深蹲跳从河的一岸到另一岸（地面标线）。每次跳要"蹲到底再跳起来"。</li>
+    <li><strong>推车比赛：</strong>两人一组，一人双手撑地做"小推车"，另一人抬脚，向前走。训练上肢+核心。</li>
+</ul>
+<p><strong>耐力类：</strong></p>
+<ul>
+    <li><strong>夺旗大战：</strong>全场4角放4面旗，孩子需跑动收集所有旗。每次拿一面回来，再跑下一个。记录时间，每次挑战缩短时间。</li>
+    <li><strong>循环站耐力赛：</strong>设置4个体能站（深蹲跳/开合跳/高抬腿/俯卧撑），每站30秒，循环3轮。</li>
+</ul>
+<p><strong>灵敏类：</strong></p>
+<ul>
+    <li><strong>绳梯闯关：</strong>设置不同绳梯步法模式（进进出出/滑步/交叉步），孩子按模式通过。模式逐关升级。</li>
+    <li><strong>反应灯挑战：</strong>用反应灯或简单手电筒——教练指向哪里，孩子就快速摸向哪里再返回中点。</li>
+</ul>
+</div>
+
+<!-- ====== 游戏化激励系统 ====== -->
+<h3>🎮 游戏化激励系统（完整版）</h3>
+
+<table>
+<thead><tr><th>机制</th><th>描述</th><th>适用阶段</th><th>心理学原理</th></tr></thead>
+<tbody>
+<tr><td><strong>🌈 彩虹币</strong></td><td>每次正确完成动作可得1币，连续3次额外奖。币换"特权"(选游戏/当小队长/休息1分钟)</td><td>K0-L2</td><td>即时反馈+自主选择</td></tr>
+<tr><td><strong>🏅 能力勋章</strong></td><td>每掌握一项基础技能获一枚勋章(平衡大师/颠球国王/挥拍超人)</td><td>K0-L3</td><td>里程碑感+胜任感</td></tr>
+<tr><td><strong>🪶 技能手环(段位制)</strong></td><td>每项技术设铜银金白金钻石5段，升一段得对应颜色手环</td><td>L2-L5</td><td>分级挑战+可视化进步</td></tr>
+<tr><td><strong>🌳 技能树</strong></td><td>贴纸板展示所有技能→学会一个贴一个叶子→从秃树变茂盛</td><td>K1-L4</td><td>可视化积累+成长感</td></tr>
+<tr><td><strong>📊 能力雷达图</strong></td><td>每月在技术/体能/步法/战术/心理5维上自评+教练评</td><td>L3-L7</td><td>自我认知+目标设定</td></tr>
+<tr><td><strong>🏆 挑战墙</strong></td><td>列出挑战任务(连续10个高远球到底线等)，完成者写名上墙</td><td>L2-L6</td><td>适度挑战+社会认可</td></tr>
+<tr><td><strong>🎪 "小教练"日</strong></td><td>每月一次让孩子当5分钟教练，教其他同学</td><td>L3-L7</td><td>知识巩固+价值感</td></tr>
+<tr><td><strong>📈 数据成长档案</strong></td><td>记录每次测试/比赛的数据，半年做一次成长对比</td><td>L3-L7</td><td>数据驱动的自我激励</td></tr>
+<tr><td><strong>🎯 自主训练计划</strong></td><td>L6+每周让孩子自己制定一次训练计划(教练审核)</td><td>L6-L7</td><td>自主性+责任感</td></tr>
+<tr><td><strong>🤝 师徒制</strong></td><td>高年级指导低年级基础训练</td><td>L5-L7</td><td>归属感+价值感</td></tr>
+</tbody>
+</table>
+
+<div class="callout teal"><p><strong>🎯 游戏化底层逻辑：</strong>所有激励机制的终极目标不是让孩子"听话"，而是帮孩子<strong>建立内在的自我驱动力</strong>。所以随着阶段升高，外部奖励（彩虹币/勋章）逐渐减少，内部奖励（数据成长/自主计划/教别人）逐渐增多。成人教练的终极目标是让<strong>自己变得不那么重要</strong>——孩子不再为了教练而练，而是为了自己而练。</p></div>
+
+<!-- ====== 家长指导手册 ====== -->
+<h3>🏡 家长指导手册（训练延伸篇）</h3>
+
+<div class="module-box m-psy">
+<h4>家长的角色定位</h4>
+<p>家长不是教练的延伸，而是孩子的<strong>支持系统</strong>。最有利于孩子成长的角色是——<strong>啦啦队长+司机+营养师</strong>，而非"第二教练"。</p>
+<p><strong>家长三要三不要：</strong></p>
+<ul>
+    <li>✅ <strong>要问过程：</strong>"今天训练了什么新动作？""哪个动作你觉得最有意思？"</li>
+    <li>❌ <strong>不要问结果：</strong>"今天打赢了吗？""教练有没有批评你？"</li>
+    <li>✅ <strong>要关注努力：</strong>"我看到你一直在练颠球，比昨天多颠了3个！太棒了！"</li>
+    <li>❌ <strong>不要横向比较：</strong>"你看小明比你打得好"——这是内在动机的最大杀手</li>
+    <li>✅ <strong>要创造环境：</strong>家里备一副儿童拍+几个球，训练回家后孩子想玩就玩。不强迫。</li>
+    <li>❌ <strong>不要过度干预：</strong>不要在训练时大喊"侧身！""举拍！"——这是教练的工作。</li>
+</ul>
+</div>
+
+<div class="module-box m-psy">
+<h4>家庭辅助练习（每天15分钟）</h4>
+<table>
+<thead><tr><th>阶段</th><th>练习内容</th><th>注意事项</th></tr></thead>
+<tbody>
+<tr><td>K0</td><td>抛接球、单脚站、跳绳(不要求连续)</td><td>在户外或大厅做，安全第一</td></tr>
+<tr><td>K1</td><td>握拍(看电视时)、颠球(每天50次)、对墙击球</td><td>用儿童短拍，拍子不能太重</td></tr>
+<tr><td>L2-L3</td><td>挥拍(每天100次·拍套不脱保证动作小)、颠球、步法(原地启动步)</td><td>用标准拍时注意手腕不要过度用力</td></tr>
+<tr><td>L4-L5</td><td>跳绳(双摇入门)、核心训练(平板/死虫式)、柔韧性</td><td>力量训练必须经过教练指导</td></tr>
+<tr><td>L6-L7</td><td>体能保持(跳绳/冲刺跑)、比赛热身流程演练</td><td>训练量由教练统一控制</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="callout warn"><p><strong>⚠️ 家长红线行为：</strong>①训练时在场边大喊指导 ②赛后过度分析输赢 ③用"别人家的孩子"比较 ④因训练成绩波动而惩罚 ⑤强迫孩子在不情愿时继续练。这些行为对孩子的长期运动发展伤害极大，可能导致孩子在青春期彻底放弃羽毛球。</p></div>
+
+<div class="divider"></div>
+
+<!-- ============================================================ -->
+<!-- 审查记录 -->
+<!-- ============================================================ -->
+<h2>🔍 专业审查记录（中卷）</h2>
+
+<div class="review">
+<div><strong><span class="s s-pass">✅ 通过</span> #1 运动生理学+安全审查</strong> — 王博士</div>
+<p style="margin-top:0.3rem;font-size:0.9rem;color:var(--text-2)">K0-L7全阶段体能设计符合儿童发育规律。杀球训练安全红线设计合理。重点审查了L6-L7的力量训练安排，确认以自重+弹力带为主、无1RM测试的设计安全。</p>
+</div>
+
+<div class="review">
+<div><strong><span class="s s-pass">✅ 通过</span> #2 技术教学法+进阶逻辑审查</strong> — 林教练</div>
+<p style="margin-top:0.3rem;font-size:0.9rem;color:var(--text-2)">从L3到L6的进阶阶梯设计合理：技术从单项→组合→对抗→比赛。多球密度从3s/球渐进到1.2s/球符合能力发展规律。建议在L5-L6之间增加"录像分析+自我纠正"环节。</p>
+</div>
+
+<div class="review">
+<div><strong><span class="s s-fix">🔧 已调整</span> #3 心理动机设计+快乐反馈审查</strong> — 陈老师</div>
+<p style="margin-top:0.3rem;font-size:0.9rem;color:var(--text-2)"><strong>初审问题：</strong>快乐反馈机制在L4-L7阶段以"外部奖励"(手环/勋章)为主，需要增加内在驱动成分。L5开始的师徒制、自主训练计划、数据成长档案——这些是很好的内部动机设计。建议将L3阶段的技能手环从"教练评定"改为"孩子自我评定+教练确认"——增加自主性。</p>
+<p style="font-size:0.85rem;color:var(--green)"><strong>已采纳：</strong>L3-L5的技能段位制调整为"自我评估+教练确认"模式，让孩子先自我判断是否达到段位标准，教练最后确认。</p>
+</div>
+
+<div class="review">
+<div><strong><span class="s s-note">💡 待审核</span> #4 可操作性+完整性终审</strong> — 全体专家</div>
+<p style="margin-top:0.3rem;font-size:0.9rem;color:var(--text-2)">目前在审核中...</p>
+</div>
+
+<hr style="border:none;border-top:1px solid var(--border);margin:3rem 0">
+
+<p style="text-align:center;color:var(--text-2);font-size:1.1rem;margin:2rem 0"><strong>——— 中卷完 · 共3卷 ———</strong></p>
+<p style="text-align:center;color:var(--text-2)">下一篇：整合终版 · 教练执行手册+日/周/月训练计划模板</p>
+
+</div>
+</body>
+</html>

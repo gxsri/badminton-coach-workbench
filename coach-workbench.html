@@ -1,0 +1,2285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>羽毛球专项教练工作台 · AthleteIQ</title>
+<style>
+:root{
+  --bg:#f5f7fb; --surface:#ffffff; --surface-2:#f8fafc; --surface-3:#eef2f9;
+  --line:#e2e8f0; --line-2:#cbd5e1;
+  --text:#16203a; --text-2:#5b6780; --text-3:#8b97ad;
+  --accent:#3f51b5; --accent-soft:#eef1fb; --accent-2:#6572cd;
+  --blue:#2563eb; --teal:#0d9488; --green:#16a34a; --amber:#d97706; --red:#dc2626; --purple:#7c3aed;
+  --ok-bg:#e9f7ef; --warn-bg:#fdf4e3; --dang-bg:#fdecec; --mute-bg:#eef1f6;
+  --shadow:0 1px 2px rgba(16,32,64,.05),0 6px 18px rgba(16,32,64,.06);
+  --r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+input,select,textarea,button{font-family:inherit;font-size:inherit;color:inherit}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd8e6;border-radius:6px}
+
+/* ============ 顶栏 ============ */
+.topbar{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1280px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:1.02rem;letter-spacing:.2px}
+.brand .logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.brand small{display:block;font-size:.62rem;font-weight:500;color:var(--text-3);letter-spacing:1.2px;line-height:1}
+.topState{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:700;background:var(--mute-bg);color:var(--text-2);white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--green)}
+.pill.warn{background:var(--warn-bg);color:var(--amber)}
+.pill.dang{background:var(--dang-bg);color:var(--red)}
+.pill.info{background:var(--accent-soft);color:var(--accent)}
+.pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+.modesw{display:flex;background:var(--surface-3);border-radius:10px;padding:3px;gap:2px}
+.modesw button{border:0;background:transparent;padding:5px 13px;border-radius:8px;font-size:.76rem;font-weight:700;color:var(--text-2);cursor:pointer;transition:.18s}
+.modesw button.on{background:#fff;color:var(--accent);box-shadow:0 1px 3px rgba(16,32,64,.12)}
+
+/* ============ 导航 ============ */
+.tabbar{position:sticky;top:57px;z-index:55;background:var(--surface);border-bottom:1px solid var(--line)}
+.tabbar-in{max-width:1280px;margin:0 auto;padding:0 18px;display:flex;gap:2px;overflow-x:auto}
+.tabbar button{border:0;background:transparent;padding:11px 14px;font-size:.83rem;font-weight:600;color:var(--text-2);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:.15s}
+.tabbar button:hover{color:var(--text)}
+.tabbar button.on{color:var(--accent);border-bottom-color:var(--accent)}
+.tabbar button svg{width:15px;height:15px}
+
+/* ============ 布局 ============ */
+main{max-width:1280px;margin:0 auto;padding:18px}
+.view{display:none;animation:fade .25s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.gside{grid-template-columns:minmax(0,1fr) 340px}
+@media(max-width:1080px){.gside{grid-template-columns:1fr}}
+@media(max-width:860px){.g2,.g3,.g4{grid-template-columns:1fr}.g4.keep2,.g3.keep2{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.g4.keep2,.g3.keep2{grid-template-columns:1fr}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.card-h{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px;background:var(--surface-2)}
+.card-h h3{font-size:.92rem;font-weight:800;letter-spacing:.2px}
+.card-h .hint{font-size:.72rem;color:var(--text-3);font-weight:500}
+.card-h .r{margin-left:auto;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.card-b{padding:15px 16px}
+.card-b.tight{padding:10px 14px}
+.sep{height:1px;background:var(--line);margin:12px 0}
+
+.pageTitle{display:flex;align-items:flex-end;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.pageTitle h2{font-size:1.25rem;font-weight:800;letter-spacing:.3px}
+.pageTitle p{font-size:.8rem;color:var(--text-2)}
+.pageTitle .r{margin-left:auto}
+
+/* ============ 通用元素 ============ */
+.btn{border:1px solid var(--line-2);background:#fff;border-radius:9px;padding:7px 13px;font-size:.8rem;font-weight:700;cursor:pointer;color:var(--text);transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri:hover{background:var(--accent-2);color:#fff}
+.btn.sm{padding:4px 9px;font-size:.72rem;border-radius:7px}
+.btn.dang{color:var(--red);border-color:#f3c6c6}
+.btn.dang:hover{background:var(--dang-bg);border-color:var(--red);color:var(--red)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn svg{width:14px;height:14px}
+
+.field{margin-bottom:11px}
+.field label{display:block;font-size:.74rem;font-weight:700;color:var(--text-2);margin-bottom:4px}
+input[type=text],input[type=number],input[type=date],input[type=password],select,textarea{
+  width:100%;border:1px solid var(--line-2);border-radius:9px;padding:7px 10px;background:#fff;font-size:.83rem;transition:.15s}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(63,81,181,.11)}
+textarea{resize:vertical;min-height:70px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.76rem;line-height:1.55}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1;min-width:130px}
+.chkline{display:flex;gap:8px;align-items:flex-start}
+.chkline input{margin-top:3px;flex-shrink:0;width:15px;height:15px;accent-color:var(--accent)}
+
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th{text-align:left;padding:8px 10px;background:var(--surface-2);color:var(--text-3);font-size:.7rem;letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:hover{background:var(--surface-2)}
+.tnum{font-variant-numeric:tabular-nums;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+.metric{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+.metric .k{font-size:.68rem;color:var(--text-3);font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.metric .v{font-size:1.5rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.25}
+.metric .v u{font-size:.7rem;font-weight:600;text-decoration:none;color:var(--text-3);margin-left:2px}
+.metric .s{font-size:.7rem;color:var(--text-2)}
+
+.bar{height:7px;background:var(--surface-3);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--accent);transition:width .4s}
+.bar.g i{background:var(--green)}.bar.a i{background:var(--amber)}.bar.r i{background:var(--red)}
+
+.tag{display:inline-block;padding:2px 7px;border-radius:6px;font-size:.68rem;font-weight:700;background:var(--mute-bg);color:var(--text-2);margin:1px 3px 1px 0}
+.tag.a{background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--ok-bg);color:var(--green)}
+.tag.y{background:var(--warn-bg);color:var(--amber)}
+.tag.r{background:var(--dang-bg);color:var(--red)}
+.tag.t{background:#e3f5f3;color:var(--teal)}
+
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:9px 12px;border-radius:0 9px 9px 0;font-size:.8rem;color:var(--text-2);margin:10px 0}
+.note.warn{border-color:var(--amber);background:var(--warn-bg)}
+.note.dang{border-color:var(--red);background:var(--dang-bg)}
+.note.ok{border-color:var(--green);background:var(--ok-bg)}
+
+/* 清单 */
+.check{padding:11px 13px;border:1px solid var(--line);border-radius:10px;margin-bottom:9px;background:#fff;display:flex;gap:11px;align-items:flex-start;transition:.15s}
+.check:hover{border-color:var(--line-2);background:var(--surface-2)}
+.check.done{background:var(--surface-2);border-color:#d9e3d9}
+.check.done .ct{text-decoration:line-through;color:var(--text-3)}
+.check input[type=checkbox]{width:17px;height:17px;margin-top:3px;flex-shrink:0;accent-color:var(--green);cursor:pointer}
+.check .cbody{flex:1;min-width:0}
+.check .ct{font-weight:700;font-size:.86rem}
+.check .cd{font-size:.76rem;color:var(--text-2);margin-top:2px}
+.check .cmeta{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;align-items:center}
+.check .cmeta .amt{font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:1px 7px;border-radius:5px}
+
+/* 手风琴 */
+details.acc{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:#fff;overflow:hidden}
+details.acc>summary{padding:11px 13px;cursor:pointer;font-weight:700;font-size:.85rem;list-style:none;display:flex;align-items:center;gap:8px}
+details.acc>summary::-webkit-details-marker{display:none}
+details.acc>summary::after{content:'';margin-left:auto;width:7px;height:7px;border-right:2px solid var(--text-3);border-bottom:2px solid var(--text-3);transform:rotate(45deg);transition:.2s}
+details.acc[open]>summary::after{transform:rotate(-135deg)}
+details.acc[open]>summary{border-bottom:1px solid var(--line);background:var(--surface-2)}
+.acc-b{padding:12px 14px;font-size:.82rem;color:var(--text-2)}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:.8rem}
+.kv dt{color:var(--text-3);font-weight:700;white-space:nowrap}
+.kv dd{color:var(--text)}
+
+ol.steps{margin:0;padding-left:1.15rem}
+ol.steps li{margin-bottom:5px;font-size:.82rem}
+ul.plain{margin:0;padding-left:1.05rem}
+ul.plain li{margin-bottom:4px;font-size:.82rem}
+
+.lvbar{display:inline-flex;align-items:center;gap:3px}
+.lvbar i{width:5px;height:13px;border-radius:2px;background:var(--surface-3)}
+.lvbar i.on{background:var(--accent)}
+
+.empty{text-align:center;padding:26px 14px;color:var(--text-3);font-size:.82rem}
+.empty svg{width:34px;height:34px;opacity:.35;display:block;margin:0 auto 8px}
+
+svg.chart{width:100%;height:auto;display:block;overflow:visible}
+.hashmark{position:absolute;width:0;height:0;overflow:hidden}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.72rem;color:var(--text-2);margin-top:6px}
+.legend i{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:4px}
+
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(80px);background:var(--text);color:#fff;padding:9px 18px;border-radius:10px;font-size:.82rem;font-weight:600;z-index:999;opacity:0;transition:.28s;box-shadow:0 10px 30px rgba(0,0,0,.22)}
+#toast.on{transform:translateX(-50%);opacity:1}
+
+.videoWrap{position:relative;background:#0f1420;border-radius:10px;overflow:hidden}
+.videoWrap video{width:100%;display:block;max-height:260px}
+.dropzone{border:2px dashed var(--line-2);border-radius:12px;padding:22px;text-align:center;cursor:pointer;transition:.15s;background:var(--surface-2)}
+.dropzone:hover{border-color:var(--accent);background:var(--accent-soft)}
+.dropzone svg{width:30px;height:30px;color:var(--text-3);margin-bottom:6px}
+
+.progressline{height:6px;background:var(--surface-3);border-radius:99px;overflow:hidden;margin-top:8px}
+.progressline i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--teal));transition:width .3s}
+
+footer{max-width:1280px;margin:22px auto;padding:16px 18px 30px;color:var(--text-3);font-size:.72rem;border-top:1px solid var(--line)}
+
+@media print{
+  .topbar,.tabbar,footer,.noprint{display:none!important}
+  body{background:#fff}
+  .card{break-inside:avoid;box-shadow:none}
+  main{padding:0;max-width:none}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <span class="logo">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20l8-8M11 4l9 9M15 4h5v5"/><circle cx="6" cy="6" r="2.2"/></svg>
+      </span>
+      <span>羽毛球专项教练工作台<small>ATHLETEIQ COACH WORKBENCH</small></span>
+    </div>
+    <div class="topState" id="topState"></div>
+    <div class="modesw" id="modeSwitch">
+      <button data-m="simple">简单模式</button>
+      <button data-m="pro" class="on">专业模式</button>
+    </div>
+  </div>
+</header>
+
+<nav class="tabbar"><div class="tabbar-in" id="tabbar"></div></nav>
+
+<main>
+<span id="today" class="hashmark"></span>
+<span id="level" class="hashmark"></span>
+<span id="lib" class="hashmark"></span>
+<span id="log" class="hashmark"></span>
+<span id="video" class="hashmark"></span>
+<span id="data" class="hashmark"></span>
+<span id="diag" class="hashmark"></span>
+<span id="profile" class="hashmark"></span>
+  <section class="view on" id="view-today"></section>
+  <section class="view" id="view-lib"></section>
+  <section class="view" id="view-log"></section>
+  <section class="view" id="view-video"></section>
+  <section class="view" id="view-data"></section>
+  <section class="view" id="view-diag"></section>
+  <section class="view" id="view-profile"></section>
+</main>
+
+<footer>
+  所有力量 / 灵敏度 / 关节角度阈值均为通用运动科学参考值，不替代医疗诊断。出现夜间痛、静息痛、关节绞锁或不稳、明显肿胀、放射性疼痛时应停止训练并寻求专业医疗评估。数据保存在本机浏览器 localStorage，不上传任何服务器。
+</footer>
+
+<div id="toast"></div>
+
+<script>
+/* ==================================================================
+   羽毛球专项教练工作台
+   零依赖 · 单文件 · 离线可用 · 数据存 localStorage
+   ================================================================== */
+"use strict";
+
+/* ==================== 一、静态知识库 ==================== */
+
+const STORE_KEY = "bwb.v1";
+
+/* 五大体能素质 */
+const QUAL = [
+  {id:"power",     n:"力量 / 爆发力", c:"var(--purple)"},
+  {id:"speed",     n:"速度 / 灵敏",   c:"var(--blue)"},
+  {id:"endurance", n:"专项耐力",     c:"var(--red)"},
+  {id:"mobility",  n:"柔韧 / 活动度", c:"var(--teal)"},
+  {id:"stability", n:"关节稳定性",   c:"var(--green)"}
+];
+
+/* ---------- 七大技术体系：技术要点 / 常见错误 / 配套素质 / 伤病风险 / 视频指标 ---------- */
+const TECH = [
+{
+  id:"serve", n:"发球", sub:"正手发高远球 · 反手发小球", icon:"serve",
+  goal:"把每一分发球的落点误差控制在 30cm 内，且不因发接发环节失分。",
+  cues:[
+    "站位：面对球网，前脚距前发球线约一个拍长，重心压在前脚掌，拍头高于手腕。",
+    "反手发球持拍：拇指顶在拍柄宽面，其余三指自然扣握，拍面后仰不超过 30°。",
+    "击球点：规则要求整个拍头必须低于手腕且低于腰部（约 1.15m），站位越低越好控制。",
+    "发力：是「推送」而非「击打」，柔化腕部，用手指最后一瞬的捻转发力控制落点。",
+    "随挥：顺势收至身体右前上方不超过 20cm，随挥越长越容易被对手读线路。"
+  ],
+  simple:[
+    "站到发球线后面一步，侧身对着网。",
+    "手抬到腰的高度，球拍放在身前。",
+    "轻推球，不要抡大臂。",
+    "球出手后马上举拍准备下一拍。"
+  ],
+  errors:[
+    ["击球点过高（超过腰线）→ 被判违例", "把持球手放低到髋部并用手指轻托，反复做空载成功后再加球"],
+    ["引拍过大，动作有停顿 → 被对手预判", "做「无引拍发球」限制练习：手臂固定，只用前臂和手指发力"],
+    ["手腕僵硬，只有推没有捻", "对着墙壁发小球练习，追求球贴墙下落，20 球一组"],
+    ["球发出后不举拍，第三拍被动", "发完立刻做「举拍—还原」的自动化衔接，教练口令陪练"]
+  ],
+  qual:["stability","mobility","endurance"],
+  qw:{stability:.45, mobility:.3, endurance:.25},
+  risks:[{p:"肘（内侧副韧带 / 屈肌总腱）",w:2},{p:"前臂屈肌群劳损",w:2},{p:"腰方肌代偿",w:1}],
+  metrics:{elbowFlex:.5, contactHeight:.4, tempo:.6, wristsnap:.5, recovery:.4}
+},
+{
+  id:"clear", n:"高远球", sub:"正手高远 · 头顶高远 · 被动过渡", icon:"clear",
+  goal:"从己方底线打到对方底线，落点稳定在双打后发球线前后 1m 内。",
+  cues:[
+    "侧身架拍：转体约 90°，持拍肘抬到不低于肩的高度，形成「弓」的张力。",
+    "蹬转发力链：屈膝蹬地 → 髋前送 → 转髋 → 甩肩 → 伸肘内旋 → 手腕鞭打，链条必须依次叠加。",
+    "击球点：持拍侧肩前上方最高点，此时肘应有 160°-175° 的伸展角。",
+    "内旋：初学者最大的分水岭，击球瞬间前臂内旋让拍面正对来球，靠拍面而非肩膀「甩」。",
+    "随挥：顺势收向另一侧下方，重心前移进入下一拍准备。"
+  ],
+  simple:[
+    "侧身站，把球拍举起来像拉弓。",
+    "先把球让到身体的前上方，再打。",
+    "打的时候脚下要蹬地，不能只靠手。",
+    "打完手臂顺势往下收，赶紧回中间。"
+  ],
+  errors:[
+    ["击球点偏后或偏低 → 打不出高度，变平抽", "多球「定点高远」：教练送出高球到固定位置，只允许在最高点击球"],
+    ["肘低于肩就开始发力 → 只用肩甩，易伤肩袖", "靠墙架拍定型训练：背靠墙避免肘下垂，60s×3 组"],
+    ["只用上半身转，没用蹬地", "做不持拍的「蹬地—转髋」慢动作链条练习，体会力量从脚底传上来"],
+    ["手腕过早发力，触球就打滑", "先做慢速拖腕挥拍 100 次建立动作程序，再逐档提速"]
+  ],
+  qual:["power","mobility","stability"],
+  qw:{power:.4, mobility:.35, stability:.25},
+  risks:[{p:"肩袖（冈上肌）冲击 / 肩峰下撞击",w:3},{p:"腰椎旋转过载",w:2},{p:"髋屈肌紧张导致的代偿",w:1}],
+  metrics:{shoulderAbd:1, elbowFlex:1, contactHeight:1, trunkRot:.8, hipShoulder:.8, wristsnap:.9, followThrough:.7, tempo:.5}
+},
+{
+  id:"smash", n:"杀球", sub:"原地杀 · 跳杀 · 点杀 / 劈杀", icon:"smash",
+  goal:"男线跳杀球速 > 220km/h（初速），落点可控；跳后第一步 0.5s 内完成复位。",
+  cues:[
+    "起跳：双脚均分蓄力，向上垂直为主、略带后倾，不要把重心全部压向前。",
+    "展腹—收腹：击球手臂同侧的髋先向后撤、形成躯干反弓，再用腹部快速收回，力量由此被放大。",
+    "击球点：比高远更靠前约半个球身，且必须尽力向上，杀球点越高威胁越大。",
+    "落地：前脚掌先着地，膝屈 100°-120° 缓冲，膝尖与第二脚趾同向，避免膝内扣。",
+    "跳杀不是每球都做：连续跳杀三拍以上体能消耗极大，须配合网前连贯练习。"
+  ],
+  simple:[
+    "起跳时挺一下胸，像要打开身体。",
+    "在高处往地面上敲球，别压着打。",
+    "落地要软，膝盖弯一下吸住力量。",
+    "落地后第一步立刻蹬回场地中间。"
+  ],
+  errors:[
+    ["起跳时机靠猜 → 打不到最高点", "三拍节奏练习：「退—跳—击」口令化，减少视动延迟"],
+    ["收腹过早，用胸背硬拉", "仰卧卷腹敲背 / 药球旋转抛练习体会「收腹—送髋」顺序"],
+    ["落地啪一声直膝落地 → 膝前痛 / 跟腱风险", "在体操垫上做30cm跳箱落地静默练习，听声音评判，蹲 2s 再起"],
+    ["杀完一拍就站定看戏，被对方挑后场反打", "强制练连贯：杀球后必须接一次网前或平抽，接不上就判这一分失分"]
+  ],
+  qual:["power","speed","stability"],
+  qw:{power:.4, speed:.3, stability:.3},
+  risks:[{p:"髌腱 / 膝前痛",w:3},{p:"跟腱（落地 / 起跳）",w:3},{p:"肩袖离心负荷",w:2},{p:"腰椎反弓过度",w:2}],
+  metrics:{shoulderAbd:1, elbowFlex:1, contactHeight:1.2, trunkRot:1, hipShoulder:1, jumpHeight:1, kneeFlex:1.1, kneeValgus:1.2, wristsnap:1, followThrough:.6, landing:.9, tempo:.5}
+},
+{
+  id:"drop", n:"吊球", sub:"劈吊 · 收吊 · 滑板吊", icon:"drop",
+  goal:"与高远球动作同形到最后一瞬，落点控制在前发球线前后 50cm。",
+  cues:[
+    "同形性：准备到击球前 80% 的动作必须与高远球完全一致，这是欺骗性的来源。",
+    "触球方式：包切（劈吊）时拍面斜切球体右侧，减速量约 25%-35%。",
+    "收吊：触球瞬间完全卸力，靠手腕把球「放」过网，落点贴网。",
+    "重心：吊球最容易犯的错是后坐，重心必须保持略微前压。",
+    "过网高度：理想 5-15cm；吊球过网越高，被抓推的反而不多，但落点会飘。"
+  ],
+  simple:[
+    "和高远一样的动作开始，快碰到球时把手放松。",
+    "球要贴着网过去，一过网就往下掉。",
+    "身体不要往后仰，往前送一点。",
+    "吊完立刻回中间准备下一拍。"
+  ],
+  errors:[
+    ["减速太早，动作提前露馅", "随机多球：教练随机喊高远 / 吊，要求在最后 0.1s 才区分"],
+    ["吊下网", "过网目标抬高到 20cm 练三周，再逐周降低"],
+    ["落点过高被推", "在对方场地放标记环，落点进环才算成功20球"],
+    ["重心后坐导致下一拍启动慢", "侧面录像自查：击球后重心投影点是否落在前脚上，而不是后脚跟"]
+  ],
+  qual:["stability","mobility","power"],
+  qw:{stability:.45, mobility:.35, power:.2},
+  risks:[{p:"腕关节 / 三角纤维软骨",w:2},{p:"肘内侧过度使用",w:1},{p:"重心后坐引起的腰部代偿",w:1}],
+  metrics:{elbowFlex:.8, contactHeight:.9, wristsnap:1, followThrough:.9, tempo:.6, trunkRot:.6}
+},
+{
+  id:"net", n:"网前球", sub:"搓球 · 勾对角 · 推后场 · 扑球", icon:"net",
+  goal:"第一步在 0.4s 内启动；搓球过网后能明显翻滚贴网（成功率 >90%）；出球后回位不超过 4 步。",
+  cues:[
+    "上步：最后一步做跨步，前弓步膝屈 90°-110°，膝尖对准第二脚趾，膝盖不要超过脚尖过多。",
+    "重心：击球点在体前，不要踮着脚尖往上够，网前要靠降低的重心去推球出弧线。",
+    "搓球：拍面向后倾斜约 25°-35° 切过球的下半部，触球后短促向上「擦」一下，让球翻滚过网。",
+    "扑球：手腕与手指的短促发力，对方出手偏低时提前举拍，把拍面停在网口上等待。",
+    "还原：击球后必须有一拍明确的回收缓冲，这是所有网前球的正负手。"
+  ],
+  simple:[
+    "上步的时候最后一步大一点，膝盖弯一点。",
+    "拍子从下往上轻轻蹭球，让球翻着过网。",
+    "打完马上用交叉步退回来。",
+    "眼睛跟着球，不要提前看对方。"
+  ],
+  errors:[
+    ["脚先到手后到，蹲着等球", "先做无球步法到网前，让脚步与伸手到达的时间严格一致"],
+    ["搓球过网过高被扑", "目标：球过网后立即下沉，可在网对面放一个高度为 15cm 的障碍线"],
+    ["弓步时膝盖内扣 → 髌股疼痛", "对着镜/录像做 20 次慢速弓步，检查髌骨中心与第二脚趾是否一条线"],
+    ["扑球判断晚，被对方推后发球线反打", "对方一出手就做小跳（分腿预备），用起动节奏争取判断时间"]
+  ],
+  qual:["speed","stability","mobility"],
+  qw:{speed:.35, stability:.35, mobility:.3},
+  risks:[{p:"髌股关节（前膝痛）",w:3},{p:"踝关节扭伤 / 距腓前韧带",w:3},{p:"髋屈肌 / 髂腰肌紧张",w:2},{p:"足底筋膜",w:1}],
+  metrics:{kneeFlex:1.1, kneeValgus:1.3, centroid:.9, tempo:.5, recovery:.9, wristsnap:.7, contactHeight:.4}
+},
+{
+  id:"defense", n:"防守", sub:"接杀挡网 · 平抽 · 反抽转攻", icon:"defense",
+  goal:"接杀回转率 >60%；防守 10 拍内的失位率 <20%。",
+  cues:[
+    "准备姿态：重心比平时低 8-10cm，拍面保持在胸前的「窗口」位置。",
+    "接杀：完全借助来球速度做短促的挡贴，不主动发力，输出力度控制在 20%-30%。",
+    "抽球：肘要贴身带出去，形成一个短杠杆，避免大挥。",
+    "防守站位：单打居中偏后约 30cm（留出上网距离），双打防守时两人平行站位、各守半场。",
+    "转攻：第三拍推挑底线或平抽对角，是防守体系中最主要的得分来源。"
+  ],
+  simple:[
+    "重心压低一点，球拍端起来放在身前。",
+    "来球用到七分力，借力挡回去就行。",
+    "尤其不需要大幅度挥拍，短一点更快。",
+    "挡完马上回中间，别站着看。"
+  ],
+  errors:[
+    ["拍面下垂，接杀时先举拍来不及", "做接杀准备动作定型：静止时拍面不能低于腰部 10cm"],
+    ["发力过猛，挡网出底线", "固定手感的托送练习：只用前臂把球送到网前 30-50cm 的落点区域"],
+    ["防守中线偏向薄弱侧", "录像统计接杀方向偏差，做不对称专项"],
+    ["被调动后看球不看人 → 失去预判", "多球随机喂6个点练习，让视觉先读动作再动脚"]
+  ],
+  qual:["speed","stability","endurance"],
+  qw:{speed:.4, stability:.35, endurance:.25},
+  risks:[{p:"踝扭伤 / 慢性踝不稳",w:3},{p:"腘绳肌拉伤（急停急转）",w:3},{p:"膝关节内侧副韧带",w:2},{p:"腰部疲劳性劳损",w:1}],
+  metrics:{centroid:1.1, kneeValgus:1.2, kneeFlex:.9, tempo:.7, recovery:1, contactHeight:.3}
+},
+{
+  id:"footwork", n:"步法", sub:"并步 · 交叉步 · 蹬转 · 垫步 · 上网与后退", icon:"footwork",
+  goal:"米字六点全部在 5-7 步内完成并回到中心；重心起伏不超过一个拳头的落差。",
+  cues:[
+    "预备：脚跟微抬约 1-2cm，重心落在前脚掌，两脚间距略宽于肩，拍置于腹前。",
+    "一小一大原则：先启动的小垫步「弹」起来，最后一步必须大，用于制动和出球。",
+    "后退相比上网更强调先转身：先把髋转向后场再跑，否则一定慢半拍。",
+    "复位：回中的第一步就要主动蹬地发力，不要等身体停稳了才想起往回走。",
+    "重心起伏：多余的跳动（兔子跳）会让每步多耗 0.05-0.1 秒，步法要像雪橇平移，不能像袋鼠蹦。 "
+  ],
+  simple:[
+    "出发前先把脚跟抬起来，像弹簧。",
+    "先迈一小步（垫一下），最后一大步。",
+    "回中间的路上也要用跑的，别走路回来。",
+    "身体不要一上一下跳，要平着移动。"
+  ],
+  errors:[
+    ["脚跟落地或站着不动等待来球", "原地小弹 8 拍练习：保持脚跟抬起持续微弹，建立 pre-tension（预张力）"],
+    ["步数过多，多 1 步相当于慢 0.2s", "限定步数练习：规定六点必须 5 步完成"],
+    ["后退先跑后转身", "录像自查：肩和髋是否同时转向后场"],
+    ["重心上下跳（兔子跳）", "头顶放一个矿泉水瓶做慢速步法，瓶子不掉才算过关"],
+    ["落地点不制动，惯性冲出", "最后一步加重练习：记住「最后一大步是刹车，不是加速」"]
+  ],
+  qual:["speed","power","stability"],
+  qw:{speed:.4, power:.25, stability:.35},
+  risks:[{p:"踝扭伤（落地不稳）",w:3},{p:"足底筋膜炎",w:2},{p:"胫骨内侧应力综合征",w:2},{p:"膝前痛",w:2}],
+  metrics:{centroid:1.2, tempo:1, recovery:1.2, kneeFlex:.9, kneeValgus:1, cadence:1}
+}
+];
+
+/* ---------- 体能动作库 ---------- */
+/* q: power / speed / endurance / mobility / stability */
+const EX = [
+/* 力量 / 爆发力 */
+{id:"goblet",q:"power",n:"高脚杯深蹲",area:"下肢 · 蹬伸",rx:{s:"4组",r:"6-8次",l:"70-80%1RM",rest:"120s"},i:8,how:"双脚略宽于肩，双手抱一个哑铃/壶铃在胸前。下蹲到大腿接近水平，膝盖跟着脚尖方向，起身时脚踩地发力。" ,cue:"膝盖始终对着第二脚趾，别往里扣。",why:"羽毛球每一次蹬地起跳、每一次后退制动都靠下肢蹬伸力量。"},
+{id:"bulgarian",q:"power",n:"保加利亚分腿蹲",area:"下肢 · 单腿力量",rx:{s:"3组",r:"每侧8次",l:"自重→24kg",rest:"90s"},i:7,how:"把后脚背搭在凳子上，前脚向前迈一大步。下蹲到前腿大腿接近水平，然后用前脚脚跟发力站起来。",cue:"身体微微前倾，让臀部为主导发力。",why:"所有网前弓步与落地都是单腿承重，单腿力量直接决定能不能「刹车」。"},
+{id:"rdl",q:"power",n:"罗马尼亚硬拉",area:"髋链 · 腘绳肌",rx:{s:"4组",r:"8次",l:"60-70%1RM",rest:"120s"},i:7,how:"双手握杠/哑铃在腿前，膝盖微屈固定。用臀部往后推的方式让上身慢慢前倾，感觉大腿后侧拉长，然后夹臀起身。",cue:"是「屁股往后推」，不是「弯腰往下够」。",why:"髋关节铰链是每一次低重心防守和起身复位的基础。"},
+{id:"nordic",q:"power",n:"北欧式腘绳肌离心",area:"腘绳肌 · 减速",rx:{s:"3组",r:"6次",l:"自重",rest:"120s"},i:9,how:"跪在垫上，同伴压住脚踝。身体保持一条直线慢慢往前倒，用手撑地接住，再爬回来。",cue:"胸口尽量撑住，能撑多久算多久。",why:"急停变向时腘绳肌受伤最常见，离心能力是最强的保护。"},
+{id:"pushpress",q:"power",n:"借力推举",area:"上肢 · 垂直推",rx:{s:"4组",r:"5次",l:"70%1RM",rest:"120s"},i:8,how:"杠铃/哑铃置于肩部，微蹲后立刻蹬地伸展，把重量顺势推到头顶伸直。",cue:"力量从脚传到手，一气呵成。",why:"模拟跳杀时「蹬地—伸展—挥臂」的完整发力链。"},
+{id:"pullup",q:"power",n:"引体向上 / 高位下拉",area:"上肢 · 拉",rx:{s:"4组",r:"6-10次",l:"自重",rest:"120s"},i:8,how:"双手握杠略宽于肩，身体不要晃，用背的力量把胸口拉向单杠，慢慢放下。" ,cue:"想象把肘部往口袋里插。",why:"平衡大量的推类动作（高远、杀球），预防肩前侧过紧。"},
+{id:"kbswing",q:"power",n:"壶铃荡摆",area:"髋爆發· posterior chain",rx:{s:"5组",r:"15次",l:"16-24kg",rest:"60s"},i:7,how:"双脚站立，把壶铃从两腿间往后荡，然后用髋部猛地前送的力量把壶铃送到胸高，顺势再荡回来。",cue:"手只是绳子，力量全部来自髋部的前送。",why:"训练在毫秒内输出力量（RFD），对应羽毛球的启动与跳杀。"},
+{id:"medball",q:"power",n:"药球旋转砸 / 抛",area:"核心 · 旋转",rx:{s:"4组",r:"每侧8次",l:"4-6kg",rest:"90s"},i:8,how:"侧对墙壁，双手持药球，像挥拍一样从身体一侧旋转砸向墙壁，接住再来。" ,cue:"脚要蹬地，旋转由髋带着走。",why:"高远、杀球的力量核心就是躯干旋转链的传递效率。"},
+{id:"hipthrust",q:"power",n:"臀桥 / 髋推",area:"臀 · 髋伸",rx:{s:"4组",r:"10次",l:"自重→杠铃",rest:"90s"},i:6,how:"肩靠凳子躺下，杠铃/哑铃放在髋部。夹臀把髋顶到最高，停一秒再放下来。",cue:"顶到最高时用力夹屁股，别用腰去顶。",why:"改善因为久坐导致的臀肌失活，避免腰部替髋干活。"},
+{id:"calfraise",q:"power",n:"提踵（含离心）",area:"小腿 · 跟腱",rx:{s:"3组",r:"15次",l:"自重→负重",rest:"45s"},i:5,how:"站在台阶边缘，脚跟悬空。快速抬起脚尖站立，然后用 3 秒慢慢放下到脚跟低于台阶。",cue:"慢下来的那 3 秒才是重点。",why:"跟腱与小腿负责每一次落地缓冲和起跳，慢离心能显著降伤病率。"},
+
+/* 速度 / 灵敏 */
+{id:"agility510",q:"speed",n:"5-10-5 灵敏跑",area:"变向 · 制动",rx:{s:"5组",r:"1次",l:"全力",rest:"60s"},i:8,how:"中间放三个标志物（5米、10米、5米）。从中点出发摸线—折返—再摸另一线—折返到中点。",cue:"每次变向前先压低重心，用外侧脚蹬地。",why:"羽毛球 70% 的移动是短距离来回的变向，不是直线冲刺。"},
+{id:"shadow",q:"speed",n:"影子步法（六点）",area:"专项 · 步法",rx:{s:"4组",r:"6点×3轮",l:"全力",rest:"90s"},i:8,how:"持拍做米字步：中心→左前→回中→右前→回中→左后→回中→右后→回中→中场两侧。",cue:"每一步都要回到中心才算完成，回中心要跑不要走。",why:"这是唯一与技术绑定的体能训练，练这个等于同时练步法。"},
+{id:"ladder",q:"speed",n:"绳梯/步频训练",area:"步频 · 协调",rx:{s:"4组",r:"4种步型×2",l:"中等",rest:"60s"},i:6,how:"在绳梯里做单步、双步、侧向、交叉四种走法，尽量不踩线。" ,cue:"脚抬高一点点，落地要有弹性。",why:"提高脚步频率，减少每一步的接触时间。"},
+{id:"react",q:"speed",n:"反应启动训练",area:"响应式 · 神经",rx:{s:"4组",r:"8次",l:"全力",rest:"60s"},i:8,how:"教练站在对面随机指方向 / 抛球，你在信号出现后立刻启动移动赶到指定点。",cue:"信号出现前保持「脚跟抬起」的小弹状态。",why:"真正的场上速度取决于对来球的反应延迟，而不只是跑得快。"},
+{id:"sprint",q:"speed",n:"10m / 20m 冲刺",area:"直线加速",rx:{s:"6组",r:"1次",l:"全力",rest:"90s"},i:9,how:"从准备姿势全力冲过 10m 或 20m，走到起点休息。",cue:"前 3 步身体前倾压低，别一开始就把身子竖起来。",why:"接发扑网、鱼跃救球的直线距离就是这几米。"},
+{id:"latbox",q:"speed",n:"侧向跳箱",area:"侧向 · 单腿弹性",rx:{s:"3组",r:"每侧10次",l:"自重",rest:"75s"},i:7,how:"站在箱子旁边，单腿侧跳上箱再跳回，两侧交替。",cue:"落地要静音，膝盖对准脚尖。",why:"中场两侧的横向扑救、抽挡，考的就是侧向弹性。"},
+
+/* 专项耐力 */
+{id:"multi20",q:"endurance",n:"多球间歇（20:10）",area:"专项无氧耐力",rx:{s:"8组",r:"20秒打/10秒歇",l:"亚极量",rest:"组间90s"},i:9,how:"教练连续送球 20 秒（约 12-18 拍），你全力移动击球，休息 10 秒继续下一组。",cue:"哪怕打不动也要把步法做完整，动作质量比打多少球重要。",why:"一场比赛的每分大约持续 5-15 秒，间隔短、强度高，极像这个模式。"},
+{id:"courtline",q:"endurance",n:"场地往返 20 趟",area:"专项有氧耐力",rx:{s:"2组",r:"20趟",l:"85-90%",rest:"3min"},i:8,how:"从一侧边线跑到底线（单步/交叉混合），20 趟计时。",cue:"保持固定节奏，不要前半程冲刺后半程崩。" ,why:"保证第三局还能打出质量的底线有氧。"},
+{id:"cooper",q:"endurance",n:"12 分钟跑 / 3km",area:"基础有氧",rx:{s:"1组",r:"12min",l:"匀速80%",rest:"-"},i:7,how:"在田径场跑 12 分钟，记录跑到的距离；或直接跑 3km 计时。",cue:"呼吸能说话但不能唱歌的强度。",why:"有氧底子厚的人，恢复快、乳酸堆积慢，第三局才不崩。"},
+{id:"circuit",q:"endurance",n:"力量循环（循环训练）",area:"肌耐力 · 混合供能",rx:{s:"3轮",r:"6站×40s",l:"中等",rest:"站间20s/轮间2min"},i:8,how:"选 6 个动作（深蹲、俯卧撑、平板、弓步、V字起身、开合跳）连续做 40 秒，站间休息 20 秒，做 3 轮。",cue:"中途可以放慢但别停，站起来的那一刻就算完成。",why:"同时练到心肺和肌肉耐力，适合训练量大时作为体能补充。"},
+
+/* 柔韧 / 活动度 */
+{id:"hip9090",q:"mobility",n:"90/90 髋旋转",area:"髋关节",rx:{s:"2组",r:"每侧10次",l:"自重",rest:"-"},i:3,how:"坐在地上，两条腿都弯成 90 度（一前一后）。保持躯干直立，把双膝一起翻到另一侧，再翻回来。",cue:"身体尽量别歪，用髋内部的转动完成。",why:"髋的内旋/外旋能力不足会被腰部代偿掉。"},
+{id:"sleeper",q:"mobility",n:"睡眠者拉伸（肩内旋）",area:"肩后侧",rx:{s:"2组",r:"每侧30-45s",l:"自重",rest:"-"},i:2,how:"侧躺，下手伸往前成 90 度，上手扶住下手前臂，轻轻往下压，让肩后侧拉长。",cue:"感觉到肩后有拉伸感就停，别硬掰到疼。",why:"没有足够的肩内旋活动度，高远球架拍就会代偿到腰。"},
+{id:"tspine",q:"mobility",n:"胸椎旋转（翻书式）",area:"胸椎",rx:{s:"2组",r:"每侧10次",l:"自重",rest:"-"},i:2,how:"侧躺屈膝，双手合十伸向前。上面的手像翻书一样慢慢转向另一侧，头和胸在转、膝盖不要动。",cue:"转胸椎，不是甩手。",why:"躯干旋转链的源头，腰椎不该承担这部分。"},
+{id:"ankledf",q:"mobility",n:"踝背屈（弓步墙测）",area:"踝",rx:{s:"2组",r:"每侧12次",l:"自重",rest:"-"},i:2,how:"面对墙，一脚前一脚后，前脚尖距墙 8-12cm，膝盖往前顶墙并保持脚跟踩地。" ,cue:"脚跟不抬的前提下慢慢把膝盖推到极限。",why:"踝背屈不够的人，网前弓步会把压力顶到膝盖上。"},
+{id:"worldsgreatest",q:"mobility",n:"最伟大拉伸",area:"全身链式",rx:{s:"2组",r:"每侧6次",l:"自重",rest:"-"},i:3,how:"弓步—手撑地—转身把上手伸向天空—收回—再伸髋，一条龙做到底。",cue:"每一次呼气都再深入一点。",why:"热身阶段一次激活髋、胸椎、踝三处。"},
+{id:"quadhip",q:"mobility",n:"股四头肌 / 髂腰肌拉伸",area:"髋屈肌",rx:{s:"2组",r:"每侧45s",l:"自重",rest:"-"},i:2,how:"单膝跪（后膝垫软垫），同侧手抓后脚背，把骨盆有一点点后倾的感觉再拉。",cue:"骨盆先摆正，别用腰顶。",why:"久坐 + 大量弓步会让髂腰肌短缩，拖累网前起步。"},
+{id:"shoulderdis",q:"mobility",n:"肩部绕环 / 弹力带开肩",area:"肩 · 胸小肌",rx:{s:"2组",r:"15次",l:"弹力带",rest:"-"},i:3,how:"双手握弹力带略宽于肩，缓慢绕过头顶到身后，再回到身前，全程保持张力。",cue:"包尽可能小、速度尽可能慢。",why:"打开胸椎与胸小肌，改善过头动作的活动空间。"},
+
+/* 关节稳定性 */
+{id:"er90",q:"stability",n:"肩袖 · 90度侧卧外旋",area:"肩袖",rx:{s:"3组",r:"每侧15次",l:"轻弹力带",rest:"45s"},i:4,how:"侧躺，持球肘贴身弯 90 度，手里握轻哑铃/弹力带，把前臂向外转开再慢慢回来。",cue:"腋下夹一条毛巾，肘不能离开身体。",why:"这是「羽毛球肩」的头号处方动作。"},
+{id:"ywt",q:"stability",n:"Y-T-W 肩胛控制",area:"肩胛稳定",rx:{s:"2组",r:"各12次",l:"自重",rest:"45s"},i:4,how:"俯卧在凳上/地上，分别把双臂摆成 Y、T、W 三个形状并保持 2 秒。",cue:"想象用背去找手，先把肩胛骨往下压。" ,why:"架拍、击球的力量需要一个稳定的肩胛基座。"},
+{id:"scappush",q:"stability",n:"肩胛俯卧撑",area:"前锯肌",rx:{s:"2组",r:"12次",l:"自重",rest:"45s"},i:4,how:"俯撑姿势手肩同宽，肘伸直，只让肩胛骨一开一合地带动身体上下 3-5cm。",cue:"手不弯，身体像一块板。" ,why:"避免翼状肩胛，保证杀球时肩膀不发虚。"},
+{id:"slbalance",q:"stability",n:"单腿平衡（进阶闭眼）",area:"踝 · 本体感受",rx:{s:"3组",r:"每侧40s",l:"自重",rest:"30s"},i:4,how:"单腿站立，膝微屈，先睁眼 20 秒再闭眼 20 秒，保持不落地。" ,cue:"用脚趾抓地来找平衡，别用晃动的身体救。",why:"脚踝扭伤后最容易丢失的就是这个闭着眼还能站稳的能力。"},
+{id:"star",q:"stability",n:"星形偏移平衡（SEBT）",area:"踝 · 髋 · 动态稳定",rx:{s:"3组",r:"每腿8方向×3",l:"自重",rest:"45s"},i:5,how:"单腿站中间的米字路口（可用胶带贴），另一条腿向 8 个方向各轻点一次再放回中间。",cue:"支撑腿的膝盖不许往里倒。",why:"量化踝/髋的动态稳定性，左右差值大于 4cm 要提高警惕。"},
+{id:"singledrop",q:"stability",n:"落地缓冲训练",area:"膝 · 髋控制",rx:{s:"3组",r:"8次",l:"跳箱30cm",rest:"60s"},i:5,how:"从 30cm 跳箱上跳下，双脚前脚掌落地后迅速屈膝，静止站稳 2 秒再起身。",cue:"落地要有声控：越安静越好；膝盖不许内扣。",why:"跳杀、网前制动落地时如果没有这一下缓冲，压力就全落在膝与跟腱。"},
+{id:"sidelying",q:"stability",n:"侧卧髋外展 / 蚌式",area:"臀中肌",rx:{s:"3组",r:"每侧15次",l:"弹力带",rest:"30s"},i:4,how:"侧躺屈膝，两脚并拢，上面的膝盖慢慢打开到最大再回来。",cue:"骨盆不要往后翻，动作要小要准。",why:"臀中肌就是膝盖不内扣的开关。"},
+{id:"deadbug",q:"stability",n:"死虫式",area:"核心 · 抗伸展",rx:{s:"3组",r:"每侧12次",l:"自重",rest:"45s"},i:4,how:"仰卧举起双手双腿（90度），缓慢伸出一侧手和对侧腿，再收回，交替进行。" ,cue:"腰必须贴地，一旦离地这一组就重来。",why:"挥拍时躯干要先能稳住，不该靠腰去晃。"},
+{id:"pallof",q:"stability",n:"Pallof 抗旋转支撑",area:"核心 · 抗旋转",rx:{s:"3组",r:"每侧10次保持3s",l:"弹力带",rest:"45s"},i:4,how:"侧对固定点，双手在胸前拉伸力带，把它慢慢推远并保持身体不动。",cue:"身体像钉住了，不许跟着转。",why:"旋转力量要先能刹得住，才可能高效地输出。"},
+{id:"sideplank",q:"stability",n:"侧平板",area:"核心 · 侧链",rx:{s:"3组",r:"每侧40s",l:"自重",rest:"45s"},i:5,how:"侧身一肘撑地，髋顶起身体成一条直线，保持呼吸。",cue:"髋往下掉就提前结束，不要硬撑着塌下来。",why:"单侧发力项目必须照顾侧链，防止左右失衡。"},
+{id:"wristcare",q:"stability",n:"腕屈伸 / 离心伸腕",area:"肘 · 前臂",rx:{s:"3组",r:"15次",l:"1-2kg",rest:"30s"},i:3,how:"前臂放在桌上手腕悬空，握小哑铃把手腕慢慢伸上去，另一只手帮忙按下（离心）或主动对抗（向心）。",cue:"慢放的部分要数到 3。",why:"常年处理大量网前与反手拍，会让肘内侧疲劳，这是最直接的预防。"}
+];
+
+/* 各技术→各项素质的配套动作 */
+const TECH_EX = {
+  serve:     {power:["calfraise","kbswing"],      speed:["react"],                    endurance:["multi20","circuit"],   mobility:["tspine","shoulderdis"], stability:["er90","wristcare","deadbug"]},
+  clear:     {power:["pushpress","kbswing","hipthrust"], speed:["sprint","react"],    endurance:["multi20","cooper"],    mobility:["sleeper","tspine","hip9090"],            stability:["er90","ywt","pallof"]},
+  smash:     {power:["pushpress","kbswing","nordic","calfraise"], speed:["agility510","latbox"], endurance:["multi20"], mobility:["ankledf","hip9090","sleeper"],       stability:["singledrop","sidelying","scappush","sideplank"]},
+  drop:      {power:["kbswing","goblet"],         speed:["ladder"],                   endurance:["circuit"],             mobility:["tspine","shoulderdis"], stability:["wristcare","er90","deadbug"]},
+  net:       {power:["bulgarian","goblet"],       speed:["agility510","shadow","react"], endurance:["multi20"],          mobility:["quadhip","ankledf","worldsgreatest"],   stability:["star","sidelying","slbalance","sideplank"]},
+  defense:   {power:["nordic","rdl","bulgarian"], speed:["agility510","react","shadow"], endurance:["courtline","multi20"], mobility:["hip9090","worldsgreatest"],          stability:["slbalance","star","sidelying","pallof"]},
+  footwork:  {power:["goblet","calfraise","kbswing"], speed:["shadow","ladder","agility510","sprint"], endurance:["courtline","multi20"], mobility:["ankledf","hip9090","worldsgreatest"], stability:["slbalance","star","singledrop","sidelying"]}
+};
+
+/* ---------- 伤病预防 / 康复库 ---------- */
+const PREHAB = [
+{id:"shoulder",n:"肩（羽毛球肩 / 肩袖）",risk:"击球练习量大的第 2-4 周最常出现",ex:[
+  {n:"90度侧卧外旋",d:"3组×15次/侧"},{n:"Y-T-W 肩胛控制",d:"2组×12次"},
+  {n:"睡眠者拉伸",d:"2组× 40s/侧"},{n:"毛巾拉伸肩后侧",d:"2组×30s/侧"}],
+ warn:"疼痛出现在举臂 60°-120° 之间、夜间侧卧痛、无力感 → 停止过头动作并就医"},
+{id:"elbow",n:"肘 / 前臂（内侧 & 网球肘）",risk:"反手技术量、网前搓球量激增时",ex:[
+  {n:"离心伸腕（1-2kg）",d:"3组×15次/侧"},{n:"腕屈伸抗阻",d:"2组×20次"},
+  {n:"前臂旋前旋后",d:"2组×20次"},{n:"前臂肌群按压放松",d:"训练后 2min/侧"}],
+ warn:"握力下降、拧毛巾痛、肘外侧刺点 → 减少反手持拍量"} ,
+{id:"lumbar",n:"腰（椎间盘 / 腰方肌）",risk:"旋转代偿、久坐后直接高强度",ex:[
+  {n:"90/90 髋旋转",d:"2组×10次/侧"},{n:"鸟狗式",d:"3组×10次/侧"},
+  {n:"死虫式",d:"3组×12次/侧"},{n:"仰卧腹式呼吸",d:"5min/日"}],
+ warn:"咳嗽/打喷嚏加重、有下肢放射或麻木 → 立即就医，禁止负重"},
+{id:"knee",n:"膝（髌腱 / 髌股疼痛）",risk:"跳杀落地、网前弓步重复过多",ex:[
+  {n:"保加利亚分腿蹲（慢放）",d:"3组×8次/侧"},{n:"落地缓冲训练",d:"3组×8次"},
+  {n:"侧卧蚌式",d:"3组×15次/侧"},{n:"股四头肌拉伸",d:"2组×45s/侧"}],
+ warn:"上下楼痛、长时间屈膝后站起僵痛（影院征）→ 降低跳跃量并做髌腱离心负荷"},
+{id:"ankle",n:"踝（扭伤 / 慢性不稳）",risk:"场地湿滑、疲劳期敏捷训练",ex:[
+  {n:"单腿平衡闭眼",d:"3组×40s/侧"},{n:"星形偏移平衡",d:"3组×8方向"},
+  {n:"弹力带踝背屈/外翻",d:"2组×20次/侧"},{n:"提踵慢离心",d:"3组×15次"}],
+ warn:"单腿站不稳、走路打软腿、反复崴脚 → 先退回到闭眼单腿 30s 达标再上强度"},
+{id:"achilles",n:"跟腱 / 小腿",risk:"跳杀量与跳绳突然增加时",ex:[
+  {n:"提踵离心（3秒下落）",d:"3组×15次"},{n:"单腿提踵",d:"3组×12次/侧"},
+  {n:"小腿泡沫轴放松",d:"训练后 2min/侧"},{n:"踝背屈墙测",d:"2组×12次/侧"}],
+ warn:"晨起第一步痛、跟腱处局部增厚压痛 → 停跳跃类并做渐进离心负荷"},
+{id:"plantar",n:"足底筋膜",risk:"连续多日大量步法后",ex:[
+  {n:"网球/球踩滚放松",d:"每脚 2min"},{n:"脚趾抓毛巾",d:"2组×20次"},
+  {n:"提踵",d:"3组×15次"},{n:"小腿拉伸",d:"2组×45s/侧"}],
+ warn:"晨起下地第一步刺痛超过两周 → 做足底专项并评估鞋垫"},
+{id:"hamstring",n:"腘绳肌（拉伤）",risk:"冲刺、救球劈叉、疲劳期末",ex:[
+  {n:"北欧式离心",d:"3组×6次"},{n:"罗马尼亚硬拉",d:"3组×8次"},
+  {n:"壶铃荡摆",d:"3组×15次"},{n:"直腿抬高主动屈髋",d:"2组×10次/侧"}],
+ warn:"有像被踢到一棍子的锐痛或局部凹陷 → 立即冰敷加压并就医"}
+];
+
+/* ---------- <｜hy_place▁holder▁no▁813｜>能测评项目 & 等级基准 ---------- */
+/* sex adj: 女 = 基准 × f */
+const TESTS = [
+{id:"cmj", n:"纵跳摸高（CMJ）", q:"power", unit:"cm", better:"up", bench:[25,34,42,50], f:.82, how:"原地下蹲后纵跳，测量起跳高度。", desc:"下肢爆发力"},
+{id:"bj",  n:"立定跳远",       q:"power", unit:"cm", better:"up", bench:[170,205,235,260], f:.85, how:"双脚开立后原地跳远，测量距离。", desc:"水平方向爆发力"},
+{id:"sq",  n:"后蹲 1RM/体重",  q:"power", unit:"倍", better:"up", bench:[0.8,1.2,1.6,2.0], f:.8, how:"深蹲最大重量 ÷ 体重（无1RM时用5RM估算）。", desc:"最大力量"},
+{id:"pu",  n:"引体向上",       q:"power", unit:"次", better:"up", bench:[1,6,12,18], f:.5, how:"标准引体，不计摆动借力。", desc:"上肢拉力量"},
+{id:"s10", n:"10米冲刺",       q:"speed", unit:"s",  better:"down", bench:[2.10,1.90,1.75,1.65], f:1.07, how:"站立起跑到10米的计时。", desc:"加速能力"},
+{id:"ag",  n:"5-10-5 灵敏跑",  q:"speed", unit:"s",  better:"down", bench:[5.60,5.20,4.90,4.65], f:1.06, how:"标准的 pro agility test 计时。", desc:"变向与制动"},
+{id:"six", n:"六点步法×3轮",   q:"speed", unit:"s",  better:"down", bench:[26,23,21,19.5], f:1.08, how:"米字六点各一次为一轮，做3轮计时。", desc:"专项移动速度"},
+{id:"yy",  n:"Yo-Yo IR1",      q:"endurance", unit:"m", better:"up", bench:[600,1000,1400,1900], f:.75, how:"标准渐增速度折返测试的总距离。", desc:"专项有氧耐力"},
+{id:"multi",n:"多球30拍质量",  q:"endurance", unit:"评分", better:"up", bench:[55,70,82,92], f:1, how:"连续多球30拍，由教练按动作质量评分（0-100）。", desc:"专项动作耐力"},
+{id:"sleeperROM",n:"肩内旋角度", q:"mobility", unit:"°", better:"up", bench:[40,55,65,75], f:1.05, how:"仰卧肩外展90°，量前臂能向内转动的最大角度。", desc:"过头动作空间"},
+{id:"slr", n:"主动直腿抬高",   q:"mobility", unit:"°", better:"up", bench:[60,72,82,90], f:1.05, how:"仰卧单腿主动抬到极限，量角度。", desc:"髋屈灵活性"},
+{id:"wt",  n:"踝背屈墙测",     q:"mobility", unit:"cm", better:"up", bench:[6,9,12,15], f:1, how:"脚尖距墙多少距离时膝盖还能贴到墙且脚跟不离地。", desc:"踝活动度"},
+{id:"sebt",n:"星形偏移总分比", q:"stability", unit:"%腿长", better:"up", bench:[75,85,92,98], f:1.02, how:"八个方向伸出距离/腿长取均值百分比。", desc:"动态平衡"},
+{id:"lsi", n:"单腿闭眼平衡",   q:"stability", unit:"s", better:"down", bench:[10,25,40,60], f:1, how:"单腿闭眼站立直到失衡的时间。", desc:"本体感受"},
+{id:"sp",  n:"侧平板",         q:"stability", unit:"s", better:"up", bench:[30,55,80,110], f:.85, how:"标准侧平板支撑至髋塌陷的时间。", desc:"核心侧链"},
+{id:"djump",n:"单腿落地质量",  q:"stability", unit:"评分", better:"up", bench:[50,70,84,95], f:1, how:"单腿落下后静态2秒由教练评分（看膝是否内扣、有无晃动）。", desc:"落地控制"}
+];
+
+/* ---------- 等级 ---------- */
+const LEVELS = [
+  {id:1,n:"L1 入门",  min:0,  col:"var(--text-3)", desc:"能连贯对打，技术稳定性待建立"},
+  {id:2,n:"L2 进阶",  min:58, col:"var(--blue)",   desc:"技术基本定型，比赛有战术雏形"},
+  {id:3,n:"L3 竞技",  min:73, col:"var(--green)",  desc:"技术与体能可支撑高强度对抗"},
+  {id:4,n:"L4 精英",  min:86, col:"var(--purple)", desc:"具备专业/半专业竞技水准"}
+];
+
+/* ---------- 中羽在线 业余等级（0-7 级） ----------
+   参考：中羽在线《多个羽毛球评定标准汇集》(bbs.badmintoncn.com/thread-934258)
+   《中羽在线业余球友等级自评》与 2024 新版分级讨论帖 (tid=3585892)
+   经典 0-7 级俗称：羽外高人 / 羽焉不详 / 羽过拔毛 / 佳羽有约 /
+   羽不自禁 / 春风化羽 / 羽翼丰满 / 呼风唤羽；新版另作 1-9 级简化划分。
+   本问卷按「能力维度 + 短板封顶 + 实战成绩校正」自评，不等同官方认证。 */
+const CY_LEVELS = [
+ {lv:0,n:"羽外高人", tag:"未入门", img:"不打球，或只在户外打和平球", desc:"球网几乎是多余设施，以活动身体为主。", next:"先建立室内场地意识与正确握拍"},
+ {lv:1,n:"羽焉不详", tag:"野球入门", img:"刚进球馆，能把球打高打远", desc:"多为苍蝇拍式握拍，室内场地成为首选，还谈不上发力和落点。", next:"正手握拍、发球与最基本的高远球挥拍"},
+ {lv:2,n:"羽过拔毛", tag:"基础期", img:"8-12 节基础培训后的水平", desc:"基本正反手握拍但转换不顺畅；正手后场能挥拍但发力/击球点有误；反手后场基本不会；网前只会轻放，搓球勾对角用不上。", next:"纠正发力链、建立全场六点步法与反手基础"},
+ {lv:3,n:"佳羽有约", tag:"中下等", img:"定期打球的球会成员", desc:"握拍发球没问题；六点步法能完成但不流畅；能区分手臂力/手腕力、对内旋外旋有概念；正手能底线到底线但球速慢、落点差；反手只能回中场；网前搓勾有初步运用但失误多。", next:"步法流畅度、爆发力应用与反手后场到位"},
+ {lv:4,n:"羽不自禁", tag:"中等", img:"普通球会中等、每周 1-2 次", desc:"能正确完成全场步法并基本应用；内外旋与爆发力能基本应用但力量有限；正手轻松拉吊杀、落点凭感觉；反手回中后场、反手吊球不稳；能组织进攻但威胁不大；防守线路变化少；双打有发接发、补位、封网意识。", next:"落点控制、反手底线与防守变线"},
+ {lv:5,n:"春风化羽", tag:"中上", img:"球馆上游 / 业余高级班", desc:"多点步法轻松应用、启动速度中上；熟练前臂内外旋与手腕爆发，对手指发力有认识；正手拉吊杀落点基本达标；反手吊球与后场回后场轻松；展搓推球、平抽挡较好；进攻规范有威胁；防守回球基本到位。", next:"动作一致性、高强度对抗下的稳定性"},
+ {lv:6,n:"羽翼丰满", tag:"俱乐部高手", img:"球群霸主 / 民间对抗主力", desc:"步法自然无盲点；手指发力成为控球关键；拉吊杀一致性好、落点有效控制；反手底线拉底线、劈吊与反手杀；网前全套熟练；快速平抽挡、重杀劈杀点杀依站位选择；防守可反抽；单打能主动控制、双打抢网控后场。", next:"比赛阅读、专项体能与稳定性冗余"},
+ {lv:7,n:"呼风唤羽", tag:"业余上限", img:"地区一流 / 准专业", desc:"可参加当地最高级别联赛；手腕与手指运用娴熟；单双混至少一项非常娴熟；体能、意识俱佳，几乎无明显缺陷。需有正式比赛成绩佐证。", next:"专项化训练与竞赛周期管理"}
+];
+const CY_COMP = [
+ "纯娱乐 / 健身，从未参加正式比赛",
+ "只打俱乐部内部小循环或朋友局",
+ "参加过市级 / 区级业余赛，未进前列",
+ "市级业余赛前八，或高校普通校队主力",
+ "市级业余赛前二 / 省级业余赛取得名次",
+ "省队、一级运动员或全国性赛事取得名次"
+];
+const CY_QS = [
+ {k:"grip",n:"握拍与发球",w:.08,opts:[
+  "苍蝇拍式握拍，发球常不过网或过高",
+  "会基本正反手握拍但转换不顺畅；发高远 / 反手小球质量不高",
+  "握拍与发球基本没问题，能稳定发到预定区域",
+  "发接发能控制落点与节奏，可变化长短球",
+  "反手发小球、偷发后场有质量，能与第三拍衔接",
+  "发接发已形成成套战术，能针对对手习惯做球"]},
+ {k:"power",n:"发力与手腕",w:.14,opts:[
+  "只会抡大臂，没有内旋 / 外旋概念",
+  "知道内外旋但打球时用不上，主要靠手臂",
+  "能分手臂力与手腕力，爆发力可基本应用",
+  "前臂内外旋 + 手腕爆发力能稳定用上，力量有限",
+  "熟练应用爆发力，对手指发力有一定认识",
+  "手指发力可精确控球，拉吊杀动作一致性好"]},
+ {k:"back",n:"正手后场",w:.14,opts:[
+  "打不高也打不远，常打不到底线",
+  "能打高但击球点 / 时机不对，多为挥手臂",
+  "能对拉底线到底线，但球速慢、落点控制差",
+  "能轻松完成拉吊杀，球速一般、落点凭感觉",
+  "拉吊杀落点基本达标，球速有提高",
+  "拉 / 吊 / 杀一致性好，落点能有效控制"]},
+ {k:"backhand",n:"反手后场",w:.10,opts:[
+  "完全不会，只能勉强用头顶球",
+  "只能用反手回前场球 / 放网",
+  "挥拍基本正确，回球只能到对方中场或略偏后",
+  "能回中后场，反手吊球稳定性一般",
+  "反手吊球、后场回后场比较轻松",
+  "反手底线拉底线、劈吊直线斜线，反手杀有威力"]},
+ {k:"foot",n:"全场步法",w:.14,opts:[
+  "基本站着打，没有步法概念",
+  "能区分垫步和跨步，六点步法完成但不流畅",
+  "能完成全场步法，但启动、移动速度不足",
+  "全场步法能基本应用，启动与灵敏度中上",
+  "多点步法轻松应用，回中主动",
+  "步法自然流畅，全场任何落点都无盲点"]},
+ {k:"net",n:"网前小球",w:.12,opts:[
+  "常不过网，基本只会轻放",
+  "放网质量基本可控，搓球质量低，勾对角用不上",
+  "收搓基本正确，勾对角质量不高",
+  "展搓、推球基本掌握，平抽挡较好",
+  "收搓 / 展搓 / 勾对角 / 扑推熟练，一致性好",
+  "网前能主动做球，精确控制旋转与落点"]},
+ {k:"def",n:"防守与平抽",w:.10,opts:[
+  "接杀常漏，只会挡直线或挑高",
+  "能防守但质量有限，线路缺少主动变化",
+  "水平相当时回球基本到位",
+  "能变线、抽对角、推腰，平抽挡能顶住",
+  "能有效起球并控制落点，对手杀球稍低可反抽",
+  "防守反击成体系，能直接由守转攻得分"]},
+ {k:"attack",n:"进攻组织",w:.10,opts:[
+  "只会把球打过去，杀球没有威胁",
+  "能杀但速度与角度中等，很难一拍致命",
+  "能根据回球组织进攻，威胁有限",
+  "后场直线 / 斜线进攻规范，力量速度中上",
+  "按站位选择重杀 / 劈杀 / 点杀，有暴击威胁",
+  "进攻体系化，能持续压制并创造得分"]},
+ {k:"tactics",n:"战术与双打意识",w:.08,opts:[
+  "没有战术概念，不知道站位",
+  "知道发接发、补位、封网等基本概念",
+  "双打能基本轮转，有一点点球路想法",
+  "能发现对手弱点，用压后场 / 吊前场争取主动",
+  "单双混至少一项非常娴熟，战术清晰",
+  "能针对对手制定并执行整套战术"]},
+ {k:"match",n:"实战稳定性",w:.10,opts:[
+  "动作看着还行，一上场就不到位、失误多",
+  "多拍容易失误、球速慢，实战远不如动作表现",
+  "与同级球友能多回合相持",
+  "城市球馆中上游主力，能稳定赢同级",
+  "本地俱乐部霸主，常被球友请教",
+  "可与专退 / 省队选手过招不落下风"]}
+];
+
+/* ---------- 周期性训练阶段模板 ---------- */
+const PHASES = [
+  {id:"gpp", n:"一般准备期 GPP", w:4, int:"60-75%", focus:["基础力量","有氧底子","技术定型","关节稳定性"],
+   week:[
+     {d:1,t:"技术+下肢力量",tech:["clear","footwork"],cond:["goblet","rdl","rdl","calfraise"],load:.75},
+     {d:2,t:"专项耐力+ core",tech:["drop","net"],cond:["multi20","deadbug","sideplank"],load:.7},
+     {d:3,t:"恢复 / 活动度",tech:[],cond:["hip9090","sleeper","tspine","worldsgreatest"],load:.35},
+     {d:4,t:"上肢力量+高远",tech:["clear"],cond:["pushpress","pullup","er90","ywt"],load:.75},
+     {d:5,t:"速度 / 灵敏",tech:["footwork"],cond:["agility510","ladder","react"],load:.8},
+     {d:6,t:"多球综合",tech:["clear","drop","net","footwork"],cond:["multi20","circuit"],load:.9},
+     {d:0,t:"完全休息 / 主动恢复",tech:[],cond:[],load:0}
+   ]},
+  {id:"spp", n:"专项强化期 SPP", w:3, int:"75-90%", focus:["专项速度","杀球威力","连续进攻","落下缓冲"],
+   week:[
+     {d:1,t:"杀球专项+爆发",tech:["smash"],cond:["pushpress","kbswing","singledrop"],load:.85},
+     {d:2,t:"补网前 + 体能",tech:["net","drop"],cond:["bulgarian","star","slbalance"],load:.8},
+     {d:3,t:"技术连贯+间歇",tech:["clear","smash","net"],cond:["multi20"],load:.9},
+     {d:4,t:"恢复 / 预康复",tech:[],cond:["er90","ywt","sleeper","hip9090","wristcare"],load:.35},
+     {d:5,t:"速度 / 敏捷",tech:["footwork","defense"],cond:["agility510","sprint","shadow"],load:.85},
+     {d:6,t:"比赛模拟",tech:["clear","smash","net","defense","footwork"],cond:[],load:.95},
+     {d:0,t:"完全休息",tech:[],cond:[],load:0}
+   ]},
+  {id:"pre", n:"赛前减量期 Taper", w:1, int:"50-70%", focus:["保持强度降低量","战术执行","充分恢复"],
+   week:[
+     {d:1,t:"轻量技术+速度激活",tech:["net","drop"],cond:["react","ladder"],load:.5},
+     {d:2,t:"比赛节奏模拟",tech:["smash","defense"],cond:["multi20"],load:.7},
+     {d:3,t:"完全休息",tech:[],cond:[],load:0},
+     {d:4,t:"战术 + 发球接发",tech:["serve","net"],cond:["pallof"],load:.5},
+     {d:5,t:"轻量技术",tech:["clear","clear"],cond:[],load:.4},
+     {d:6,t:"比赛日",tech:[],cond:[],load:1},
+     {d:0,t:"赛后恢复",tech:[],cond:["hip9090","tspine","worldsgreatest"],load:.2}
+   ]},
+  {id:"tr", n:"过渡恢复期 TR", w:1, int:"40-60%", focus:["身体恢复","伤病史清理","低强度交叉"],
+   week:[
+     {d:1,t:"交叉训练（游泳/骑行）",tech:[],cond:["cooper"],load:.45},
+     {d:2,t:"活动度 + 放松",tech:[],cond:["hip9090","tspine","worldsgreatest","shoulderdis"],load:.3},
+     {d:3,t:"完全休息",tech:[],cond:[],load:0},
+     {d:4,t:"轻量娱乐性打球",tech:["serve","net"],cond:[],load:.45},
+     {d:5,t:"基础力量维持",tech:[],cond:["goblet","hipthrust","deadbug"],load:.5},
+     {d:6,t:"完全休息",tech:[],cond:[],load:0},
+     {d:0,t:"完全休息",tech:[],cond:[],load:0}
+   ]}
+];
+
+/* ---------- 问卷量表 ---------- */
+const DAILY_Q = [
+  {k:"sleep",   n:"睡眠时长",       type:"num",  unit:"h",   def:7.5, min:2, max:12, step:.5},
+  {k:"sleepq",  n:"睡眠质量",       type:"sel",  opt:[[1,"很差"],[2,"差"],[3,"一般"],[4,"好"],[5,"很好"]], def:3},
+  {k:"energy",  n:"主观精力",       type:"sel",  opt:[[1,"枯竭"],[2,"疲惫"],[3,"一般"],[4,"充沛"],[5,"满格"]], def:3},
+  {k:"mood",    n:"情绪状态",       type:"sel",  opt:[[1,"低落"],[2,"烦躁"],[3,"平稳"],[4,"愉快"],[5,"兴奋"]], def:3},
+  {k:"sore",    n:"肌肉酸痛",       type:"sel",  opt:[[1,"无痛"],[2,"轻微"],[3,"明显"],[4,"较重"],[5,"剧痛"]], def:2},
+  {k:"pain",    n:"关节/肌腱疼痛",  type:"sel",  opt:[[1,"无痛"],[2,"轻微"],[3,"运动中才痛"],[4,"静息也痛"],[5,"持续夜间痛"]], def:1},
+  {k:"painsite",n:"疼痛部位",       type:"txt",  def:""}
+];
+
+const WEEKLY_Q = [
+  {k:"techconf",n:"本周技术发挥信心", type:"sel", opt:[[1,"很没底"],[2,"不稳"],[3,"一般"],[4,"稳"],[5,"很稳"]], def:3},
+  {k:"stamina", n:"多拍相持体力",     type:"sel", opt:[[1,"后半崩"],[2,"跟不上"],[3,"一般"],[4,"稳"],[5,"全场在线"]], def:3},
+  {k:"motiv",   n:"训练动机",         type:"sel", opt:[[1,"抗拒"],[2,"勉强"],[3,"一般"],[4,"主动"],[5,"极度投入"]], def:4},
+  {k:"stress",  n:"场外压力负荷",     type:"sel", opt:[[1,"很低"],[2,"低"],[3,"中"],[4,"高"],[5,"很高"]], def:2},
+  {k:"domParts",n:"最吃力的环节",     type:"txt", def:""}
+];
+
+/* ----------  Icons（内联 SVG） ---------- */
+const ICONS = {
+  today:'<path d="M3 9h18M7 3v2M17 3v2M4 5h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z"/>',
+  lib:'<path d="M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>',
+  log:'<path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/>',
+  video:'<path d="M23 7l-7 5 7 5V7zM1 5h15v14H1z"/>',
+  data:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>',
+  diag:'<path d="M3 3v18h18"/><path d="M7 15l4-6 3 3 5-8"/>',
+  profile:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+  check:'<path d="M20 6L9 17l-5-5"/>',
+  warn:'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/>',
+  up:'<path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/>'
+};
+function icon(n,sz){return '<svg viewBox="0 0 24 24" width="'+(sz||16)+'" height="'+(sz||16)+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+ICONS[n]+'</svg>';}
+
+
+/* ==================== 二、数据层 & 算法引擎 ==================== */
+
+/* ---------- 工具 ---------- */
+function todayISO(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function parseD(s){const p=String(s).split("-");return new Date(+p[0],+p[1]-1,+p[2]);}
+function addDays(s,n){const d=parseD(s);d.setDate(d.getDate()+n);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function diffDays(a,b){return Math.round((parseD(a)-parseD(b))/86400000);}
+function weekday(s){return parseD(s).getDay();}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function avg(a){return a.length?a.reduce((x,y)=>x+y,0)/a.length:0;}
+function sd(a){if(a.length<2)return 0;const m=avg(a);return Math.sqrt(a.reduce((s,x)=>s+(x-m)*(x-m),0)/(a.length-1));}
+function round(v,n){const p=Math.pow(10,n||0);return Math.round(v*p)/p;}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function levelOf(sc){for(let i=LEVELS.length-1;i>=0;i--){if(sc>=LEVELS[i].min)return LEVELS[i];}return LEVELS[0];}
+function qualityName(id){const q=QUAL.find(x=>x.id===id);return q?q.n:id;}
+function exById(id){return EX.find(e=>e.id===id)||DB.custom.find(e=>e.id===id);}
+function techById(id){return TECH.find(t=>t.id===id);}
+
+/* ---------- 存储 ---------- */
+let DB = null;
+function defaultDB(){
+  return {
+    v:1,
+    profile:{name:"", sex:"m", age:22, height:175, weight:68, hand:"R", years:3,
+             mode:"pro", freq:4, startDate:todayISO(), targetLevel:3, note:""},
+    skills:{serve:55,clear:58,smash:50,drop:48,net:52,defense:50,footwork:55},
+    logs:[], mind:[], weekly:[], wear:[], tests:[], vids:[], custom:[], levels:[], done:{}
+  };
+}
+function load(){
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    DB = raw?Object.assign(defaultDB(),JSON.parse(raw)):defaultDB();
+  }catch(e){ DB=defaultDB(); }
+  if(!DB.skills)DB.skills=defaultDB().skills;
+  ["logs","mind","weekly","wear","tests","vids","custom","levels"].forEach(k=>{if(!Array.isArray(DB[k]))DB[k]=[];});
+  if(!DB.done)DB.done={};
+  return DB;
+}
+function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify(DB));}catch(e){toast("保存失败：本地存储空间不足");}}
+
+/* ---------- 负荷模型（session-RPE：负荷 = 分钟 × RPE） ---------- */
+function logLoad(l){return (l.dur||0)*(l.rpe||0);}
+function loadOn(date){return DB.logs.filter(l=>l.date===date).reduce((s,l)=>s+logLoad(l),0);}
+function loadWin(endDate,days){let s=0;for(let i=0;i<days;i++)s+=loadOn(addDays(endDate,-i));return s;}
+function daysWithLoad(endDate,days){let c=0;for(let i=0;i<days;i++)if(loadOn(addDays(endDate,-i))>0)c++;return c;}
+function acuteLoad(d){return loadWin(d,7)/7;}
+function chronicLoad(d){const c=daysWithLoad(d,28);return c>=4?(loadWin(d,28)/28):(loadWin(d,28)/28);}
+function acwr(d){
+  const a=acuteLoad(d),c=chronicLoad(d);
+  if(c<=0) return a>0?1.2:0;
+  return round(a/c,2);
+}
+function monotony(d){const ws=[];for(let i=0;i<7;i++)ws.push(loadOn(addDays(d,-i)));const m=avg(ws),s=sd(ws);return s>0?round(m/s,2):0;}
+function strain(d){return Math.round(loadWin(d,7)*monotony(d));}
+
+/* ---------- 穿戴基线 ---------- */
+function med(a){if(!a.length)return 0;const b=a.slice().sort((x,y)=>x-y);const h=b.length>>1;return b.length%2?b[h]:(b[h-1]+b[h])/2;}
+function wearBase(k){const vals=DB.wear.map(w=>w[k]).filter(v=>typeof v==="number"&&!isNaN(v));return med(vals);}
+
+/* ---------- 准备度 / 恢复 ---------- */
+function checkinOf(d){return DB.mind.find(m=>m.date===d);}
+function wearOf(d){return DB.wear.find(w=>w.date===d);}
+function readiness(d){
+  const c=checkinOf(d), w=wearOf(d);
+  if(!c&&!w) return {score:null,parts:[],src:"无数据"};
+  const parts=[]; let lost=0;
+  const add=(k,v)=>{v=Math.max(0,v);parts.push({k:k,v:Math.round(v)});lost+=v;};
+  if(c){
+    if(c.sleep!=null) add("睡眠不足",Math.abs(8-c.sleep)*7);
+    add("睡眠质量",(3-(c.sleepq||3))*5);
+    add("精力偏低",(3-(c.energy||3))*5);
+    add("情绪",(3-(c.mood||3))*3);
+    add("肌肉酸痛",((c.sore||1)-1)*6);
+    const p=c.pain||1;
+    if(p>=3) add("关节疼痛",p===3?10:(p===4?20:28));
+  }else add("缺少当日问卷",6);
+  if(w){
+    const bH=wearBase("hrv"), bR=wearBase("rhr");
+    if(bH&&w.hrv){const dv=(w.hrv-bH)/bH; if(dv<-0.25)add("HRV 显著下降",18); else if(dv<-0.12)add("HRV 下降",9);}
+    if(bR&&w.rhr&&w.rhr-bR>8) add("静息心率升高",10);
+    if(w.sleepH&&w.sleepH<6.5) add("睡眠时间不足",(6.5-w.sleepH)*6);
+  }
+  const y=loadOn(addDays(d,-1)), ch=chronicLoad(d);
+  if(ch>0&&y>ch*1.6) add("昨日负荷过大",8);
+  return {score:Math.round(clamp(100-lost,0,100)),parts:parts,src:(c?"问卷":"")+(c&&w?" + ":"")+(w?"穿戴":"")};
+}
+function readinessSeries(d,n){const out=[];for(let i=n-1;i>=0;i--){const dd=addDays(d,-i);out.push({date:dd,score:readiness(dd).score});}return out;}
+
+/* ---------- 技术评分 ---------- */
+function latestVid(techId){
+  const vs=DB.vids.filter(v=>v.tech===techId).slice().sort((a,b)=>a.date<b.date?1:-1);
+  return vs[0]||null;
+}
+function techScore(techId){
+  const base=DB.skills[techId]==null?50:DB.skills[techId];
+  const v=latestVid(techId);
+  if(!v) return {score:base,src:"自评 / 教练评分",vid:null};
+  const ageW=Math.max(0,diffDays(todayISO(),v.date))/7;
+  const w=1/(1+ageW/10);
+  return {score:Math.round(clamp(base*(1-w)+v.score*w,0,100)),src:"视频评估 + 基线",vid:v};
+}
+function techDomain(){
+  const per=TECH.map(t=>{const s=techScore(t.id);return {id:t.id,n:t.n,score:s.score,src:s.src};});
+  return {per:per,score:Math.round(avg(per.map(p=>p.score)))};
+}
+
+/* ---------- 体能评分（测评 → 等级线插值） ---------- */
+const PTS=[40,58,73,86];
+function testScore(t,val){
+  let v=parseFloat(val);
+  if(isNaN(v))return null;
+  const sexF = DB.profile.sex==="f" ? (t.f||1) : 1;
+  const b = t.bench.map(x=>x*sexF);
+  let s;
+  if(t.better==="up"){
+    if(v<=b[0]) s=PTS[0]-(b[0]-v)/((b[1]-b[0])||1)*18;
+    else if(v>=b[3]) s=PTS[3]+(v-b[3])/((b[3]-b[2])||1)*8;
+    else{for(let i=0;i<3;i++){if(v<=b[i+1]){s=PTS[i]+(v-b[i])/((b[i+1]-b[i])||1)*(PTS[i+1]-PTS[i]);break;}}}
+  }else{
+    if(v>=b[0]) s=PTS[0]-(v-b[0])/((b[0]-b[1])||1)*18;
+    else if(v<=b[3]) s=PTS[3]+(b[3]-v)/((b[2]-b[3])||1)*8;
+    else{for(let i=0;i<3;i++){if(v>=b[i+1]){s=PTS[i]+(b[i]-v)/((b[i]-b[i+1])||1)*(PTS[i+1]-PTS[i]);break;}}}
+  }
+  return clamp(Math.round(s),5,100);
+}
+function physicalDomain(){
+  const lastTest=DB.tests.slice().sort((a,b)=>a.date<b.date?1:-1)[0]||null;
+  const res=lastTest?lastTest.res:{};
+  const bucket={}; QUAL.forEach(q=>bucket[q.id]=[]);
+  TESTS.forEach(t=>{
+    const v=res[t.id];
+    if(v==null||v==="")return;
+    const s=testScore(t,v);
+    if(s!=null) bucket[t.q].push({id:t.id,n:t.n,unit:t.unit,val:parseFloat(v),score:s});
+  });
+  const w={power:.25,speed:.25,endurance:.2,mobility:.15,stability:.15};
+  let num=0,den=0; const missing=[];
+  QUAL.forEach(q=>{
+    const arr=bucket[q.id];
+    if(!arr.length){missing.push(q.n);return;}
+    const qs=Math.round(avg(arr.map(a=>a.score)));
+    bucket[q.id].score=qs; num+=qs*w[q.id]; den+=w[q.id];
+  });
+  const detail=QUAL.map(q=>({id:q.id,n:q.n,c:q.c,score:bucket[q.id].score==null?null:bucket[q.id].score,items:bucket[q.id]}));
+  return {score:den?Math.round(num/den):null,detail:detail,missing:missing,date:lastTest?lastTest.date:null};
+}
+
+/* ---------- 恢复评分 ---------- */
+function recoveryDomain(){
+  const rs=readinessSeries(todayISO(),14).filter(r=>r.score!=null);
+  if(!rs.length) return {score:null,parts:[],days:0};
+  const l7=rs.slice(-7);
+  const base = avg(l7.map(r=>r.score))*.6 + avg(rs.map(r=>r.score))*.4;
+  let sc=base; const parts=[];
+  const a=acwr(todayISO());
+  if(a>1.5){sc-=16;parts.push({k:"ACWR 过高 "+a,v:-16});}
+  else if(a>1.3){sc-=8;parts.push({k:"ACWR 偏高 "+a,v:-8});}
+  else if(a>0&&a<0.6){sc-=8;parts.push({k:"负荷过低 "+a,v:-8});}
+  const low=l7.filter(r=>r.score<60).length;
+  if(low>=4){sc-=10;parts.push({k:"近 7 天有 "+low+" 天准备度 <60",v:-10});}
+  return {score:Math.round(clamp(sc,0,100)),parts:parts,days:rs.length,raw:Math.round(base),acwr:a};
+}
+
+/* ---------- 瓶颈归因 ---------- */
+function weakTechnique(){return techDomain().per.slice().sort((a,b)=>a.score-b.score)[0];}
+function weakestQuality(detail){const v=detail.filter(d=>d.score!=null);return v.length?v.slice().sort((a,b)=>a.score-b.score)[0]:null;}
+function bottleneck(){
+  const T=techDomain(),P=physicalDomain(),R=recoveryDomain();
+  const target=(LEVELS.find(l=>l.id===DB.profile.targetLevel)||LEVELS[2]).min;
+  const tScore=T.score,pScore=(P.score==null?55:P.score),rScore=(R.score==null?70:R.score);
+  const deficits=[
+    {k:"tech", n:"技术短板", score:tScore, gap:target-tScore, w:1},
+    {k:"phys", n:"体能弱项", score:pScore, gap:target-pScore, w:1},
+    {k:"recov",n:"恢复不足", score:rScore, gap:target-rScore, w:1.15}
+  ].sort((a,b)=>(b.gap*b.w)-(a.gap*a.w));
+  const top=deficits[0], detail={type:top.k};
+  if(top.k==="recov"){
+    const rs=readinessSeries(todayISO(),7).filter(r=>r.score!=null);
+    const recent=DB.mind.slice(-7);
+    detail.drivers=R.parts.slice();
+    if(rs.length) detail.mean7=Math.round(avg(rs.map(r=>r.score)));
+    if(rs.length>2){const j=sd(rs.map(r=>r.score)); if(j>10)detail.drivers.push({k:"准备度波动偏大 SD "+Math.round(j),v:0});}
+    detail.sleepAvg=round(avg(recent.map(m=>m.sleep||7.5)),1);
+    detail.painMax=Math.max(0,...recent.map(m=>m.pain||1));
+    if(!detail.drivers.length) detail.drivers=[{k:"缺少问卷 / 穿戴数据，无法进一步定位",v:0}];
+  }else if(top.k==="tech"){
+    const wt=weakTechnique(); const t=techById(wt.id); const v=latestVid(wt.id);
+    detail.tech=wt; detail.vid=v;
+    detail.worstMetric=(v&&v.metrics&&v.metrics.length)?v.metrics.slice().sort((a,b)=>a.score-b.score)[0]:null;
+    detail.drills=t.errors.slice(0,2);
+  }else{
+    const wq=weakestQuality(P.detail); detail.quality=wq;
+    detail.worstTests=(wq&&wq.items.length)?wq.items.slice().sort((a,b)=>a.score-b.score).slice(0,2):null;
+    detail.missing=P.missing;
+  }
+  return {target:target,T:{score:tScore,detail:T},P:{score:pScore,detail:P},R:{score:rScore,detail:R},
+    domains:deficits,primary:top,runnerUp:deficits[1],detail:detail,
+    composite:Math.round(avg([tScore,pScore,rScore]))};
+}
+
+/* ---------- 中羽等级：问卷 → 等级 ---------- */
+function cyFromAnswers(ans){
+  const dims={},parts=[];
+  CY_QS.forEach(q=>{
+    const oi=clamp(ans[q.k]==null?0:parseInt(ans[q.k])||0,0,5);
+    const d=Math.round((oi+1)*7/6);          // 6 档答案映射到 1-7 级刻度
+    dims[q.k]=d; parts.push({k:q.k,n:q.n,v:d,w:q.w});
+  });
+  let num=0,den=0;parts.forEach(p=>{num+=p.v*p.w;den+=p.w;});
+  const raw=num/den;
+  let level=Math.round(raw);
+  const applied=[];
+  // 中羽分级的本质是「短板定级」：单项明显缺口会压住整体等级
+  const caps=[
+    {t:dims.power<=2,c:2,why:"发力方式尚未建立（内外旋 / 爆发力不足）"},
+    {t:dims.back<=3,c:3,why:"正手后场不能稳定到位"},
+    {t:dims.backhand<=2,c:3,why:"反手后场基本不会（俗称反手为 0）"},
+    {t:dims.foot<=3,c:4,why:"移动 / 启动不足，实战表现低于动作表现"},
+    {t:dims.def<=2,c:4,why:"防守质量有限，难以进入高强度对抗"},
+    {t:dims.match<=3,c:5,why:"实战稳定性不足，动作尚未转化为比赛能力"}
+  ];
+  caps.forEach(r=>{if(r.t&&level>r.c){level=r.c;applied.push(r.why);}});
+  const ci=clamp(ans.comp==null?0:parseInt(ans.comp)||0,0,5);
+  const compBonus=[0,0,0,1,1,2][ci];
+  level+=compBonus;
+  if(ci<=1&&level>6)level=6;   // 无正式比赛经历不评 7 级
+  level=clamp(Math.round(level),0,7);
+  return {level:level,dims:dims,parts:parts,raw:round(raw,2),applied:applied,compBonus:compBonus,compIdx:ci,ans:ans};
+}
+function cyToInternal(lv){return lv<=2?1:(lv<=4?2:(lv<=6?3:4));}
+function applyLevelResult(r){
+  const d=r.dims, sc=x=>Math.round(clamp(18+x*11,0,100));
+  DB.skills={
+    serve:sc(d.grip), clear:sc(d.back),
+    smash:sc(Math.min(d.back,d.power,d.attack)),
+    drop:sc(Math.min(d.back,d.net)), net:sc(d.net),
+    defense:sc(d.def), footwork:sc(d.foot)
+  };
+  const it=cyToInternal(r.level);
+  DB.profile.currentCY=r.level;
+  DB.profile.targetLevel=clamp(it+1,1,4);   // 目标定在下一档，驱动瓶颈诊断
+  DB.levels.push({id:uid(),date:todayISO(),level:r.level,dims:d,raw:r.raw,ans:r.ans});
+  save();
+  return it;
+}
+function lastLevel(){return DB.levels.length?DB.levels[DB.levels.length-1]:null;}
+
+/* ---------- 伤病风险预警 ---------- */
+function warnings(){
+  const out=[], today=todayISO();
+  const recent=DB.mind.slice(-7).filter(m=>diffDays(today,m.date)<=7);
+  const painMax=Math.max(0,...recent.map(m=>m.pain||1));
+  const painSites=[...new Set(recent.filter(m=>(m.pain||1)>=3).map(m=>(m.painsite||"").trim()).filter(Boolean))];
+  const a=acwr(today), chron=chronicLoad(today);
+  if(chron>0){
+    if(a>1.5) out.push({lv:"high",t:"急性负荷过高（ACWR "+a+"）",d:"近 7 天相对过去 4 周负荷比超过 1.5，是软组织损伤的高风险区间。",act:"未来 5-7 天总负荷下调 20-30%，删除跳跃与冲刺内容，保留技术与活动度。"});
+    else if(a>1.3) out.push({lv:"mid",t:"负荷爬升偏快（ACWR "+a+"）",d:"已进入警戒区，若继续上行 1-2 周将进入高风险区。",act:"本周不新增高强度内容，插入 1 天完全休息。"});
+    else if(a<0.6) out.push({lv:"low",t:"负荷过低（ACWR "+a+"）",d:"刺激不足以维持适应，回到对抗环境容易受伤。",act:"按每周 +10% 的节奏逐步恢复训练量。"});
+  }
+  if(painMax>=4) out.push({lv:"high",t:"静息 / 夜间疼痛信号",d:"出现 4 级以上疼痛，通常提示存在需要处理的组织问题。",act:"停止引发疼痛的动作，48 小时内无改善请就医评估。"});
+  else if(painMax===3) out.push({lv:"mid",t:"运动中疼痛（3 级）"+(painSites.length?" · 部位："+painSites.join(" / "):""),d:"运动中疼痛会改变动作模式，形成二次代偿。",act:"把该部位负荷降到运动中不痛的水平，并在训练前后做对应预康复。"});
+  const rs=readinessSeries(today,7).filter(r=>r.score!=null);
+  if(rs.filter(r=>r.score<55).length>=3) out.push({lv:"high",t:"准备度持续偏低",d:"近 7 天有 3 天以上准备度低于 55，恢复系统已经跟不上。",act:"本周改为减量周：总量降 30%，睡眠补足 8 小时以上。"});
+  const sleepAvg=avg(recent.map(m=>m.sleep||7.5));
+  if(recent.length>=3&&sleepAvg<6.5) out.push({lv:"mid",t:"睡眠不足（近一周平均 "+round(sleepAvg,1)+" 小时）",d:"睡眠是反应速度、技术固化与组织修复的共同前提。",act:"固定熄灯时间，训练总量先降到与睡眠匹配的水平。"});
+  const bH=wearBase("hrv"), lastW=DB.wear.slice(-1)[0];
+  if(bH&&lastW&&lastW.hrv&&(lastW.hrv-bH)/bH<-0.2) out.push({lv:"mid",t:"HRV 明显低于个人基线",d:"相对基线下降超过 20%，副交感恢复不足。",act:"当日改为低强度技术或完全休息，避免高强度间歇。"});
+  const P=physicalDomain(), stab=P.detail.find(d=>d.id==="stability");
+  const sv=latestVid("smash");
+  if(sv&&sv.metrics&&sv.metrics.length){
+    const get=k=>sv.metrics.find(m=>m.k===k);
+    const kv=get("kneeValgus"), land=get("landing");
+    if(kv&&kv.score<60) out.push({lv:"mid",t:"落地 / 制动时膝内扣明显",d:"视频评估中膝-踝横向偏移得分 "+kv.score+"，长期把压力集中在髌股关节。",act:"训练前做落地缓冲 + 侧卧蚌式，技术课减少连续跳杀量。"});
+    if(land&&land.score<60) out.push({lv:"mid",t:"落地稳定性不足",d:"跳杀后落地控制评分偏低，膝与跟腱承受额外冲击。",act:"加入静音落地与单腿平衡练习，每节课跳杀不超过 30 次。"});
+  }
+  if(stab&&stab.score!=null&&stab.score<62) out.push({lv:"mid",t:"关节稳定性储备不足",d:"稳定性项得分 "+stab.score+"，低于安全阈值，疲劳后变向时风险放大。",act:"每天 8 分钟稳定性质检：单腿平衡 + 星形偏移 + 侧平板。"});
+  return out.sort((x,y)=>({high:0,mid:1,low:2}[x.lv])-({high:0,mid:1,low:2}[y.lv]));
+}
+
+/* ---------- 周期化 ---------- */
+function currentPhase(d){
+  const start=DB.profile.startDate||todayISO();
+  const total=PHASES.reduce((s,p)=>s+p.w,0);
+  let day=diffDays(d,start); if(day<0)day=0;
+  const pos=day%(total*7);
+  let acc=0;
+  for(const p of PHASES){
+    if(pos<acc+p.w*7) return {phase:p,weekInPhase:Math.floor((pos-acc)/7)+1,phaseTotal:p.w};
+    acc+=p.w*7;
+  }
+  return {phase:PHASES[0],weekInPhase:1,phaseTotal:PHASES[0].w};
+}
+function phasePlan(d){
+  const c=currentPhase(d), wd=weekday(d);
+  const day=c.phase.week.find(x=>x.d===wd)||c.phase.week[0];
+  return {cur:c,day:day};
+}
+function todayAdjust(){
+  const r=readiness(todayISO()), a=acwr(todayISO());
+  let mul=1; const notes=[];
+  if(r.score!=null){
+    if(r.score<50){mul*=.6;notes.push("准备度 "+r.score+"：今日降为低强度（计划负荷 ×0.6）");}
+    else if(r.score<65){mul*=.8;notes.push("准备度 "+r.score+"：今日强度下调（×0.8）");}
+    else if(r.score>85){mul*=1.05;notes.push("准备度 "+r.score+"：状态良好，可适度加量");}
+  }else notes.push("今日还没有准备度数据，先做一次打卡再确认强度");
+  if(a>1.5){mul*=.75;notes.push("ACWR "+a+" 过高：整体负荷再下调 25%");}
+  return {mul:round(mul,2),notes:notes,readiness:r.score,parts:r.parts};
+}
+function relScore(p,techIds){
+  let s=0;
+  techIds.forEach(tid=>{const t=techById(tid); if(!t)return;
+    t.risks.forEach(r=>{ if(p.n.indexOf(r.p.slice(0,2))>=0||p.n.indexOf(r.p.slice(0,1))>=0) s+=r.w; });});
+  return s;
+}
+function todayItems(){
+  const d=todayISO(), pp=phasePlan(d), adj=todayAdjust(), bn=bottleneck();
+  const items=[];
+  pp.day.tech.forEach(tid=>{
+    const t=techById(tid); if(!t)return;
+    const focus = bn.detail.type==="tech" && bn.detail.tech.id===tid;
+    items.push({grp:"技术",k:"tech-"+tid,t:t.n,sub:t.sub,
+      d:focus?"今日瓶颈项：放慢节奏，逐条对照动作要领自查":"常规维持，追求落点稳定",
+      amt:focus?"12 min + 20 球":"8 min / 约 15 球",
+      tags:["技术"].concat(focus?["瓶颈项"]:[]),cue:t.simple[0],focus:focus,tid:tid});
+  });
+  (pp.day.cond||[]).map(exById).filter(Boolean).forEach(e=>{
+    const focus = bn.detail.type==="phys" && bn.detail.quality && e.q===bn.detail.quality.id;
+    items.push({grp:"体能",k:"cond-"+e.id,t:e.n,d:e.how,
+      amt:e.rx.s+" × "+e.rx.r+" · 负荷 "+e.rx.l+" · 组间歇 "+e.rx.rest,
+      cue:e.cue,tags:[qualityName(e.q)].concat(focus?["瓶颈项"]:[]),focus:focus});
+  });
+  if(bn.detail.type==="tech"){
+    const t=techById(bn.detail.tech.id);
+    const dr=bn.detail.drills[0];
+    items.push({grp:"瓶颈突破",k:"bn-tech",t:t.n+" 专项纠正（10 min）",
+      d:dr?("典型问题："+dr[0]+"　｜　纠正方法："+dr[1]):t.simple[0],
+      amt:"10 min",tags:["瓶颈","技术"],focus:true});
+  }else if(bn.detail.type==="phys"){
+    const q=bn.detail.quality?bn.detail.quality.id:"power";
+    const cands=EX.filter(e=>e.q===q).slice(0,2);
+    items.push({grp:"瓶颈突破",k:"bn-phys",t:qualityName(q)+" 专项补给（10 min）",
+      d:cands.map(e=>e.n+"："+e.rx.s+" × "+e.rx.r).join("　｜　"),
+      amt:"10 min",tags:["瓶颈","体能"],focus:true});
+  }else{
+    items.push({grp:"瓶颈突破",k:"bn-rec",t:"恢复干预（20 min）",
+      d:"腹式呼吸 5 min + 泡沫轴放松 8 min + 温水浴 5 min；今晚睡眠目标 8 小时",
+      amt:"20 min",tags:["瓶颈","恢复"],focus:true});
+  }
+  const bnpain=DB.mind.slice(-7).map(m=>(m.painsite||"")).join(" ");
+  let pick=PREHAB.find(p=>bnpain&&(bnpain.indexOf(p.n.slice(0,1))>=0||bnpain.indexOf(p.n.slice(2,4))>=0));
+  if(!pick) pick=PREHAB.slice().sort((x,y)=>relScore(y,pp.day.tech)-relScore(x,pp.day.tech))[0];
+  items.push({grp:"预康复",k:"prehab-"+pick.id,t:pick.n+" 预防套件",
+    d:pick.ex.map(e=>e.n+"（"+e.d+"）").join("　｜　"),amt:"8 min",tags:["伤病预防"],warn:pick.warn});
+  items.push({grp:"打卡",k:"checkin",t:"训练后自评打卡",d:"睡眠 / 酸痛 / 疼痛 / 主观强度，30 秒完成",amt:"30 秒",tags:["数据"]});
+  return {items:items,adj:adj,pp:pp,bn:bn};
+}
+
+/* ---------- 4 周突破计划 ---------- */
+function breakthrough(bn){
+  const weeks=[];
+  const baseWeekly=(DB.profile.freq||4)*55;           // 预估每周训练分钟
+  const type=bn.primary.k;
+  const tid=(bn.detail.type==="tech"&&bn.detail.tech)?bn.detail.tech.id:weakTechnique().id;
+  const T=techById(tid)||TECH[0];
+  for(let i=1;i<=4;i++){
+    let mul=[1,1.1,1.2,.7][i-1];
+    if(type==="recov") mul=[.7,.85,1,.65][i-1];
+    let focus="", sessions=[];
+    if(type==="tech"){
+      focus=T.n+" 动作重塑 ｜ "+T.qual.map(qualityName).join(" / ")+" 配套积累";
+      sessions=[
+        {n:"技术重建",c:T.n+" 慢速分解 20 min + 中速连贯 15 min + 定点多球 15 min",l:7},
+        {n:"配套体能",c:TECH_EX[tid][T.qual[0]].map(id=>{const e=exById(id);return e?e.n:"";}).filter(Boolean).join(" + "),l:7},
+        {n:"专项迁移",c:"影子步法 + 限定线路的模拟对抗",l:6},
+        {n:"恢复",c:"活动度 + 呼吸放松 + 睡眠补足",l:2}
+      ];
+    }else if(type==="phys"){
+      const q=bn.detail.quality?bn.detail.quality.id:"power";
+      focus=qualityName(q)+" 定向强化 ｜ 技术维持（量降 20%、保持质量）";
+      const qex=EX.filter(e=>e.q===q);
+      sessions=[
+        {n:qualityName(q)+" 主课",c:qex.slice(0,3).map(e=>e.n+" "+e.rx.s+" × "+e.rx.r).join(" + "),l:8},
+        {n:"技术维持",c:T.n+" 低疲劳练习 25 min，只求动作质量",l:5},
+        {n:"专项转移",c:"多球 20:10 间歇 或 场地往返 15 趟",l:7},
+        {n:"恢复",c:"活动度 + 预康复套件",l:2}
+      ];
+    }else{
+      focus="恢复系统重建 ｜ 睡眠、营养与负荷节奏优先（技术仅做维持）";
+      sessions=[
+        {n:"低强度技术",c:T.n+" 半速练习 25 min + 固定线路",l:3},
+        {n:"有氧基础",c:"心率 130-145 的匀速有氧 30-40 min",l:4},
+        {n:"活动度 / 呼吸",c:"髋 + 胸椎 + 肩后链，配合膈式呼吸",l:2},
+        {n:"完全休息",c:"不安排任何训练",l:0}
+      ];
+    }
+    weeks.push({w:i,mul:mul,loadTarget:Math.round(baseWeekly*mul),focus:focus,sessions:sessions,
+      note:i===4?"第 4 周为吸收周（deload）：用回落换来前三周适应的显现。":"每次训练后记录 RPE，周末复查准备度是否回到 70 以上。"});
+  }
+  return weeks;
+}
+
+
+/* ==================== 三、界面与交互 ==================== */
+const TABS=[{id:"today",n:"今日",i:"today"},{id:"level",n:"等级定级",i:"check"},{id:"lib",n:"内容库",i:"lib"},{id:"log",n:"训练记录",i:"log"},
+  {id:"video",n:"视频评估",i:"video"},{id:"data",n:"数据接入",i:"data"},{id:"diag",n:"瓶颈诊断",i:"diag"},{id:"profile",n:"档案",i:"profile"}];
+let VIEW="today", LIBTAB="tech", LIBTECH="clear", LEVEL_LAST=null;
+let VIDSTATE={tech:"clear",frames:null,meta:null,videoURL:null,result:null,engine:"pixel"};
+
+function el(id){return document.getElementById(id);}
+function toast(m){const t=el("toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("on"),2200);}
+
+/* ---------- 图表（纯 SVG） ---------- */
+function chartLine(data,opt){
+  opt=opt||{};
+  const W=640,H=opt.h||150,PL=34,PR=8,PT=10,PB=22;
+  if(!data.length)return '<div class="empty">暂无数据</div>';
+  const vals=data.map(d=>d.v);
+  const max=Math.max(1,...vals)*(opt.pad||1.15);
+  const x=i=>PL+(W-PL-PR)*(data.length<2?.5:i/(data.length-1));
+  const y=v=>PT+(H-PT-PB)*(1-v/max);
+  let area="M"+x(0)+" "+y(vals[0]),line=area;
+  data.forEach((d,i)=>{area+=" L"+x(i)+" "+y(d.v);if(i)line+=" L"+x(i)+" "+y(d.v);});
+  area+=" L"+x(data.length-1)+" "+H-PB+" L"+x(0)+" "+H-PB+" Z";
+  let grid="",lb="";
+  for(let i=0;i<=3;i++){const gy=PT+(H-PT-PB)*i/3,gv=Math.round(max*(1-i/3));
+    grid+='<line x1="'+PL+'" y1="'+gy+'" x2="'+(W-PR)+'" y2="'+gy+'" stroke="#e2e8f0" stroke-width="1"/>';
+    grid+='<text x="'+(PL-5)+'" y="'+(gy+3.5)+'" text-anchor="end" font-size="9" fill="#8b97ad">'+gv+'</text>';}
+  data.forEach((d,i)=>{ if(data.length<9||i%2===0||i===data.length-1)
+    lb+='<text x="'+x(i)+'" y="'+(H-6)+'" text-anchor="middle" font-size="9" fill="#8b97ad">'+d.k+'</text>';});
+  const dots=data.map((d,i)=>'<circle cx="'+x(i)+'" cy="'+y(d.v)+'" r="2.6" fill="'+(opt.color||"#3f51b5")+'"/>').join("");
+  return '<svg class="chart" viewBox="0 0 '+W+' '+H+'">'+grid+
+    '<path d="'+area+'" fill="'+(opt.fill||"rgba(63,81,181,.10)")+'"/>'+
+    '<path d="'+line+'" fill="none" stroke="'+(opt.color||"#3f51b5")+'" stroke-width="2" stroke-linejoin="round"/>'+dots+lb+'</svg>';
+}
+function chartBars(data,opt){
+  opt=opt||{};
+  const W=640,H=opt.h||150,PL=34,PR=8,PT=10,PB=22;
+  if(!data.length)return '<div class="empty">暂无数据</div>';
+  const max=Math.max(1,...data.map(d=>d.v))*(opt.pad||1.2);
+  const bw=(W-PL-PR)/data.length*0.62, step=(W-PL-PR)/data.length;
+  let g="",lb="";
+  for(let i=0;i<=3;i++){const gy=PT+(H-PT-PB)*i/3;
+    g+='<line x1="'+PL+'" y1="'+gy+'" x2="'+(W-PR)+'" y2="'+gy+'" stroke="#e2e8f0"/>';
+    g+='<text x="'+(PL-5)+'" y="'+(gy+3.5)+'" text-anchor="end" font-size="9" fill="#8b97ad">'+Math.round(max*(1-i/3))+'</text>';}
+  data.forEach((d,i)=>{
+    const h=(H-PT-PB)*(d.v/max), x=PL+step*i+(step-bw)/2, y=H-PB-h;
+    g+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(1,h).toFixed(1)+'" rx="3" fill="'+(d.c||opt.color||"#3f51b5")+'"/>';
+    if(data.length<10||i%2===0) lb+='<text x="'+(x+bw/2).toFixed(1)+'" y="'+(H-6)+'" text-anchor="middle" font-size="9" fill="#8b97ad">'+d.k+'</text>';
+  });
+  return '<svg class="chart" viewBox="0 0 '+W+' '+H+'">'+g+lb+'</svg>';
+}
+function chartRadar(items){
+  const W=420,H=300,cx=W/2,cy=H/2,R=Math.min(W,H)/2-46,n=items.length;
+  const pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/n;return [cx+Math.cos(a)*r,cy+Math.sin(a)*r];};
+  let grid="",axis="",poly="",dots="",lab="";
+  [0.25,0.5,0.75,1].forEach(f=>{const p=[];for(let i=0;i<n;i++){const q=pt(i,R*f);p.push(q[0].toFixed(1)+","+q[1].toFixed(1));}
+    grid+='<polygon points="'+p.join(" ")+'" fill="none" stroke="#e2e8f0"/>';});
+  items.forEach((it,i)=>{
+    const q=pt(i,R); axis+='<line x1="'+cx+'" y1="'+cy+'" x2="'+q[0].toFixed(1)+'" y2="'+q[1].toFixed(1)+'" stroke="#e2e8f0"/>';
+    const v=Math.max(2,(it.v==null?0:it.v)/100*R); const p=pt(i,v);
+    poly+=p[0].toFixed(1)+","+p[1].toFixed(1)+" ";
+    dots+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.2" fill="#3f51b5"/>';
+    const l=pt(i,R+20); const anc=l[0]>cx+8?"start":(l[0]<cx-8?"end":"middle");
+    lab+='<text x="'+l[0].toFixed(1)+'" y="'+l[1].toFixed(1)+'" text-anchor="'+anc+'" font-size="11" fill="#5b6780">'+esc(it.k)+'</text>';
+    lab+='<text x="'+l[0].toFixed(1)+'" y="'+(l[1]+13).toFixed(1)+'" text-anchor="'+anc+'" font-size="11" font-weight="700" fill="#16203a">'+(it.v==null?"—":it.v)+'</text>';
+  });
+  return '<svg class="chart" viewBox="0 0 '+W+' '+H+'">'+grid+axis+
+    '<polygon points="'+poly+'" fill="rgba(63,81,181,.18)" stroke="#3f51b5" stroke-width="2"/>'+dots+lab+'</svg>';
+}
+function lvBar(sc){
+  const n=clamp(Math.ceil((sc||0)/25),1,4);
+  return '<span class="lvbar">'+[1,2,3,4].map(i=>'<i class="'+(i<=n?"on":"")+'"></i>').join("")+'</span>';
+}
+
+/* ---------- 顶栏 ---------- */
+function renderTop(){
+  const d=todayISO(), r=readiness(d), a=acwr(d), bn=bottleneck(), pp=phasePlan(d);
+  const lv=levelOf(bn.composite);
+  const cls=v=>v==null?"":(v>=75?"ok":(v>=60?"warn":"dang"));
+  el("topState").innerHTML=
+    '<span class="pill '+(r.score==null?"":cls(r.score))+'"><i class="dot"></i>准备度 '+(r.score==null?"—":r.score)+'</span>'+
+    '<span class="pill '+(a>1.5?"dang":(a>1.3?"warn":(a>0?"ok":"")))+'">ACWR '+(a||"—")+'</span>'+
+    '<span class="pill info">'+esc(pp.cur.phase.n)+' 第'+pp.cur.weekInPhase+'/'+pp.cur.phaseTotal+'周</span>'+
+    '<span class="pill" style="background:'+lv.col+'22;color:'+lv.col+'">'+lv.n+'</span>'+
+    (DB.profile.currentCY!=null?'<span class="pill info">中羽 '+DB.profile.currentCY+' 级 · '+esc((CY_LEVELS[DB.profile.currentCY]||{}).n||"")+'</span>':'');
+  tabbarRender();
+}
+function tabbarRender(){
+  el("tabbar").innerHTML=TABS.map(t=>'<button class="'+(VIEW===t.id?"on":"")+'" data-act="nav" data-v="'+t.id+'">'+icon(t.i,15)+t.n+'</button>').join("");
+  Array.from(el("modeSwitch").children).forEach(b=>b.classList.toggle("on",b.dataset.m===DB.profile.mode));
+}
+
+/* ---------- 视图 1：今日 ---------- */
+function viewToday(){
+  const d=todayISO(), ti=todayItems(), r=readiness(d), a=acwr(d), bn=bottleneck();
+  const wl=loadWin(d,7), weeklyTarget=(DB.profile.freq||4)*55;
+  const isPro=DB.profile.mode==="pro";
+  const risk=warnings();
+  const key=d+"|";
+  let html='<div class="pageTitle"><h2>今日训练</h2><p>'+d+'　'+["周日","周一","周二","周三","周四","周五","周六"][weekday(d)]+'</p>'+
+    '<div class="r"><button class="btn sm" data-act="print">打印今日清单</button></div></div>'+
+    (!lastLevel()?'<div class="note warn">还没有做过等级定级。先花 2 分钟完成问卷，系统才能按你的真实水平安排训练强度与目标。<button class="btn sm" style="margin-left:8px" data-act="nav" data-v="level">现在去定级</button></div>':"");
+
+  if(isPro){
+    html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>周期化状态</h3><span class="hint">'+esc(ti.pp.cur.phase.int)+' 强度区间</span></div><div class="card-b">'+
+      '<dl class="kv">'+
+      '<dt>训练分期</dt><dd>'+esc(ti.pp.cur.phase.n)+'（第 '+ti.pp.cur.weekInPhase+' / '+ti.pp.cur.phaseTotal+' 周）</dd>'+
+      '<dt>本阶段重点</dt><dd>'+ti.pp.cur.phase.focus.map(esc).join(" · ")+'</dd>'+
+      '<dt>今日课次</dt><dd>'+esc(ti.pp.day.t)+'</dd>'+
+      '<dt>目标负荷</dt><dd>'+Math.round((ti.pp.day.load||0)*weeklyTarget/4.7)+' AU 左右（session-RPE：分钟 × RPE）</dd>'+
+      '<dt>近 7 天负荷</dt><dd>'+wl+' AU　｜　周单调性 '+monotony(d)+'　｜　周应变 '+strain(d)+'</dd>'+
+      '</dl></div></div>';
+    if(ti.adj.notes.length) html+='<div class="note '+(ti.adj.mul<1?"warn":"ok")+'">今日调整建议：'+ti.adj.notes.map(esc).join("；")+'</div>';
+  }else{
+    const bar=r.score==null?"未知":(r.score>=75?"不错，可以按计划练":(r.score>=60?"一般，注意别练太狠":"偏低，今天悠着点"));
+    html+='<div class="card" style="margin-bottom:14px"><div class="card-b"><div class="row" style="align-items:center">'+
+      '<div style="flex:2;min-width:180px"><div style="font-size:.72rem;color:var(--text-3);font-weight:700">今天身体状态</div>'+
+      '<div style="font-size:1.5rem;font-weight:800">'+(r.score==null?"还没打卡":r.score+" 分")+'</div>'+
+      '<div style="font-size:.8rem;color:var(--text-2)">'+esc(bar)+'</div></div>'+
+      '<div style="flex:3;min-width:200px"><div style="font-size:.72rem;color:var(--text-3);font-weight:700">今天练什么</div>'+
+      '<div style="font-weight:700">'+esc(ti.pp.day.t)+'</div>'+
+      '<div style="font-size:.78rem;color:var(--text-2)">照着下面的清单做，做完打勾就行</div></div>'+
+      '</div></div></div>';
+    if(ti.adj.mul<1) html+='<div class="note warn">今天状态不太好，清单里所有动作都多做两组热身、组数按 7 成做。</div>';
+  }
+
+  if(risk.length){
+    html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>伤病风险提示</h3><span class="hint">'+risk.length+' 条</span></div><div class="card-b">'+
+      risk.slice(0,isPro?4:2).map(w=>'<div class="note '+(w.lv==="high"?"dang":(w.lv==="mid"?"warn":"ok"))+'" style="margin:6px 0"><b>'+esc(w.t)+'</b><br>'+esc(isPro?w.d+"　处置："+w.act:w.act)+'</div>').join("")+
+      '<div class="r"><button class="btn sm" data-act="nav" data-v="diag">查看完整诊断</button></div></div></div>';
+  }
+
+  // 清单
+  let grp="";
+  html+='<div class="card"><div class="card-h"><h3>'+(isPro?"今日执行处方":"今日清单 · 照做即可")+'</h3>'+
+    '<span class="hint">'+ti.items.filter(i=>DB.done[key+i.k]).length+' / '+ti.items.length+' 已完成</span></div><div class="card-b">';
+  ti.items.forEach(it=>{
+    if(it.grp!==grp){grp=it.grp;html+='<div style="font-size:.72rem;font-weight:800;color:var(--text-3);letter-spacing:1px;margin:12px 0 6px">'+esc(grp)+'</div>';}
+    const done=!!DB.done[key+it.k];
+    html+='<div class="check '+(done?"done":"")+'">'+
+      '<input type="checkbox" '+(done?"checked":"")+' data-act="toggle" data-k="'+esc(it.k)+'">'+
+      '<div class="cbody"><div class="ct">'+esc(it.t)+(it.focus?' <span class="tag r">今日重点</span>':'')+'</div>'+
+      '<div class="cd">'+esc(it.d)+'</div>'+
+      '<div class="cmeta"><span class="amt">'+esc(it.amt)+'</span>'+(it.tags||[]).filter(Boolean).map(t=>'<span class="tag a">'+esc(t)+'</span>').join("")+
+      (isPro&&it.cue?'<span style="font-size:.74rem;color:var(--teal)">要点：'+esc(it.cue)+'</span>':"")+'</div>'+
+      (isPro&&it.warn?'<div style="font-size:.72rem;color:var(--red);margin-top:4px">红灯信号：'+esc(it.warn)+'</div>':"")+
+      '</div></div>';
+  });
+  html+='</div></div>';
+
+  // 记录 & 图表
+  if(isPro){
+    const lc=readinessSeries(d,14).map(x=>({k:x.date.slice(5),v:x.score==null?0:x.score}));
+    const ld=[];for(let i=13;i>=0;i--){const dd=addDays(d,-i);ld.push({k:dd.slice(5),v:loadOn(dd)});}
+    html+='<div class="grid g2" style="margin-top:14px">'+
+      '<div class="card"><div class="card-h"><h3>近 14 天负荷（AU）</h3></div><div class="card-b">'+chartBars(ld,{h:140,color:"#6572cd"})+'</div></div>'+
+      '<div class="card"><div class="card-h"><h3>近 14 天准备度</h3></div><div class="card-b">'+chartLine(lc,{h:140,color:"#0d9488",fill:"rgba(13,148,136,.10)"})+'</div></div>'+
+      '</div>';
+  }
+  html+='<div class="card" style="margin-top:14px"><div class="card-h"><h3>记录今天的训练</h3><span class="hint">session-RPE 法：负荷 = 分钟 × 主观强度</span></div><div class="card-b">'+
+    '<div class="row"><div class="field"><label>时长（分钟）</label><input type="number" id="qlDur" value="75" min="10" max="300"></div>'+
+    '<div class="field"><label>主观强度 RPE（1-10）</label><input type="number" id="qlRpe" value="6" min="1" max="10"></div>'+
+    '<div class="field"><label>类型</label><select id="qlType"><option value="tech">技术</option><option value="cond">体能</option><option value="match">对抗 / 比赛</option><option value="recovery">恢复 / 活动度</option></select></div>'+
+    '<div class="field"><label>备注</label><input type="text" id="qlNote" placeholder="手感、落点、完成情况"></div></div>'+
+    '<button class="btn pri" data-act="quicklog">'+icon("check",14)+'保存今日训练记录</button></div></div>';
+  return html;
+}
+
+/* ---------- 视图 2：中羽等级定级问卷 ---------- */
+function levelResultHTML(r,his){
+  const L=CY_LEVELS[r.level]||CY_LEVELS[0];
+  const it=cyToInternal(r.level), tgt=clamp(it+1,1,4);
+  const parts=r.parts||CY_QS.map(q=>({k:q.k,n:q.n,v:(r.dims||{})[q.k]||0,w:q.w}));
+  const weak=parts.slice().sort((a,b)=>a.v-b.v).slice(0,3);
+  let h='<div style="text-align:center;padding:4px 0 10px">'+
+    '<div style="font-size:3rem;font-weight:800;line-height:1;color:var(--accent)">'+r.level+'</div>'+
+    '<div style="font-size:1.1rem;font-weight:800">中羽 '+r.level+' 级 · '+esc(L.n)+'</div>'+
+    '<div style="font-size:.76rem;color:var(--text-2)">'+esc(L.tag)+' ｜ '+esc(L.img)+'</div>'+
+    (his?'<div style="font-size:.72rem;color:var(--text-3);margin-top:4px">上次测评：'+esc(his)+'</div>':"")+'</div>';
+  h+='<div class="note">'+esc(L.desc)+'</div>';
+  h+='<div class="note ok"><b>下一步主攻：</b>'+esc(L.next)+'<br>已同步到工作台：内部基线 '+LEVELS[it-1].n+'，目标设为 '+LEVELS[tgt-1].n+'（用于瓶颈诊断）。</div>';
+  if(r.applied&&r.applied.length) h+='<div class="note warn"><b>短板封顶已生效</b><br>'+r.applied.map(esc).join('<br>')+'</div>';
+  if(r.compBonus) h+='<div style="font-size:.74rem;color:var(--text-3)">竞技成绩校正：+'+r.compBonus+' 级（'+esc(CY_COMP[r.compIdx||0])+'）</div>';
+  h+='<div style="font-weight:700;margin:12px 0 6px">十维能力画像（1-7）</div>'+
+    '<table><tbody>'+parts.map(x=>'<tr><td style="white-space:nowrap">'+esc(x.n)+'</td><td class="tnum">'+x.v+'</td>'+
+      '<td style="width:48%"><div class="bar '+(x.v>=5?"g":(x.v>=3?"a":"r"))+'"><i style="width:'+(x.v/7*100)+'%"></i></div></td></tr>').join("")+'</tbody></table>';
+  h+='<div class="note warn" style="margin-top:10px"><b>最该先补的三项：</b>'+weak.map(x=>esc(x.n)+'（'+x.v+'/7）').join(" · ")+'</div>';
+  h+='<div class="row" style="margin-top:10px"><button class="btn pri" data-act="nav" data-v="today">看今日清单</button>'+
+     '<button class="btn" data-act="nav" data-v="diag">看瓶颈诊断</button>'+
+     '<button class="btn" data-act="levelreset">重新填写</button></div>';
+  return h;
+}
+function viewLevel(){
+  const last=lastLevel();
+  const saved=(last&&last.ans)?last.ans:{};
+  const shown=LEVEL_LAST||last;
+  let html='<div class="pageTitle"><h2>等级定级问卷</h2>'+
+    '<p>参考中羽在线 0-7 级分级体系 · 10 项能力 + 实战成绩 · 约 2 分钟</p>'+
+    '<div class="r"><button class="btn sm" data-act="leveldemo">填入 4 级示例</button></div></div>';
+  html+='<div class="note">分级依据：'+
+    '<a href="https://bbs.badmintoncn.com/forum.php?mod=viewthread&tid=934258" target="_blank" rel="noopener">中羽在线《多个羽毛球评定标准汇集》</a>'+
+    ' · <a href="https://bbs.badmintoncn.com/forum.php?mod=viewthread&tid=3585892" target="_blank" rel="noopener">2024 新版分级讨论</a>。'+
+    '采用「加权均分 + 短板封顶 + 比赛成绩校正」：反手为 0、步法慢、实战不到位都会把等级压下来，符合中羽「短板定级」的惯例。自评结果仅供参考，不等同官方认证。</div>';
+  html+='<div class="grid gside"><div><div class="card"><div class="card-h"><h3>逐项自评</h3><span class="hint">按真实比赛表现选，不按最好状态选</span></div><div class="card-b">'+
+    CY_QS.map((q,qi)=>'<div class="field"><label>'+(qi+1)+'. '+esc(q.n)+'</label>'+
+      '<select data-lq="'+q.k+'"><option value="-1">— 请选择 —</option>'+
+      q.opts.map((o,oi)=>'<option value="'+oi+'" '+(String(saved[q.k])===String(oi)?"selected":"")+'>'+esc(o)+'</option>').join("")+'</select></div>').join("")+
+    '<div class="field"><label>11. 竞技 / 比赛经历（成绩校正）</label>'+
+      '<select data-lq="comp"><option value="-1">— 请选择 —</option>'+
+      CY_COMP.map((o,oi)=>'<option value="'+oi+'" '+(String(saved.comp)===String(oi)?"selected":"")+'>'+esc(o)+'</option>').join("")+'</select></div>'+
+    '<button class="btn pri" style="width:100%;justify-content:center" data-act="levelsubmit">'+icon("check",14)+'提交并生成等级</button>'+
+    '<div style="font-size:.72rem;color:var(--text-3);margin-top:8px">提交后会自动写入：七项技术基线、目标等级、首页等级徽标，并立即影响今日清单与瓶颈诊断。</div>'+
+    '</div></div></div>'+
+    '<div><div class="card" style="position:sticky;top:112px"><div class="card-h"><h3>定级结果</h3>'+
+      (shown?'<span class="pill info">中羽 '+shown.level+' 级</span>':"")+'</div><div class="card-b" id="levelResult">'+
+      (shown?levelResultHTML(shown,LEVEL_LAST?null:(last?last.date:null))
+        :'<div class="empty">'+icon("check",34)+'完成左侧问卷后，这里会给出等级、十维画像与突破重点</div>')+
+    '</div></div></div></div>';
+  if(DB.levels.length){
+    html+='<div class="card" style="margin-top:14px"><div class="card-h"><h3>历次定级记录</h3><span class="hint">共 '+DB.levels.length+' 次 · 建议每 8-12 周复测</span></div><div class="card-b">'+
+      (DB.levels.length>1?chartLine(DB.levels.map(x=>({k:x.date.slice(5),v:x.level})),{h:130,color:"#7c3aed",pad:1.4}):"")+
+      '<table style="margin-top:8px"><thead><tr><th>日期</th><th>中羽等级</th><th>加权均分</th><th>内部基线</th><th></th></tr></thead><tbody>'+
+      DB.levels.slice().reverse().map(x=>'<tr><td class="tnum">'+x.date+'</td><td><span class="tag a">'+x.level+' 级 '+esc((CY_LEVELS[x.level]||{}).n||"")+'</span></td>'+
+        '<td class="tnum">'+x.raw+'</td><td>'+LEVELS[cyToInternal(x.level)-1].n+'</td>'+
+        '<td><button class="btn sm dang" data-act="dellevel" data-id="'+esc(x.id||"")+'">删除</button></td></tr>').join("")+'</tbody></table>'+
+      '</div></div>';
+  }
+  html+='<div class="card" style="margin-top:14px"><div class="card-h"><h3>完整等级标尺</h3></div><div class="card-b"><table>'+
+    '<thead><tr><th>级别</th><th>俗称</th><th>典型画像</th><th>核心特征</th></tr></thead><tbody>'+
+    CY_LEVELS.map(L=>'<tr'+(shown&&shown.level===L.lv?' style="background:var(--accent-soft)"':"")+'><td class="tnum">'+L.lv+'</td><td><b>'+esc(L.n)+'</b></td>'+
+      '<td>'+esc(L.img)+'</td><td style="font-size:.76rem">'+esc(L.desc)+'</td></tr>').join("")+'</tbody></table></div></div>';
+  return html;
+}
+
+/* ---------- 视图 2：内容库 ---------- */
+function viewLib(){
+  const isPro=DB.profile.mode==="pro";
+  let html='<div class="pageTitle"><h2>内容体系</h2><p>技术 · 体能 · 运动康复　三大板块联动</p>'+
+    '<div class="r"><div class="modesw">'+[["tech","技术教学"],["cond","体能训练"],["rehab","运动康复"]].map(x=>
+      '<button data-act="libtab" data-t="'+x[0]+'" class="'+(LIBTAB===x[0]?"on":"")+'">'+x[1]+'</button>').join("")+'</div></div></div>';
+
+  if(LIBTAB==="tech"){
+    html+='<div class="row" style="margin-bottom:12px">'+TECH.map(t=>'<button class="btn '+(LIBTECH===t.id?"pri":"")+'" data-act="libtech" data-t="'+t.id+'">'+esc(t.n)+'</button>').join("")+'</div>';
+    const t=techById(LIBTECH), ts=techScore(LIBTECH), lv=levelOf(ts.score);
+    html+='<div class="card"><div class="card-h"><h3>'+esc(t.n)+'</h3><span class="hint">'+esc(t.sub)+'</span>'+
+      '<div class="r"><span class="pill info">当前 '+lv.n+'（'+ts.score+' 分）</span><span class="hint">'+esc(ts.src)+'</span>'+
+      '<button class="btn sm" data-act="nav" data-v="video">去拍视频评估</button></div></div><div class="card-b">'+
+      '<div class="note">达标目标是：<b>'+esc(t.goal)+'</b></div>'+
+      '<div class="grid g2">'+
+        '<div><div style="font-weight:700;margin-bottom:6px">'+(isPro?"技术动作要领":"照着做就对了")+'</div>'+
+        '<ol class="steps">'+(isPro?t.cues:t.simple).map(s=>'<li>'+esc(s)+'</li>').join("")+'</ol>'+
+        (isPro?'<div style="font-size:.76rem;color:var(--text-3);margin-top:6px">对应通俗版：'+esc(t.simple.join("；"))+'</div>':"")+
+        '</div>'+
+        '<div><div style="font-weight:700;margin-bottom:6px">常见错误与纠正</div>'+
+        '<table><tbody>'+t.errors.map(e=>'<tr><td style="color:var(--red)">'+esc(e[0])+'</td><td>'+esc(e[1])+'</td></tr>').join("")+'</table></div>'+
+      '</div><div class="sep"></div>'+
+      '<div style="font-weight:700;margin-bottom:6px">本项技术的体能积累方案</div>'+
+      '<div class="grid g3 keep2">'+Object.keys(t.qw).map(qid=>{
+        const ids=(TECH_EX[t.id][qid]||[]).map(exById).filter(Boolean);
+        return '<div class="metric"><div class="k">'+esc(qualityName(qid))+'　权重 '+Math.round(t.qw[qid]*100)+'%</div>'+
+          ids.map(e=>'<div style="font-size:.78rem;margin-top:5px"><b>'+esc(e.n)+'</b><br><span style="color:var(--text-2)">'+
+            (isPro?esc(e.rx.s+" × "+e.rx.r+"　"+e.rx.l+"　组间歇 "+e.rx.rest):esc(e.how))+'</span></div>').join("")+'</div>';
+      }).join("")+'</div><div class="sep"></div>'+
+      '<div style="font-weight:700;margin-bottom:6px">伤病风险点与 Prevention</div>'+
+      '<div>'+t.risks.map(r=>'<span class="tag '+(r.w>=3?"r":"y")+'">'+esc(r.p)+'　风险 '+r.w+'/3</span>').join("")+'</div>'+
+      '<div class="note-warn note">'+esc((PREHAB.find(p=>p.n.indexOf(t.risks[0].p.slice(0,2))>=0)||PREHAB[0]).warn)+'</div>'+
+      '</div></div>';
+  }else if(LIBTAB==="cond"){
+    const T=techById(LIBTECH);
+    html+='<div class="note">体能不是独立的跑和举铁：下面每个动作都按「它服务于哪一项技术」归类。当前展示：<b>'+esc(T.n)+'</b> 的配套方案，切换技术在右上角。</div>';
+    html+=QUAL.map(q=>{
+      const all=EX.filter(e=>e.q===q.id);
+      const forTech=TECH_EX[LIBTECH][q.id]||[];
+      return '<details class="acc" open><summary>'+icon("up",14)+esc(q.n)+'　<span class="hint">'+all.length+' 个动作</span></summary><div class="acc-b">'+
+        '<div class="grid g2">'+all.map(e=>{
+          const inTech=forTech.indexOf(e.id)>=0;
+          return '<div class="metric" style="'+(inTech?"border-color:var(--accent)":"")+'">'+
+            '<div class="k">'+esc(e.area)+(inTech?' <span class="tag a">'+esc(LIBTECH==="clear"?"高远球":T.n)+' 配套</span>':"")+'</div>'+
+            '<div style="font-weight:700">'+esc(e.n)+'</div>'+
+            (isPro?'<div style="font-size:.76rem;color:var(--accent);font-weight:700;margin-top:3px">'+esc(e.rx.s+" × "+e.rx.r+" · 负荷 "+e.rx.l+" · 组间歇 "+e.rx.rest+" · RPE "+e.i)+'</div>':"")+
+            '<div style="font-size:.78rem;margin-top:4px">'+esc(e.how)+'</div>'+
+            '<div style="font-size:.75rem;color:var(--teal);margin-top:4px">要点：'+esc(e.cue)+'</div>'+
+            (isPro?'<div style="font-size:.75rem;color:var(--text-3);margin-top:3px">为什么练：'+esc(e.why)+'</div>':"")+
+            '</div>';
+        }).join("")+'</div></div></details>';
+    }).join("");
+  }else{
+    html+='<div class="grid g2">'+PREHAB.map(p=>'<div class="card"><div class="card-h"><h3>'+esc(p.n)+'</h3></div><div class="card-b">'+
+      '<div style="font-size:.78rem;color:var(--text-2);margin-bottom:6px">高发时机：'+esc(p.risk)+'</div>'+
+      '<ul class="plain">'+p.ex.map(e=>'<li><b>'+esc(e.n)+'</b>　'+esc(e.d)+'</li>').join("")+'</ul>'+
+      '<div class="note dang" style="margin-top:8px">红灯信号：'+esc(p.warn)+'</div></div></div>').join("")+'</div>';
+  }
+  return html;
+}
+
+/* ---------- 视图 3：训练记录 ---------- */
+function viewLog(){
+  const d=todayISO(), c=checkinOf(d)||{};
+  const lastTest=DB.tests.slice().sort((a,b)=>a.date<b.date?1:-1)[0];
+  const wk=(function(){const p=[d];return p;})();
+  let html='<div class="pageTitle"><h2>训练记录与自评</h2><p>手动日志 · 每日问卷 · 周期问卷 · 体能测评</p></div>';
+
+  html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>每日问卷自评</h3><span class="hint">'+d+'</span></div><div class="card-b">'+
+    '<div class="row">'+DAILY_Q.map(q=>{
+      if(q.type==="sel")return '<div class="field"><label>'+esc(q.n)+'</label><select data-q="'+q.k+'">'+
+        q.opt.map(o=>'<option value="'+o[0]+'" '+((c[q.k]==null?q.def:c[q.k])===o[0]?"selected":"")+'>'+esc(o[1])+'</option>').join("")+'</select></div>';
+      if(q.type==="num")return '<div class="field"><label>'+esc(q.n)+'（'+q.unit+'）</label><input type="number" data-q="'+q.k+'" value="'+(c[q.k]==null?q.def:c[q.k])+'" min="'+q.min+'" max="'+q.max+'" step="'+q.step+'"></div>';
+      return '<div class="field"><label>'+esc(q.n)+'（无则留空）</label><input type="text" data-q="'+q.k+'" value="'+esc(c[q.k]||"")+'" placeholder="如：右膝、右肩"></div>';
+    }).join("")+'</div>'+
+    '<button class="btn pri" data-act="checkin">'+icon("check",14)+'保存今日打卡</button></div></div>';
+
+  html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>周期问卷（每周一次）</h3></div><div class="card-b">'+
+    '<div class="row">'+WEEKLY_Q.map(q=>{
+      if(q.type==="sel")return '<div class="field"><label>'+esc(q.n)+'</label><select data-w="'+q.k+'">'+q.opt.map(o=>'<option value="'+o[0]+'" '+(q.def===o[0]?"selected":"")+'>'+esc(o[1])+'</option>').join("")+'</select></div>';
+      return '<div class="field"><label>'+esc(q.n)+'</label><input type="text" data-w="'+q.k+'" placeholder="如：后场被动、第三拍"></div>';
+    }).join("")+'</div><button class="btn" data-act="weekly">保存本周问卷</button></div></div>';
+
+  html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>体能测评</h3><span class="hint">上次测评：'+(lastTest?lastTest.date:"无记录")+'</span></div><div class="card-b">'+
+    '<div class="field"><label>测评日期</label><input type="date" id="testDate" value="'+d+'" style="max-width:200px"></div>'+
+    '<div class="grid g4 keep2">'+TESTS.map(t=>'<div class="field"><label>'+esc(t.n)+'（'+t.unit+'）</label>'+
+      '<input type="number" step="0.1" data-t="'+t.id+'" value="'+(lastTest&&lastTest.res[t.id]!=null?lastTest.res[t.id]:"")+'" placeholder="'+(DB.profile.sex==="f"?round(t.bench[1]*t.f,1):t.bench[1])+'">'+
+      '<div style="font-size:.7rem;color:var(--text-3)">'+esc(t.desc)+' · L2 基准 '+(DB.profile.sex==="f"?round(t.bench[1]*t.f,1):t.bench[1])+'</div></div>').join("")+'</div>'+
+    '<button class="btn pri" data-act="savetest">'+icon("check",14)+'保存测评结果</button></div></div>';
+
+  const logs=DB.logs.slice().sort((a,b)=>a.date<b.date?1:-1).slice(0,25);
+  html+='<div class="card"><div class="card-h"><h3>训练日志</h3><span class="hint">近 '+logs.length+' 条</span></div><div class="card-b">'+
+    (logs.length?'<table><thead><tr><th>日期</th><th>类型</th><th>时长</th><th>RPE</th><th>负荷 AU</th><th>备注</th><th></th></tr></thead><tbody>'+
+      logs.map(l=>'<tr><td class="tnum">'+l.date+'</td><td>'+({tech:"技术",cond:"体能",match:"对抗/比赛",recovery:"恢复"}[l.type]||l.type)+'</td>'+
+        '<td class="tnum">'+l.dur+' min</td><td class="tnum">'+l.rpe+'</td><td class="tnum">'+logLoad(l)+'</td><td>'+esc(l.note||"")+'</td>'+
+        '<td><button class="btn sm dang" data-act="dellog" data-id="'+l.id+'">删除</button></td></tr>').join("")+'</tbody></table>'
+      :'<div class="empty">'+icon("log",34)+'还没有训练日志，去「今日」页记录一次</div>')+
+    '</div></div>';
+  return html;
+}
+
+/* ---------- 视图 4：视频评估 ---------- */
+const METRICS={
+  shoulderAbd:{n:"肩关节最大外展角",u:"°",ideal:[155,178],tol:[25,20]},
+  elbowFlex:{n:"击球瞬间肘伸展角",u:"°",ideal:[160,178],tol:[25,15]},
+  contactHeight:{n:"击球点高度比",u:"×身高",ideal:[1.02,1.35],tol:[.25,.2]},
+  trunkRot:{n:"躯干旋转角",u:"°",ideal:[22,55],tol:[18,25]},
+  hipShoulder:{n:"髋肩分离角",u:"°",ideal:[30,60],tol:[18,25]},
+  jumpHeight:{n:"起跳腾空高度",u:"cm",ideal:[15,60],tol:[12,30],only:["smash"]},
+  kneeFlex:{n:"缓冲 / 弓步膝屈角",u:"°",ideal:[95,125],tol:[25,35]},
+  kneeValgus:{n:"膝-踝横向偏移",u:"%腿长",ideal:[0,8],tol:[6,18]},
+  wristsnap:{n:"末段腕 / 拍峰值速度",u:"身高/秒",ideal:[2.5,8],tol:[2,6]},
+  followThrough:{n:"随挥完成度",u:"%",ideal:[60,100],tol:[35,20]},
+  tempo:{n:"挥拍节奏变异系数",u:"%",ideal:[0,12],tol:[10,20]},
+  centroid:{n:"重心平移范围",u:"%肩宽",ideal:[80,400],tol:[100,250]},
+  recovery:{n:"复位时间",u:"s",ideal:[.4,1.2],tol:[.5,1.2]},
+  landing:{n:"落地稳定性",u:"分",ideal:[75,100],tol:[25,20]},
+  cadence:{n:"步频",u:"步/s",ideal:[3.5,5.5],tol:[1.2,2]}
+};
+const FB={
+  shoulderAbd:["架拍时持拍臂抬得不够，长期靠肩膀硬甩，肩袖负荷偏高","抬起持拍肘至不低于肩：靠墙架拍定型 60s × 3 组"],
+  elbowFlex:["击球瞬间肘没有充分伸展，力量链路中断，球速上不去","在最高点触球：定点多球只允许在最高点击球"],
+  contactHeight:["击球点偏低，导致出球平、被动","先慢后快地建立高举动力定型：后方无敌而导致起点偏低时先用高球喂"],
+  trunkRot:["躯干旋转不足 / 过度，落到腰的输出不足","先把旋转范本练到位：餐药物球旋转抛，从髋带动而非甩腰"],
+  hipShoulder:["髋肩分离不足（X 因子小），旋转力没有完全储备","做「下肢先转」的分解练习：脚先转再上手"],
+  jumpHeight:["跳杀时腾空高度不足，击球点偏低","每周 2 次垂直弹性训练：跳箱 + 提踵离心"],
+  kneeFlex:["落地 / 弓步缓冲不足或过深，压力集中在膝与跟腱","做静音落地与大 Step 制动练习，目标膝屈 100-120°"],
+  kneeValgus:["出现膝内扣，髌股关节承压明显","加强臀中肌：侧卧蚌式 + 单腿蹲控 + 落地对齐练习"],
+  wristsnap:["末段发力不足，缺少「鞭打」感","慢速拖腕挥拍建立程序后再逐档提速"],
+  followThrough:["随挥不足，力量没有完全释放且易急停受伤","把随挥做完整：收向身体另一侧下方"],
+  tempo:["挥拍节奏波动大，说明动作程序不稳定","用口令「1-2-3」固定节奏，先慢速一致后提速"],
+  centroid:["重心移动控制不足，导致下一拍启动慢","回中的第一步主动蹬地，步法保持雪橇式平移"],
+  recovery:["复位时间偏长，连贯性差","每一拍结束后逼迫自己 4 步内回到中心"],
+  landing:["落地稳定性不足，容易给膝和踝带额外的侧向负荷","单腿平衡 + 静音落地，跳杀量控制在 30 次以内"],
+  cadence:["步频偏低，步数偏多","练习绳梯与小垫步，把每一步的触地时间压下来"]
+};
+const PIXW={
+  serve:{continuity:.3,burst:.15,rhythm:.25,travel:.15,symmetry:.15},
+  clear:{continuity:.25,burst:.3,rhythm:.2,travel:.1,symmetry:.15},
+  smash:{continuity:.2,burst:.4,rhythm:.15,travel:.1,symmetry:.15},
+  drop:{continuity:.35,burst:.1,rhythm:.2,travel:.1,symmetry:.25},
+  net:{continuity:.25,burst:.1,rhythm:.2,travel:.2,symmetry:.25},
+  defense:{continuity:.2,burst:.2,rhythm:.25,travel:.2,symmetry:.15},
+  footwork:{continuity:.25,burst:.15,rhythm:.3,travel:.2,symmetry:.1}
+};
+const PIXFB={
+  continuity:["视频显示动作链条连贯性不足，存在明显停顿","先慢速做完整链条，再逐步提速，重点是中间不停顿"],
+  burst:["爆发性不足，加速阶段偏平","加入此举前的预处理：先慢后快，并增加下肢弹跳与药球训练"],
+  rhythm:["节奏波动较大，会直接影响多拍中的落点稳定性","用固定口令或怪声控制节拍，第一优先级是节拍一致"],
+  travel:["重心移动范围控制不佳，下一拍启动会变慢","回中第一步主动蹬地，避免惯性冲出"],
+  symmetry:["左右侧动作差异明显，存在单侧代偿","做单侧对照练习，弱侧多做一组的 1.5 倍"],
+  cadence:["动作频率偏低，回合中没有持续给对手压力","先用节拍器固定频率，再逐步提高到接近比赛的节奏"]
+};
+function scoreRange(v,ideal,tol){
+  const [lo,hi]=ideal,[tl,th]=tol;
+  if(v>=lo&&v<=hi)return 100;
+  let d=v<lo?(lo-v)/tl:(v-hi)/th;
+  return Math.round(clamp(100-d*45,5,100));
+}
+function viewVideo(){
+  let html='<div class="pageTitle"><h2>视频动作评估</h2><p>两种引擎：内置像素级运动分析（节奏 / 能量 / 对称性） · YOLO 姿态解算（真实关节角度）</p></div>';
+  html+='<div class="grid gside"><div>'+
+    '<div class="card"><div class="card-h"><h3>上传训练视频</h3><span class="hint">视频只在本地处理，不上传</span></div><div class="card-b">'+
+    '<div class="row"><div class="field"><label>评估技术</label><select id="vidTech">'+TECH.map(t=>'<option value="'+t.id+'" '+(VIDSTATE.tech===t.id?"selected":"")+'>'+t.n+'</option>').join("")+'</select></div>'+
+    '<div class="field"><label>拍摄建议</label><input type="text" value="侧面或侧后方，全身入镜，连续 5-10 次挥拍" readonly></div></div>'+
+    '<div class="dropzone" id="dropz" data-act="pickvideo">'+icon("video",30)+'<div>点击选择本地视频文件（mp4 / mov / webm）</div>'+
+    '<div style="font-size:.72rem;color:var(--text-3);margin-top:4px">单段建议不超过 60 秒，包含 3 次以上完整动作</div></div>'+
+    '<input type="file" id="vidFile" accept="video/*" data-act="videofile" style="display:none">'+
+    '<div id="vidPreview" style="margin-top:10px"></div>'+
+    '<div class="row" style="margin-top:10px"><button class="btn pri" data-act="runpix">'+icon("up",14)+'开始内置分析</button>'+
+    '<button class="btn" data-act="nav" data-v="log">手动补录数据</button></div>'+
+    '<div id="vidProg" style="margin-top:10px"></div></div></div>'+
+    '<div class="card" style="margin-top:14px"><div class="card-h"><h3>YOLO 姿态解算结果导入</h3></div><div class="card-b">'+
+    '<div class="note">已在本目录提供 <b>yolo-pose-bridge.py</b>：本地运行 <code>python yolo-pose-bridge.py 视频.mp4 -o result.json</code>（需 <code>pip install ultralytics</code>），产出 COCO-17 关键点 JSON，再在这里导入即可得到真实关节角度评估。</div>'+
+    '<input type="file" id="yoFile" accept=".json" data-act="yolofile">'+
+    '<textarea id="yoText" placeholder="也可以直接粘贴 JSON 内容" style="margin-top:8px"></textarea>'+
+    '<div class="row" style="margin-top:8px"><button class="btn" data-act="yolopaste">解析粘贴的 JSON</button>'+
+    '<button class="btn pri" data-act="demopose">载入示例姿态数据（无需视频）</button>'+
+    '<button class="btn" data-act="dldemo">下载示例 JSON</button></div>'+
+    '<div style="font-size:.72rem;color:var(--text-3);margin-top:6px">示例数据为 48 帧合成 COCO-17 关键点，可立即验证角度计算、评分与分级全流程，也可导出后当作桥接脚本的输出格式参考。</div>'+
+    '</div></div></div>'+
+    '<div><div class="card" style="position:sticky;top:112px"><div class="card-h"><h3>评估结果</h3></div><div class="card-b" id="vidResult">'+
+      (VIDSTATE.result?renderResult(VIDSTATE.result):'<div class="empty">'+icon("video",34)+'先上传视频并选择引擎</div>')+
+    '</div></div></div></div>';
+  return html;
+}
+function renderResult(res){
+  const lv=levelOf(res.score);
+  let h='<div style="text-align:center;padding:6px 0 12px">'+
+    '<div style="font-size:2.6rem;font-weight:800;color:'+lv.col+'">'+res.score+'</div>'+
+    '<div style="font-weight:700">'+lv.n+'　'+lvBar(res.score)+'</div>'+
+    '<div style="font-size:.76rem;color:var(--text-2)">'+esc(techById(res.tech).n)+' · '+esc(res.date)+' · 引擎：'+(res.engine==="yolo"?"YOLO 姿态解算":"内置像素运动分析")+'</div></div>';
+  h+='<table><thead><tr><th>指标</th><th class="tnum">值</th><th class="tnum">得分</th></tr></thead><tbody>'+
+    res.metrics.map(m=>'<tr><td>'+esc(m.n)+'</td><td class="tnum">'+esc(m.v)+' '+esc(m.u||"")+'</td>'+
+      '<td class="tnum"><span class="tag '+(m.score>=80?"g":(m.score>=60?"y":"r"))+'">'+m.score+'</span></td></tr>').join("")+'</tbody></table>';
+  h+='<div style="font-weight:700;margin:12px 0 6px">针对性反馈</div>';
+  h+=res.metrics.slice().sort((a,b)=>a.score-b.score).slice(0,3).map(m=>
+    '<div class="note '+(m.score>=80?"ok":(m.score>=60?"warn":"dang"))+'"><b>'+esc(m.n)+'（'+m.score+'）</b><br>'+esc(m.fb)+'</div>').join("");
+  if(res.note) h+='<div class="note">'+esc(res.note)+'</div>';
+  h+='<button class="btn pri" style="width:100%;justify-content:center;margin-top:10px" data-act="savevid">'+icon("check",14)+'存入成长档案</button>';
+  return h;
+}
+/* 内置像素分析 */
+async function grabFrames(file,maxFrames){
+  const url=URL.createObjectURL(file);
+  const video=document.createElement("video");
+  video.src=url;video.muted=true;video.playsInline=true;video.preload="auto";
+  await new Promise((res,rej)=>{video.onloadedmetadata=res;video.onerror=()=>rej(new Error("浏览器无法解码该视频，请换成 H.264 编码的 MP4/MOV 再试"));});
+  const dur=Math.min(video.duration||5,45);
+  const n=Math.min(maxFrames||90,Math.max(24,Math.round(dur*8)));
+  const W=80,H=60,cv=document.createElement("canvas");cv.width=W;cv.height=H;
+  const ctx=cv.getContext("2d",{willReadFrequently:true});
+  const frames=[];
+  for(let i=0;i<n;i++){
+    const t=dur*(i+0.5)/n;
+    await new Promise(res=>{let done=false;const h=()=>{if(done)return;done=true;video.removeEventListener("seeked",h);res();};
+      video.addEventListener("seeked",h);video.currentTime=Math.min(t,Math.max(0,dur-0.05));});
+    ctx.drawImage(video,0,0,W,H);
+    const px=ctx.getImageData(0,0,W,H).data;
+    const g=new Float32Array(W*H);
+    for(let p=0,q=0;p<W*H;p++,q+=4)g[p]=px[q]*.299+px[q+1]*.587+px[q+2]*.114;
+    frames.push({t:t,g:g});
+  }
+  video.src="";
+  return {frames:frames,W:W,H:H,dur:dur};
+}
+function analyzePixels(data,techId){
+  const {frames,W,H,dur}=data, F=frames.length;
+  const energy=[],cent=[];
+  let leftE=0,rightE=0;
+  for(let i=1;i<F;i++){
+    const a=frames[i-1].g,b=frames[i].g;
+    let s=0,cx=0,cy=0,m=0,l=0,r=0;
+    for(let p=0;p<a.length;p++){
+      const dv=Math.abs(b[p]-a[p]);
+      if(dv>8){ s+=dv; const x=p%W,y=(p/W)|0; cx+=x*dv; cy+=y*dv; m+=dv; if(x<W/2)l+=dv; else r+=dv; }
+    }
+    energy.push(s/(a.length||1));
+    cent.push({x:m?cx/m:W/2,y:m?cy/m:H/2,m:m});
+    leftE+=l;rightE+=r;
+  }
+  const meanE=avg(energy); if(meanE<=0) throw new Error("视频中几乎没有检测到运动，可能是画面静止或分辨率过低");
+  const norm=energy.map(e=>e/meanE);
+  const smth=avg(norm.slice(1).map((v,i)=>Math.abs(v-norm[i])));
+  const continuity=Math.round(clamp(100-(smth-.35)*70,20,100));
+  const burst=round(Math.max(...norm),2);
+  // 节奏：对能量序列做自相关，周期性越强得分越高
+  let rhythm=null, cadence=null;
+  {
+    const e=norm, m=e.length, mn=avg(e);
+    const z=e.map(v=>v-mn);
+    const den=z.reduce((a,v)=>a+v*v,0)||1;
+    let best=0,bestLag=0;
+    for(let lag=3;lag<=Math.floor(m/2);lag++){
+      let acc=0; for(let k=0;k+lag<m;k++) acc+=z[k]*z[k+lag];
+      const r=acc/den;
+      if(r>best){best=r;bestLag=lag;}
+    }
+    if(bestLag>2){
+      const dt=data.dur/F;
+      cadence=round(1/(bestLag*dt),2);
+      rhythm=round(clamp(100*(1-best),0,100),1);
+    }
+  }
+  const xs=cent.map(c=>c.x), ys=cent.map(c=>c.y);
+  const travel=round(100*(Math.max(...xs)-Math.min(...xs))/W,1);
+  const startD=round(100*(Math.sqrt(Math.pow(xs[xs.length-1]-xs[0],2)+Math.pow(ys[ys.length-1]-ys[0],2))/Math.sqrt(W*W+H*H)),1);
+  const symmetry=round(100-50*Math.abs(leftE-rightE)/Math.max(leftE,rightE,1),1);
+  const restore=Math.round(clamp(100-startD*1.6,20,100));
+  const tw=PIXW[techId]||PIXW.clear;
+  const raw=[
+    {k:"continuity",n:"动作连贯性",v:continuity,base:100,u:"分",ideal:[65,100],tol:[35,25]},
+    {k:"burst",n:"爆发 / 加速特征",v:burst,base:100,u:"倍",ideal:[2.2,9],tol:[1.3,6]},
+    {k:"rhythm",n:"节奏一致性",v:rhythm,base:100,u:"%CV",ideal:[0,18],tol:[12,25]},
+    {k:"travel",n:"重心控制",v:travel,base:100,u:"%画面",ideal:[15,45],tol:[20,25]},
+    {k:"symmetry",n:"双侧动员比",v:symmetry,base:100,u:"%",ideal:[40,100],tol:[25,15]},
+    {k:"cadence",n:"动作频率",v:cadence==null?0:cadence,base:100,u:"次/秒",ideal:[0.5,2.5],tol:[0.4,1.2]}
+  ];
+  let num=0,den=0;const metrics=[];
+  raw.forEach(m=>{
+    if(m.k==="cadence"&&m.v<=0)return;
+    const sc=scoreRange(m.v,m.ideal,m.tol);
+    const w=(m.k==="rhythm"||m.k==="travel")?(tw[m.k]||0)*(m.k==="travel"?restore/100:1):tw[m.k]||0;
+    metrics.push({k:m.k,n:m.n,v:m.v,u:m.u,score:sc,fb:PIXFB[m.k][sc>=60?0:1]});
+    num+=sc*(w||.1);den+=(w||.1);
+  });
+  const score=Math.round(clamp(num/den,0,100));
+  return {tech:techId,engine:"pixel",score:score,metrics:metrics,dur:round(dur,1),frames:F,
+    note:"共采样 "+F+" 帧（"+round(dur,1)+"s）。内置引擎通过帧间运动能量、重心轨迹与左右能量分布对动作进行粗粒度评估，能反映连贯性、爆发性与对称性，但不能替代关键的关节角度；如需精确角度请导入 YOLO 姿态 JSON。"};
+}
+/* YOLO 姿态分析 */
+function ang(a,b,c){ // b 为顶点
+  const v1=[a[0]-b[0],a[1]-b[1]],v2=[c[0]-b[0],c[1]-b[1]];
+  const d=(v1[0]*v2[0]+v1[1]*v2[1])/(Math.hypot(v1[0],v1[1])*Math.hypot(v2[0],v2[1])||1);
+  return Math.acos(clamp(d,-1,1))*180/Math.PI;
+}
+function dist(a,b){return Math.hypot(a[0]-b[0],a[1]-b[1]);}
+function analyzeYolo(json,techId){
+  const raw=Array.isArray(json)?json:(json.frames||json.data||null);
+  if(!raw||!raw.length) throw new Error("JSON 结构不正确：需要 {frames:[{t,kps:[[x,y,conf],...]}]}");
+  const seq=raw.map(f=>({t:(f.t!=null?f.t:(f.time||0)),k:f.kps||f.keypoints||f.landmarks||[]}))
+    .filter(f=>f.k&&f.k.length>=13).sort((a,b)=>a.t-b.t);
+  if(seq.length<4) throw new Error("有效帧不足：需要至少 4 帧且每帧不少于 13 个可见关键点");
+  const pick=(f,i)=>(f.k[i]&&f.k[i][2]>0.15)?f.k[i]:null;
+  const ok=p=>!!p;
+  const heights=[],shoulders=[],ankleYs=[];
+  seq.forEach(f=>{
+    const nose=pick(f,0),la=pick(f,15),ra=pick(f,16);
+    if(ok(nose)&&(ok(la)||ok(ra))){const a=ok(la)?la:ra;heights.push(dist(nose,a));ankleYs.push(a[1]);}
+    const ls=pick(f,5),rs=pick(f,6); if(ok(ls)&&ok(rs)) shoulders.push(dist(ls,rs));
+  });
+  const PH=med(heights)||300, SW=med(shoulders)||60, ANK=med(ankleYs)||PH;
+  const pH=DB.profile.height||175, cmPerPx=pH/(PH||1);
+  const rangeOf=idx=>{const a=seq.map(f=>pick(f,idx)).filter(ok).map(p=>p[1]);
+    return a.length>2?(Math.max(...a)-Math.min(...a)):0;};
+  const side=rangeOf(10)>=rangeOf(9)?"R":"L";
+  const I=side==="R"?{sh:6,el:8,wr:10,hi:12,kn:14,an:16}:{sh:5,el:7,wr:9,hi:11,kn:13,an:15};
+  const OPP=side==="R"?{sh:5,hi:11}:{sh:6,hi:12};
+
+  let maxAbd=0,minElb=200,rotDeg=0,hipSep=0,kneeMin=200,valgusMax=0;
+  let hipTop=1e9,hipLow=-1e9,hipXs=[],wrTop=1e9,wrTopT=0,wrPath=[],hipMidX=[];
+  seq.forEach(f=>{
+    const sh=pick(f,I.sh),el=pick(f,I.el),wr=pick(f,I.wr),hi=pick(f,I.hi),kn=pick(f,I.kn),an=pick(f,I.an);
+    const osh=pick(f,OPP.sh),ohi=pick(f,OPP.hi);
+    if(ok(sh)&&ok(osh)&&ok(hi)&&ok(ohi)){
+      const sm=[(sh[0]+osh[0])/2,(sh[1]+osh[1])/2], hm=[(hi[0]+ohi[0])/2,(hi[1]+ohi[1])/2];
+      hipMidX.push(hm[0]);
+      const rot=Math.abs(sm[0]-hm[0])/SW;
+      rotDeg=Math.max(rotDeg,Math.asin(clamp(rot,0,1))*180/Math.PI);
+      const ls=pick(f,5),rs=pick(f,6),lh=pick(f,11),rh=pick(f,12);
+      if(ok(ls)&&ok(rs)&&ok(lh)&&ok(rh)){
+        const vs=[rs[0]-ls[0],rs[1]-ls[1]], vh=[rh[0]-lh[0],rh[1]-lh[1]];
+        const c=(vs[0]*vh[0]+vs[1]*vh[1])/((Math.hypot(vs[0],vs[1])*Math.hypot(vh[0],vh[1]))||1);
+        hipSep=Math.max(hipSep,Math.acos(clamp(c,-1,1))*180/Math.PI);
+      }
+      if(ok(el)){
+        const torso=[hm[0]-sm[0],hm[1]-sm[1]], arm=[el[0]-sh[0],el[1]-sh[1]];
+        const c=(torso[0]*arm[0]+torso[1]*arm[1])/((Math.hypot(torso[0],torso[1])*Math.hypot(arm[0],arm[1]))||1);
+        maxAbd=Math.max(maxAbd,Math.acos(clamp(c,-1,1))*180/Math.PI);
+      }
+      hipTop=Math.min(hipTop,hm[1]);hipLow=Math.max(hipLow,hm[1]);
+    }
+    if(ok(sh)&&ok(el)&&ok(wr)) minElb=Math.min(minElb,ang(sh,el,wr));
+    if(ok(hi)&&ok(kn)&&ok(an)){
+      kneeMin=Math.min(kneeMin,ang(hi,kn,an));
+      valgusMax=Math.max(valgusMax,Math.abs(kn[0]-an[0])/(dist(hi,an)||1)*100);
+    }
+    if(ok(wr)){ wrPath.push({t:f.t,p:wr,e:(ok(sh)&&ok(el))?ang(sh,el,wr):null}); if(wr[1]<wrTop){wrTop=wr[1];wrTopT=f.t;} }
+  });
+  if(hipMidX.length>2) hipXs=hipMidX;
+  // 击球点高度（相对身体尺度）
+  let contactH=null;
+  if(wrPath.length) contactH=round((ANK-wrTop)/PH,3);
+  // 触球瞬间的肘伸展角：取击球帧 ±2 帧内的最大伸展
+  {
+    const ci=wrPath.findIndex(w=>w.t===wrTopT);
+    const win=ci>=0?wrPath.slice(Math.max(0,ci-1),ci+3).map(w=>w.e).filter(v=>v!=null):[];
+    if(win.length) minElb=Math.max(...win);
+  }
+  // 腕峰速度（身高/秒）
+  let snap=null;
+  for(let i=1;i<wrPath.length;i++){
+    const dt=Math.max(1e-3,wrPath[i].t-wrPath[i-1].t);
+    snap=Math.max(snap||0,dist(wrPath[i].p,wrPath[i-1].p)/PH/dt);
+  }
+  if(snap!=null) snap=round(snap,2);
+  // 节奏CV
+  let rhythm=null;
+  const spd=[];
+  for(let i=1;i<wrPath.length;i++){const dt=Math.max(1e-3,wrPath[i].t-wrPath[i-1].t);spd.push(dist(wrPath[i].p,wrPath[i-1].p)/dt);}
+  if(spd.length>6){
+    const mx=Math.max(...spd),pk=[];
+    for(let i=1;i<spd.length-1;i++) if(spd[i]>mx*.55&&spd[i]>=spd[i-1]&&spd[i]>=spd[i+1]&&(!pk.length||i-pk[pk.length-1]>2))pk.push(i);
+    if(pk.length>=3){const iv=pk.slice(1).map((v,i)=>v-pk[i]);rhythm=round(100*sd(iv)/avg(iv),1);}
+  }
+  // 随挥完成度：击球后腕越过髋中线的最大幅度（%肩宽）
+  let follow=null;
+  if(hipXs.length&&wrPath.length){
+    const ci=Math.max(0,wrPath.findIndex(w=>w.t===wrTopT));
+    const base=hipXs[hipXs.length-1];
+    let crossed=0;
+    wrPath.slice(ci).forEach(w=>{ crossed=Math.max(crossed,Math.abs(w.p[0]-base)/SW); });
+    follow=Math.round(clamp(crossed*100,0,100));
+  }
+  let travel=null;
+  if(hipXs.length>3) travel=round(100*(Math.max(...hipXs)-Math.min(...hipXs))/SW,0);
+  let jump=null;
+  if(hipLow>hipTop) jump=round((hipLow-hipTop)*cmPerPx,1);
+  let landing=null;
+  if(valgusMax!=null){
+    const tail=hipXs.slice(Math.max(0,Math.floor(hipXs.length*.75)));
+    const jitter=tail.length>2?sd(tail)/SW*100:12;
+    landing=Math.round(clamp((100-valgusMax*2.2)*.6+(100-jitter*1.6)*.4,5,100));
+  }
+  const wcfg=(TECH.find(t=>t.id===techId)||TECH[0]).metrics||{};
+  const ans=[]; let num=0,den=0;
+  const add=(k,v,u)=>{
+    if(v==null||isNaN(v))return;
+    const m=METRICS[k]; if(!m)return;
+    if(m.only&&m.only.indexOf(techId)<0)return;
+    const sc=scoreRange(v,m.ideal,m.tol), w=wcfg[k]||0.5;
+    ans.push({k:k,n:m.n,v:round(v,2),u:u||m.u,score:sc,fb:FB[k][sc>=60?0:1]});
+    num+=sc*w;den+=w;
+  };
+  add("shoulderAbd",maxAbd||null);
+  add("elbowFlex",minElb<200?minElb:null);
+  add("contactHeight",contactH);
+  add("trunkRot",rotDeg||null);
+  add("hipShoulder",hipSep||null);
+  add("kneeFlex",kneeMin<200?kneeMin:null);
+  add("kneeValgus",valgusMax||null);
+  add("wristsnap",snap);
+  add("followThrough",follow);
+  add("tempo",rhythm);
+  add("centroid",travel);
+  add("jumpHeight",jump!=null&&jump>=0?jump:null);
+  add("landing",landing);
+  if(!ans.length) throw new Error("关键点信息不足，检查一下拍摄是否包含全身（尤其髋与踝）");
+  return {tech:techId,engine:"yolo",score:Math.round(clamp(num/den,0,100)),metrics:ans,frames:seq.length,
+    side:side,note:"基于 "+seq.length+" 帧 COCO-17 关键点解算（身体基准 "+Math.round(PH)+"px ≈ "+pH+"cm，肩宽 "+Math.round(SW)+"px）。单摄像头二维解算，绝对角度存在透视误差，建议固定机位纵向对比。"};
+}
+
+/* ---------- 视图 5：数据接入 ---------- */
+function viewData(){
+  const recent=DB.wear.slice().sort((a,b)=>a.date<b.date?1:-1).slice(0,10);
+  let html='<div class="pageTitle"><h2>数据接入</h2><p>穿戴设备 · 文件备份 · 手动补录</p></div>';
+  html+='<div class="grid g2">'+
+   '<div class="card"><div class="card-h"><h3>穿戴设备数据（CSV）</h3></div><div class="card-b">'+
+   '<div class="note">支持列名（不区分大小写）：date/日期、resting_hr/静息心率、hrv、sleep_hours/睡眠、steps/步数、load/负荷。缺日期的行会被跳过。</div>'+
+   '<textarea id="csvText" placeholder="date,resting_hr,hrv,sleep_hours,steps,load&#10;2026-09-01,54,72,7.5,9000,480&#10;2026-09-02,56,68,7.0,8200,520"></textarea>'+
+   '<div class="row" style="margin-top:8px"><input type="file" id="csvFile" accept=".csv,.txt,.json" data-act="csvfile">'+
+   '<button class="btn pri" data-act="csvimport">导入解析</button></div>'+
+   '<div id="csvOut" style="margin-top:8px"></div></div></div>'+
+   '<div class="card"><div class="card-h"><h3>手动补录 / 修正</h3></div><div class="card-b">'+
+   '<div class="row"><div class="field"><label>日期</label><input type="date" id="wDate" value="'+todayISO()+'"></div>'+
+   '<div class="field"><label>静息心率</label><input type="number" id="wRhr" placeholder="54"></div>'+
+   '<div class="field"><label>HRV (rMSSD)</label><input type="number" id="wHrv" placeholder="70"></div>'+
+   '<div class="field"><label>睡眠时长(h)</label><input type="number" step="0.1" id="wSleep" placeholder="7.5"></div>'+
+   '<div class="field"><label>步数</label><input type="number" id="wSteps" placeholder="8000"></div>'+
+   '<div class="field"><label>设备训练负荷</label><input type="number" id="wLoad" placeholder="500"></div></div>'+
+   '<button class="btn pri" data-act="savewear">保存穿戴数据</button></div></div></div>';
+  html+='<div class="card" style="margin-top:14px"><div class="card-h"><h3>近期穿戴记录</h3><span class="hint">共 '+DB.wear.length+' 条</span></div><div class="card-b">'+
+    (recent.length?'<table><thead><tr><th>日期</th><th>静息心率</th><th>HRV</th><th>睡眠</th><th>步数</th><th>负荷</th><th></th></tr></thead><tbody>'+
+      recent.map(w=>'<tr><td class="tnum">'+w.date+'</td><td class="tnum">'+(w.rhr||"—")+'</td><td class="tnum">'+(w.hrv||"—")+'</td>'+
+      '<td class="tnum">'+(w.sleepH||"—")+'</td><td class="tnum">'+(w.steps||"—")+'</td><td class="tnum">'+(w.load||"—")+'</td>'+
+      '<td><button class="btn sm dang" data-act="delwear" data-d="'+w.date+'">删除</button></td></tr>').join("")+'</tbody></table>'
+    :'<div class="empty">'+icon("data",34)+'还没有穿戴数据</div>')+'</div></div>';
+  html+='<div class="card" style="margin-top:14px"><div class="card-h"><h3>备份与迁移</h3></div><div class="card-b">'+
+    '<div class="row"><button class="btn" data-act="export">导出全部数据（JSON）</button>'+
+    '<button class="btn" data-act="import">从 JSON 恢复</button>'+
+    '<input type="file" id="dbFile" accept=".json" data-act="dbfile" style="display:none"></div>'+
+    '<div class="note">所有数据只保存在这台设备的浏览器 localStorage 中，不上传服务器；换电脑请用上面的导出 / 导入迁移。</div></div></div>';
+  return html;
+}
+function parseCSV(txt){
+  const lines=txt.replace(/\r/g,"").split("\n").filter(l=>l.trim());
+  if(lines.length<2) throw new Error("至少需要表头 + 1 行数据");
+  const H=lines[0].split(/[,;\t]/).map(s=>s.trim().toLowerCase());
+  const map={date:["date","日期","day","时间"],rhr:["resting_hr","rhr","静息心率","静息心率（bpm）"],
+    hrv:["hrv","rmssd","心率变异性"],sleepH:["sleep_hours","sleep","sleeph","睡眠","睡眠时长","睡眠时间"],
+    steps:["steps","步数"],load:["load","training_load","负荷","训练负荷"]};
+  const idx={};Object.keys(map).forEach(k=>{idx[k]=H.findIndex(h=>map[k].indexOf(h)>=0);});
+  if(idx.date<0) throw new Error("找不到日期列（date / 日期）");
+  const rows=[];
+  lines.slice(1).forEach((l,ri)=>{
+    const c=l.split(/[,;\t]/).map(s=>s.trim());
+    let d=c[idx.date]||"";
+    d=d.replace(/\//g,"-");
+    if(!/^\d{4}-\d{1,2}-\d{1,2}/.test(d))return;
+    const p=d.slice(0,10).split("-");
+    const iso=p[0]+"-"+String(+p[1]).padStart(2,"0")+"-"+String(+p[2]).padStart(2,"0");
+    const num=i=>(i>=0&&c[i]!==""&&!isNaN(parseFloat(c[i])))?parseFloat(c[i]):null;
+    rows.push({date:iso,rhr:num(idx.rhr),hrv:num(idx.hrv),sleepH:num(idx.sleepH),steps:num(idx.steps),load:num(idx.load)});
+  });
+  return rows;
+}
+
+/* ---------- 视图 6：瓶颈诊断 ---------- */
+function viewDiag(){
+  const bn=bottleneck(), ws=warnings(), P=physicalDomain();
+  const pcs=[{k:"技术",v:bn.T.score,w:"瓶颈"+(bn.primary.k==="tech"?"（主要）":"")},
+             {k:"体能",v:bn.P.score,w:bn.primary.k==="phys"?"瓶颈（主要）":""},
+             {k:"恢复",v:bn.R.score,w:bn.primary.k==="recov"?"瓶颈（主要）":""}];
+  let html='<div class="pageTitle"><h2>瓶颈诊断与突破计划</h2><p>自动判断限制因素是技术短板、体能弱项还是恢复不足</p></div>';
+  html+='<div class="grid g4 keep2" style="margin-bottom:14px">'+
+    pcs.map(p=>'<div class="card"><div class="card-b"><div class="metric" style="border:0;background:transparent;padding:0">'+
+      '<div class="k">'+p.k+'</div><div class="v">'+p.v+'<u>/100</u></div>'+
+      '<div class="bar '+(p.v>=bn.target?"g":(p.v>=bn.target-10?"a":"r"))+'"><i style="width:'+p.v+'%"></i></div>'+
+      '<div class="s">目标线 '+bn.target+'（'+levelOf(bn.target).n+'）'+(p.w?'　<span class="tag r">'+p.w+'</span>':"")+'</div>'+
+      '</div></div></div>').join("")+
+    '<div class="card"><div class="card-b"><div class="metric" style="border:0;background:transparent;padding:0">'+
+      '<div class="k">综合评定</div><div class="v" style="color:'+levelOf(bn.composite).col+'">'+bn.composite+'</div>'+
+      '<div class="s">'+levelOf(bn.composite).n+' · '+levelOf(bn.composite).desc+'</div></div></div></div></div>';
+
+  html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>限制因素判定</h3>'+
+    '<span class="hint">对比次要限制：'+esc(bn.runnerUp.n)+'（差 '+Math.abs(bn.runnerUp.gap>=0?Math.round(bn.runnerUp.gap):0)+' 分）</span></div><div class="card-b">'+
+    '<div class="note dang"><b>当前主要限制因素：'+esc(bn.primary.n)+'</b>　当前 '+bn.primary.score+' 分，距目标 '+Math.round(bn.primary.gap)+' 分</div>';
+  const dt=bn.detail;
+  if(dt.type==="tech"){
+    const t=techById(dt.tech.id);
+    html+='<div class="grid g2"><div><div style="font-weight:700;margin-bottom:6px">最弱单项：'+esc(t.n)+'</div>'+
+      '<div style="font-size:.82rem;color:var(--text-2)">'+esc(t.goal)+'</div>'+
+      (dt.worstMetric?'<div class="note warn" style="margin-top:8px">视频中最弱的环节：<b>'+esc(dt.worstMetric.n)+'</b>（'+dt.worstMetric.score+' 分）<br>'+esc(dt.worstMetric.fb)+'</div>'
+        :'<div class="note" style="margin-top:8px">还没有视频评估数据。补一段 '+esc(t.n)+' 的视频，可以把瓶颈定位到具体角度。</div>')+
+      '<div style="font-weight:700;margin-top:10px">纠正处方</div><ul class="plain">'+
+        dt.drills.map(d=>'<li>'+esc(d[0])+'　→　'+esc(d[1])+'</li>').join("")+'</ul></div>'+
+      '<div><div style="font-weight:700;margin-bottom:6px">七项技术当前水平</div>'+
+      '<table><tbody>'+bn.T.detail.per.map(p=>'<tr><td>'+esc(p.n)+'</td><td class="tnum">'+p.score+'</td>'+
+        '<td style="width:45%"><div class="bar '+(p.score>=73?"g":(p.score>=58?"a":"r"))+'"><i style="width:'+p.score+'%"></i></div></td>'+
+        '<td>'+(p.id===dt.tech.id?'<span class="tag r">瓶颈</span>':"")+'</td></tr>').join("")+'</tbody></table></div></div>';
+  }else if(dt.type==="phys"){
+    html+='<div class="grid g2"><div><div style="font-weight:700;margin-bottom:6px">最弱素质：'+esc(dt.quality?dt.quality.n:"—")+'</div>'+
+      (dt.worstTests?'<table><tbody>'+dt.worstTests.map(x=>'<tr><td>'+esc(x.n)+'</td><td class="tnum">'+x.val+x.unit+'</td>'+
+        '<td><span class="tag '+(x.score>=73?"g":(x.score>=58?"y":"r"))+'">'+x.score+'</span></td></tr>').join("")+'</tbody></table>'
+        :'<div class="note">该项还没有测评数据，先去做一次体能测评。</div>')+
+      (dt.missing&&dt.missing.length?'<div class="note warn">未测评素质：'+dt.missing.map(esc).join(" / ")+'</div>':"")+
+      '<div style="font-weight:700;margin-top:10px">定向补给动作</div><ul class="plain">'+
+        (EX.filter(e=>e.q===(dt.quality?dt.quality.id:"power")).slice(0,4)).map(e=>'<li><b>'+esc(e.n)+'</b>　'+esc(e.rx.s+" × "+e.rx.r+"　"+e.rx.l)+'</li>').join("")+'</ul></div>'+
+      '<div>'+chartRadar(P.detail.map(d=>({k:d.n,v:d.score})))+'</div></div>';
+  }else{
+    html+='<div class="grid g2"><div><div style="font-weight:700;margin-bottom:6px">恢复侧驱动因素</div>'+
+      '<ul class="plain">'+(dt.drivers.length?dt.drivers.map(d=>'<li>'+esc(d.k)+(d.v?'（'+d.v+'）':"")+'</li>').join(""):'<li>无</li>')+'</ul>'+
+      '<div class="note">近一周平均准备度 '+(dt.mean7||"—")+'　平均睡眠 '+dt.sleepAvg+' 小时　最高疼痛等级 '+dt.painMax+'</div></div>'+
+      '<div><div style="font-weight:700;margin-bottom:6px">恢复干预清单</div><ul class="plain">'+
+      '<li>睡眠：固定作息，目标 8 小时（当前 '+dt.sleepAvg+'h）</li>'+
+      '<li>负荷：本周总量下调 20-30%，删除跳跃与冲刺内容</li>'+
+      '<li>营养：训练后 30 分钟内补足碳水 + 蛋白质</li>'+
+      '<li>主动恢复：每天 15 分钟低强度有氧 + 呼吸练习</li>'+
+      '<li>疼痛部位：对应部位预康复每天 8 分钟</li></ul></div></div>';
+  }
+  html+='</div></div>';
+
+  html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>伤病风险预警</h3><span class="hint">'+ws.length+' 条</span></div><div class="card-b">'+
+    (ws.length?ws.map(w=>'<div class="note '+(w.lv==="high"?"dang":(w.lv==="mid"?"warn":"ok"))+'"><b>'+esc(w.t)+'</b><br>'+esc(w.d)+'<br><span style="color:var(--accent)">处置：'+esc(w.act)+'</span></div>').join("")
+      :'<div class="note ok">目前没有触发预警规则，继续保持。</div>')+'</div></div>';
+
+  const weeks=breakthrough(bn);
+  html+='<div class="card"><div class="card-h"><h3>4 周突破计划</h3><span class="hint">自动滚动：每周重新计算一次</span></div><div class="card-b">'+
+    weeks.map(w=>'<details class="acc" '+(w.w===1?"open":"")+'><summary>第 '+w.w+' 周　负荷目标 '+w.loadTarget+' 分钟当量'+
+      (w.mul<1?'　<span class="tag y">减量 '+Math.round(w.mul*100)+'%</span>':(w.mul>1?'　<span class="tag g">+'+Math.round((w.mul-1)*100)+'%</span>':""))+'</summary>'+
+      '<div class="acc-b"><div style="margin-bottom:8px">'+esc(w.focus)+'</div>'+
+      '<table><thead><tr><th>课次</th><th>内容</th><th>RPE</th></tr></thead><tbody>'+
+      w.sessions.map(s=>'<tr><td>'+esc(s.n)+'</td><td>'+esc(s.c)+'</td><td class="tnum">'+s.l+'</td></tr>').join("")+'</tbody></table>'+
+      '<div style="font-size:.76rem;color:var(--text-3);margin-top:6px">'+esc(w.note)+'</div></div></details>').join("")+
+    '</div></div>';
+  return html;
+}
+
+/* ---------- 视图 7：档案 ---------- */
+function viewProfile(){
+  const p=DB.profile;
+  let html='<div class="pageTitle"><h2>个人档案</h2><p>所有数据保存在本机浏览器 localStorage</p>'+
+    '<div class="r">'+(p.currentCY!=null?'<span class="pill info">中羽 '+p.currentCY+' 级 · '+esc((CY_LEVELS[p.currentCY]||{}).n||"")+'</span>':"")+
+    '<button class="btn sm" data-act="nav" data-v="level">'+(p.currentCY!=null?'重新定级':'去做等级定级')+'</button></div></div>';
+  html+='<div class="grid g2"><div class="card"><div class="card-h"><h3>基本信息</h3></div><div class="card-b">'+
+    '<div class="row"><div class="field"><label>姓名 / 编号</label><input type="text" id="pfName" value="'+esc(p.name)+'"></div>'+
+    '<div class="field"><label>性别（影响测评基准）</label><select id="pfSex"><option value="m" '+(p.sex==="m"?"selected":"")+'>男</option><option value="f" '+(p.sex==="f"?"selected":"")+'>女</option></select></div>'+
+    '<div class="field"><label>年龄</label><input type="number" id="pfAge" value="'+p.age+'"></div>'+
+    '<div class="field"><label>身高 cm</label><input type="number" id="pfH" value="'+p.height+'"></div>'+
+    '<div class="field"><label>体重 kg</label><input type="number" id="pfW" value="'+p.weight+'"></div>'+
+    '<div class="field"><label>持拍手</label><select id="pfHand"><option value="R" '+(p.hand==="R"?"selected":"")+'>右手</option><option value="L" '+(p.hand==="L"?"selected":"")+'>左手</option></select></div>'+
+    '<div class="field"><label>球龄（年）</label><input type="number" id="pfY" value="'+p.years+'"></div>'+
+    '<div class="field"><label>每周训练次数</label><input type="number" id="pfF" value="'+p.freq+'" min="1" max="14"></div>'+
+    '<div class="field"><label>周期起始日</label><input type="date" id="pfStart" value="'+p.startDate+'"></div>'+
+    '<div class="field"><label>目标等级</label><select id="pfTarget">'+LEVELS.map(l=>'<option value="'+l.id+'" '+(p.targetLevel===l.id?"selected":"")+'>'+l.n+' · '+l.desc+'</option>').join("")+'</select></div>'+
+    '</div><button class="btn pri" data-act="saveprofile">保存档案</button></div></div>'+
+    '<div class="card"><div class="card-h"><h3>七项技术基线评分</h3><span class="hint">教练打分或自评，视频评估结果会自动加权覆盖</span></div><div class="card-b">'+
+    TECH.map(t=>'<div class="field"><label>'+esc(t.n)+'　<span id="sk-'+t.id+'" style="color:var(--accent)">'+DB.skills[t.id]+'</span></label>'+
+      '<input type="range" min="0" max="100" data-sk="'+t.id+'" value="'+DB.skills[t.id]+'"></div>').join("")+
+    '</div></div></div>';
+  html+='<div class="card" style="margin-top:14px"><div class="card-h"><h3>数据管理</h3></div><div class="card-b">'+
+    '<div class="row"><button class="btn" data-act="seed">生成 5 周示例数据</button>'+
+    '<button class="btn" data-act="export">导出备份</button>'+
+    '<button class="btn dang" data-act="reset">清空全部数据</button></div>'+
+    '<div class="note">示例数据用于快速体验全部图表与诊断逻辑；生成前请先确认，生成后可以在「训练记录」里逐条删除。</div>'+
+    '<div class="sep"></div><div class="row">'+
+    '<div class="metric"><div class="k">训练日志</div><div class="v">'+DB.logs.length+'</div></div>'+
+    '<div class="metric"><div class="k">每日打卡</div><div class="v">'+DB.mind.length+'</div></div>'+
+    '<div class="metric"><div class="k">穿戴记录</div><div class="v">'+DB.wear.length+'</div></div>'+
+    '<div class="metric"><div class="k">视频评估</div><div class="v">'+DB.vids.length+'</div></div>'+
+    '</div></div></div>';
+  return html;
+}
+
+/* ---------- 示例数据 ---------- */
+function seedDemo(){
+  const d=todayISO();
+  for(let i=35;i>=0;i--){
+    const day=addDays(d,-i), wd=weekday(day);
+    const isSession=[1,2,4,5,6].indexOf(wd)>=0 && Math.random()>.18;
+    if(isSession){
+      const rpe=5+Math.round(Math.random()*3)+(i<10?1:0);
+      DB.logs.push({id:uid(),date:day,dur:60+Math.round(Math.random()*30),rpe:Math.min(10,rpe),
+        type:["tech","cond","match","recovery"][Math.floor(Math.random()*4)],note:["手感一般","后场到位率高","多拍仍能顶住","第三拍偏慢"][Math.floor(Math.random()*4)]});
+    }
+    DB.mind.push({id:uid(),date:day,sleep:round(6+Math.random()*2.5,1),sleepq:2+Math.floor(Math.random()*4),
+      energy:2+Math.floor(Math.random()*4),mood:3+Math.floor(Math.random()*3),sore:1+Math.floor(Math.random()*3),
+      pain:(Math.random()>.86?3:1),painsite:(Math.random()>.9?"右膝":"")});
+    DB.wear.push({date:day,rhr:Math.round(50+Math.random()*8),hrv:Math.round(58+Math.random()*26),
+      sleepH:round(6+Math.random()*2.4,1),steps:Math.round(6000+Math.random()*7000),load:isSession?Math.round(400+Math.random()*300):Math.round(80+Math.random()*120)});
+  }
+  DB.tests.push({id:uid(),date:addDays(d,-3),res:{cmj:36,bj:205,sq:1.15,pu:6,s10:1.95,ag:5.35,six:24,yy:900,multi:70,
+    sleeperROM:52,slr:70,wt:8,sebt:82,lsi:22,sp:50,djump:66}});
+  DB.skills={serve:62,clear:66,smash:54,drop:52,net:58,defense:55,footwork:60};
+  save();toast("已生成 5 周示例数据");
+}
+
+/* ---------- 渲染调度 ---------- */
+function render(){
+  ["today","level","lib","log","video","data","diag","profile"].forEach(v=>{
+    const sec=el("view-"+v);
+    sec.classList.toggle("on",VIEW===v);
+    if(VIEW===v){
+      let html="";
+      try{ html = {today:viewToday,level:viewLevel,lib:viewLib,log:viewLog,video:viewVideo,data:viewData,diag:viewDiag,profile:viewProfile}[v](); }
+      catch(e){ html='<div class="note dang">渲染出错：'+esc(e.message)+'</div>'; }
+      sec.innerHTML=html;
+    }else sec.innerHTML="";
+  });
+  renderTop();
+  if(VIEW==="video"&&VIDSTATE.videoURL){
+    const pv=el("vidPreview");
+    if(pv&&!pv.querySelector("video")&&VIDSTATE.fileRef){
+      pv.innerHTML='<div class="videoWrap"><video controls src="'+VIDSTATE.videoURL+'"></video></div>';
+    }
+  }
+}
+function renderKeepScroll(){
+  const y=window.scrollY; render(); window.scrollTo(0,y);
+}
+
+/* ---------- 事件委托 ---------- */
+document.addEventListener("click",function(e){
+  const b=e.target.closest("[data-act]");
+  if(!b)return;
+  const a=b.dataset.act, key=DB.done&&todayISO();
+  switch(a){
+    case "nav": VIEW=b.dataset.v;
+      try{ history.replaceState(null,"","#"+VIEW); }catch(e){}
+      window.scrollTo(0,0); render(); break;
+    case "mode": DB.profile.mode=b.dataset.m; save(); render(); break;
+    case "libtab": LIBTAB=b.dataset.t; renderKeepScroll(); break;
+    case "libtech": LIBTECH=b.dataset.t; renderKeepScroll(); break;
+    case "print": window.print(); break;
+    case "toggle":{
+      const k=todayISO()+"|"+b.dataset.k;
+      if(DB.done[k])delete DB.done[k]; else DB.done[k]=true;
+      save(); renderKeepScroll(); break;
+    }
+    case "quicklog":{
+      const l={id:uid(),date:todayISO(),dur:parseInt(el("qlDur").value)||60,rpe:parseInt(el("qlRpe").value)||6,
+        type:el("qlType").value,note:el("qlNote").value};
+      DB.logs.push(l);save();toast("已记录：负荷 "+logLoad(l)+" AU");render();break;
+    }
+    case "dellog": DB.logs=DB.logs.filter(x=>x.id!==b.dataset.id);save();render();toast("已删除");break;
+    case "delwear": DB.wear=DB.wear.filter(x=>x.date!==b.dataset.d);save();render();toast("已删除");break;
+    case "checkin":{
+      const o={date:todayISO()};
+      document.querySelectorAll("[data-q]").forEach(i=>{o[i.dataset.q]=i.value;});
+      if(o.painsite==="")delete o.painsite;
+      ["sleep"].forEach(k=>{if(o[k]!==""&&!isNaN(o[k]))o[k]=parseFloat(o[k]);});
+      ["sleepq","energy","mood","sore","pain"].forEach(k=>{if(o[k]!=="")o[k]=parseInt(o[k]);});
+      DB.mind=DB.mind.filter(m=>m.date!==o.date); DB.mind.push(o); save(); render(); toast("打卡已保存");
+      break;
+    }
+    case "weekly":{
+      const o={date:todayISO(),week:todayISO()};
+      document.querySelectorAll("[data-w]").forEach(i=>{o[i.dataset.w]=i.value;});
+      ["techconf","stamina","motiv","stress"].forEach(k=>{if(o[k]!=="")o[k]=parseInt(o[k]);});
+      DB.weekly=DB.weekly.filter(x=>x.week!==o.week); DB.weekly.push(o); save(); toast("周期问卷已保存"); break;
+    }
+    case "savetest":{
+      const res={}; document.querySelectorAll("[data-t]").forEach(i=>{ if(i.value!=="")res[i.dataset.t]=parseFloat(i.value); });
+      const dt=el("testDate").value||todayISO();
+      DB.tests=DB.tests.filter(x=>x.date!==dt); DB.tests.push({id:uid(),date:dt,res:res});
+      save();toast("测评已保存（"+Object.keys(res).length+" 项）");render();break;
+    }
+    case "savewear":{
+      const o={date:el("wDate").value||todayISO()};
+      [["wRhr","rhr"],["wHrv","hrv"],["wSleep","sleepH"],["wSteps","steps"],["wLoad","load"]].forEach(p=>{
+        const v=el(p[0]).value; if(v!=="")o[p[1]]=parseFloat(v);});
+      DB.wear=DB.wear.filter(x=>x.date!==o.date); DB.wear.push(o); save(); toast("穿戴数据已保存"); render(); break;
+    }
+    case "pickvideo": el("vidFile").click(); break;
+    case "runpix": runPixel(); break;
+    case "yolopaste": parseYoloText(); break;
+    case "savevid":{
+      if(!VIDSTATE.result){toast("还没有分析结果");break;}
+      const r=VIDSTATE.result;
+      DB.vids.push({id:uid(),date:todayISO(),tech:r.tech,engine:r.engine,score:r.score,metrics:r.metrics,note:r.note});
+      save();toast("已存入成长档案，技术水平评分已同步更新");VIEW="diag";render();break;
+    }
+    case "csvimport": importCSV(); break;
+    case "export": exportDB(); break;
+    case "import": el("dbFile").click(); break;
+    case "seed": seedDemo(); render(); break;
+    case "reset":{
+      if(confirm("将清空本机保存的全部训练数据（无法撤销），确认继续？")){
+        localStorage.removeItem(STORE_KEY);load();render();toast("已清空");
+      }
+      break;
+    }
+    case "levelsubmit":{
+      const ans={}, missing=[];
+      document.querySelectorAll("[data-lq]").forEach(i=>{
+        if(i.value==="-1"||i.value===""||i.value==null) missing.push(i.dataset.lq);
+        else ans[i.dataset.lq]=parseInt(i.value);
+      });
+      if(missing.length){toast("还有 "+missing.length+" 项没有选择，请全部填完再提交");break;}
+      const r=cyFromAnswers(ans);
+      const it=applyLevelResult(r);
+      LEVEL_LAST=r; render();
+      toast("定级完成：中羽 "+r.level+" 级 · "+CY_LEVELS[r.level].n+"，已同步 "+LEVELS[it-1].n+" 基线");
+      break;
+    }
+    case "levelreset": LEVEL_LAST=null; render(); toast("已清空本次结果，可重新填写"); break;
+    case "leveldemo":{
+      document.querySelectorAll("[data-lq]").forEach(i=>{ i.value=(i.dataset.lq==="comp")?"2":"3"; });
+      toast("已填入 4 级示例答案，点「提交并生成等级」查看效果"); break;
+    }
+    case "dellevel":{
+      DB.levels=DB.levels.filter(x=>x.id!==b.dataset.id);
+      if(!DB.levels.length)DB.profile.currentCY=null;
+      LEVEL_LAST=null; save(); render(); toast("已删除该次定级记录"); break;
+    }
+    case "demopose":{
+      const tech=(el("vidTech")&&el("vidTech").value)||VIDSTATE.tech;
+      try{
+        const r=analyzeYolo(demoPoseFrames(),tech);
+        VIDSTATE.result=r; el("vidResult").innerHTML=renderResult(r);
+        toast("示例姿态评估完成："+r.score+" 分，可点「存入成长档案」");
+      }catch(err){ toast("示例分析失败："+err.message); }
+      break;
+    }
+    case "dldemo": downloadDemoPose(); break;
+    case "saveprofile": saveProfile(); break;
+  }
+});
+document.addEventListener("change",function(e){
+  const t=e.target;
+  if(t.dataset&&t.dataset.act==="videofile"&&t.files&&t.files[0]) onVideoFile(t.files[0]);
+  if(t.dataset&&t.dataset.act==="yolofile"&&t.files&&t.files[0]) onYoloFile(t.files[0]);
+  if(t.dataset&&t.dataset.act==="csvfile"&&t.files&&t.files[0]){
+    const fr=new FileReader(); fr.onload=()=>{el("csvText").value=fr.result;}; fr.readAsText(t.files[0]);
+  }
+  if(t.dataset&&t.dataset.act==="dbfile"&&t.files&&t.files[0]) onDBFile(t.files[0]);
+  if(t.id==="vidTech"){VIDSTATE.tech=t.value;}
+  if(t.dataset&&t.dataset.sk){ DB.skills[t.dataset.sk]=parseInt(t.value); const s=el("sk-"+t.dataset.sk); if(s)s.textContent=t.value; save(); }
+});
+document.addEventListener("input",function(e){
+  if(e.target.dataset&&e.target.dataset.sk){
+    DB.skills[e.target.dataset.sk]=parseInt(e.target.value);
+    const s=el("sk-"+e.target.dataset.sk); if(s)s.textContent=e.target.value; save();
+  }
+});
+el("modeSwitch").addEventListener("click",function(e){
+  const b=e.target.closest("button"); if(!b)return;
+  DB.profile.mode=b.dataset.m; save(); render(); toast(DB.profile.mode==="pro"?"已切换到专业模式":"已切换到简单模式：只给执行清单");
+});
+
+/* ---------- 动作函数 ---------- */
+function saveProfile(){
+  const p=DB.profile;
+  p.name=el("pfName").value; p.sex=el("pfSex").value; p.age=parseInt(el("pfAge").value)||22;
+  p.height=parseInt(el("pfH").value)||175; p.weight=parseInt(el("pfW").value)||68;
+  p.hand=el("pfHand").value; p.years=parseInt(el("pfY").value)||3; p.freq=parseInt(el("pfF").value)||4;
+  p.startDate=el("pfStart").value||todayISO(); p.targetLevel=parseInt(el("pfTarget").value)||3;
+  save();toast("档案已保存");render();
+}
+function onVideoFile(file){
+  if(VIDSTATE.videoURL)URL.revokeObjectURL(VIDSTATE.videoURL);
+  VIDSTATE.videoURL=URL.createObjectURL(file); VIDSTATE.fileRef=file; VIDSTATE.result=null;
+  const pv=el("vidPreview");
+  if(pv)pv.innerHTML='<div class="videoWrap"><video controls src="'+VIDSTATE.videoURL+'"></video></div>'+
+    '<div style="font-size:.76rem;color:var(--text-3);margin-top:6px">'+esc(file.name)+'　'+round(file.size/1048576,2)+' MB</div>';
+  const pr=el("vidProg"); if(pr)pr.innerHTML='<div class="note">视频已就绪，点击「开始内置分析」即可（全程本地处理）。</div>';
+}
+async function runPixel(){
+  if(!VIDSTATE.fileRef){toast("请先选择视频文件");return;}
+  const pr=el("vidProg"); if(pr)pr.innerHTML='<div class="note">正在逐帧采样…<div class="progressline"><i style="width:35%"></i></div></div>';
+  try{
+    const data=await grabFrames(VIDSTATE.fileRef,90);
+    if(pr)pr.innerHTML='<div class="note">采样完成 '+data.frames.length+' 帧，正在计算运动学特征…<div class="progressline"><i style="width:75%"></i></div></div>';
+    const tech=(el("vidTech")&&el("vidTech").value)||VIDSTATE.tech;
+    const res=analyzePixels(data,tech);
+    VIDSTATE.result=res;
+    el("vidResult").innerHTML=renderResult(res);
+    if(pr)pr.innerHTML='<div class="note ok">分析完成，综合得分 '+res.score+'。可在右侧「存入成长档案」。</div>';
+  }catch(err){
+    if(pr)pr.innerHTML='<div class="note dang">分析失败：'+esc(err.message)+'</div>';
+    toast("分析失败："+err.message);
+  }
+}
+function onYoloFile(file){
+  const fr=new FileReader();
+  fr.onload=()=>{handleYolo(fr.result);};
+  fr.readAsText(file);
+}
+function parseYoloText(){
+  const txt=el("yoText").value.trim();
+  if(!txt){toast("请先粘贴 JSON 内容");return;}
+  handleYolo(txt);
+}
+function handleYolo(txt){
+  try{
+    const json=JSON.parse(txt);
+    const tech=(el("vidTech")&&el("vidTech").value)||VIDSTATE.tech;
+    const res=analyzeYolo(json,tech);
+    VIDSTATE.result=res;
+    el("vidResult").innerHTML=renderResult(res);
+    toast("YOLO 姿态评估完成："+res.score+" 分");
+  }catch(e){
+    toast("解析失败："+e.message);
+  }
+}
+function demoPoseFrames(){
+  const arr=[],cx=200;
+  for(let i=0;i<48;i++){
+    const ph=i/47*Math.PI*2, dip=Math.max(0,Math.sin(ph)), up=.5-.5*Math.cos(ph);
+    const kneeX=cx+18+10*dip, kneeY=275-14*dip, hipY=200+9*dip;
+    const wrist=[cx+40+28*Math.sin(ph*2),250-215*up];
+    const elbow=[cx+30+18*Math.sin(ph*2),150-92*up];
+    const k=[];
+    k[0]=[cx,50,.95];k[1]=[cx-6,45,.9];k[2]=[cx+6,45,.9];k[3]=[cx-10,50,.85];k[4]=[cx+10,50,.85];
+    k[5]=[cx-25,90,.95];k[6]=[cx+25,90,.95];
+    k[7]=[cx-30,150,.9];k[8]=[elbow[0],elbow[1],.93];
+    k[9]=[cx-40,250,.9];k[10]=[wrist[0],wrist[1],.96];
+    k[11]=[cx-20,hipY,.95];k[12]=[cx+20,hipY,.95];
+    k[13]=[cx-18,kneeY-4,.93];k[14]=[kneeX,kneeY,.93];
+    k[15]=[cx-18,350,.95];k[16]=[cx+18,350,.95];
+    arr.push({t:round(i*.033,3),kps:k});
+  }
+  return {video:"demo-pose.json",fps:30,model:"synthetic-demo",frames:arr};
+}
+function downloadDemoPose(){
+  const blob=new Blob([JSON.stringify(demoPoseFrames(),null,1)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download="demo-pose.json"; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+  toast("示例姿态 JSON 已下载");
+}
+
+function importCSV(){
+  try{
+    const rows=parseCSV(el("csvText").value);
+    if(!rows.length){toast("没有解析到有效数据行");return;}
+    rows.forEach(r=>{ DB.wear=DB.wear.filter(x=>x.date!==r.date); DB.wear.push(r); });
+    save();
+    el("csvOut").innerHTML='<div class="note ok">成功导入 '+rows.length+' 条穿戴数据，日期范围 '+rows[rows.length-1].date+' ~ '+rows[0].date+'</div>';
+    renderTop();
+  }catch(e){ el("csvOut").innerHTML='<div class="note dang">'+esc(e.message)+'</div>'; }
+}
+function exportDB(){
+  const blob=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="badminton-workbench-"+(DB.profile.name||"备份")+"-"+todayISO()+".json";
+  a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+  toast("已导出备份文件");
+}
+function onDBFile(file){
+  const fr=new FileReader();
+  fr.onload=()=>{
+    try{
+      const d=JSON.parse(fr.result);
+      if(!d||typeof d!=="object")throw new Error("文件格式不正确");
+      DB=Object.assign(defaultDB(),d); save(); render(); toast("数据已从备份恢复");
+    }catch(e){toast("恢复失败："+e.message);}
+  };
+  fr.readAsText(file);
+}
+
+/* ---------- 初始化 ---------- */
+function hashView(){
+  try{
+    const h=String(location.hash||"").replace(/^#/,"");
+    return TABS.some(t=>t.id===h)?h:null;
+  }catch(e){return null;}
+}
+load();
+try{ const hv=hashView(); if(hv)VIEW=hv; }catch(e){}
+try{
+  window.addEventListener("hashchange",function(){
+    const hv=hashView();
+    if(hv){ VIEW=hv; window.scrollTo(0,0); render(); }
+  });
+}catch(e){}
+render();
+
+</script>
+</body>
+</html>

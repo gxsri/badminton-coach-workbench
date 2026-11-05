@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全面水平评估 · 省队/市队/国家队选材级测评</title>
+<style>
+:root{--bg:#fafaf8;--surface:#fff;--surface-2:#f5f5f0;--surface-3:#eeecea;--border:#e0ddd8;--text:#1a1a1a;--text-2:#555;--text-3:#999;--red:#dc2626;--green:#16a34a;--blue:#2563eb;--purple:#7c3aed;--orange:#ea580c;--teal:#0d9488;--pink:#db2777;--gold:#d97706;--green-bg:#f0fdf4;--blue-bg:#eff6ff;--purple-bg:#faf5ff;--orange-bg:#fff7ed;--teal-bg:#f0fdfa;--red-bg:#fef2f2;--gold-bg:#fffbeb}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+
+.header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:#fff;padding:3rem 1.5rem 2rem;text-align:center}
+.header .badge{display:inline-block;background:rgba(233,69,96,0.9);padding:0.25rem 0.9rem;border-radius:20px;font-size:0.75rem;font-weight:700;margin-bottom:0.8rem;letter-spacing:0.5px}
+.header h1{font-size:1.8rem;font-weight:900;line-height:1.3;margin-bottom:0.4rem}
+.header .sub{color:#a0b0c0;font-size:0.9rem}
+.header .tags{display:flex;justify-content:center;gap:0.4rem;margin-top:0.8rem;flex-wrap:wrap}
+.header .tag{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);padding:0.2rem 0.6rem;border-radius:12px;font-size:0.7rem;color:#ccc}
+
+.progress-wrap{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:0.6rem 1rem}
+.progress-inner{max-width:700px;margin:0 auto}
+.progress-top{display:flex;align-items:center;gap:0.8rem;margin-bottom:0.3rem}
+.progress-bar{flex:1;height:5px;background:var(--surface-3);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:3px;transition:width 0.4s ease}
+.progress-text{font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--teal);font-weight:700;white-space:nowrap}
+.progress-section{font-size:0.7rem;color:var(--text-3);text-align:center}
+
+.quiz-container{max-width:700px;margin:0 auto;padding:1rem}
+.quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:none;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.quiz-card.active{display:block;animation:slideUp 0.3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+.quiz-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);background:var(--surface-2)}
+.quiz-num{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--teal);font-weight:700;letter-spacing:0.5px;margin-bottom:0.15rem;text-transform:uppercase}
+.quiz-title{font-size:1rem;font-weight:700}
+.quiz-desc{font-size:0.78rem;color:var(--text-3);margin-top:0.2rem}
+.quiz-body{padding:1.2rem}
+
+.options{display:flex;flex-direction:column;gap:0.4rem}
+.option{background:var(--surface-2);border:2px solid var(--border);border-radius:8px;padding:0.6rem 0.8rem;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:0.6rem}
+.option:hover{border-color:var(--teal);background:var(--teal-bg)}
+.option.selected{border-color:var(--teal);background:var(--teal-bg);box-shadow:0 0 0 1px var(--teal)}
+.option .opt-icon{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:#fff;flex-shrink:0}
+.option .opt-text{font-size:0.82rem}
+
+.input-group{display:flex;flex-direction:column;gap:0.8rem}
+.input-row{display:flex;gap:0.8rem}
+.input-item{flex:1;display:flex;flex-direction:column;gap:0.3rem}
+.input-item label{font-size:0.78rem;font-weight:600;color:var(--text-2)}
+.input-item input,.input-item select{padding:0.5rem 0.7rem;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;font-family:inherit;background:var(--surface);color:var(--text)}
+.input-item input:focus,.input-item select:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 2px rgba(13,148,136,0.15)}
+
+.slider-wrap{padding:0.3rem 0}
+.slider-label{display:flex;justify-content:space-between;font-size:0.78rem;color:var(--text-2);margin-bottom:0.3rem}
+.slider-label .val{color:var(--teal);font-weight:700;font-family:'JetBrains Mono',monospace}
+input[type="range"]{-webkit-appearance:none;width:100%;height:5px;background:var(--surface-3);border-radius:3px;outline:none}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:var(--teal);border-radius:50%;cursor:pointer}
+
+.btn-row{display:flex;gap:0.5rem;margin-top:1rem}
+.btn{flex:1;padding:0.65rem;border:none;border-radius:8px;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.15s;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,var(--teal),var(--green));color:#fff}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(13,148,136,0.3)}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-secondary{background:var(--surface-2);color:var(--text-2);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--teal);color:var(--teal)}
+
+.result-card{display:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.06)}
+.result-card.active{display:block;animation:slideUp 0.4s ease}
+.result-hero{text-align:center;padding:2rem 1.5rem;border-bottom:1px solid var(--border)}
+.result-emoji{font-size:3rem;margin-bottom:0.3rem}
+.result-level{font-size:1.3rem;font-weight:900;margin-bottom:0.2rem}
+.result-sub{font-size:0.85rem;color:var(--text-2);margin-bottom:0.5rem}
+.result-badge{display:inline-block;padding:0.2rem 0.8rem;border-radius:12px;font-size:0.75rem;font-weight:700}
+.result-body{padding:1.5rem}
+
+.section-title{font-size:0.85rem;font-weight:700;color:var(--teal);margin:1.2rem 0 0.6rem;display:flex;align-items:center;gap:0.4rem}
+.section-title::before{content:'';width:3px;height:14px;border-radius:2px;background:var(--teal)}
+
+.score-bars{display:flex;flex-direction:column;gap:0.5rem}
+.score-bar{display:flex;align-items:center;gap:0.5rem}
+.score-bar .sb-label{width:60px;font-size:0.75rem;color:var(--text-2);text-align:right;flex-shrink:0}
+.score-bar .sb-track{flex:1;height:6px;background:var(--surface-3);border-radius:3px;overflow:hidden}
+.score-bar .sb-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.score-bar .sb-val{width:28px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:700}
+
+.radar-card{background:var(--surface-2);border-radius:10px;padding:1rem;margin:0.6rem 0}
+.radar-card h4{font-size:0.82rem;font-weight:700;margin-bottom:0.4rem}
+.radar-card p{font-size:0.8rem;color:var(--text-2)}
+
+.path-flow{display:flex;align-items:center;gap:0;overflow-x:auto;padding:0.5rem 0;margin:0.6rem 0}
+.path-node{padding:0.4rem 0.7rem;border-radius:6px;font-size:0.72rem;font-weight:600;white-space:nowrap}
+.path-arrow{font-size:0.9rem;color:var(--text-3);padding:0 0.2rem;flex-shrink:0}
+
+.plan-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin:0.6rem 0;overflow:hidden}
+.plan-header{padding:0.5rem 0.8rem;font-weight:700;font-size:0.8rem;color:#fff}
+.plan-body{padding:0.8rem;font-size:0.8rem;color:var(--text-2)}
+.plan-body ul{margin:0.2rem 0;padding-left:1.2rem}
+.plan-body li{margin-bottom:0.15rem}
+
+.weak-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;margin:0.6rem 0}
+.weak-item{background:var(--surface-2);border-radius:6px;padding:0.5rem 0.7rem;font-size:0.78rem;border-left:3px solid}
+.weak-item .wi-label{font-weight:700;font-size:0.75rem;margin-bottom:0.15rem}
+.weak-item .wi-tip{color:var(--text-2)}
+
+.strength-item{background:var(--green-bg);border-radius:6px;padding:0.5rem 0.7rem;font-size:0.78rem;border-left:3px solid var(--green);margin:0.3rem 0}
+
+.restart{text-align:center;padding:1.2rem}
+.restart-btn{background:var(--surface-2);border:1px solid var(--border);color:var(--text);padding:0.5rem 1.5rem;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit}
+.restart-btn:hover{border-color:var(--teal);color:var(--teal)}
+.footer{text-align:center;padding:2rem;color:var(--text-3);font-size:0.75rem}
+@media(max-width:600px){
+  .header h1{font-size:1.4rem}
+  .input-row{flex-direction:column}
+  .weak-grid{grid-template-columns:1fr}
+  .score-bar .sb-label{width:50px;font-size:0.68rem}
+}
+</style>
+</head>
+<body>
+
+<nav style="position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:0.4rem 0.8rem;display:flex;gap:0.3rem;overflow-x:auto;white-space:nowrap">
+  <a href="index.html" style="font-size:0.7rem;font-weight:600;padding:0.25rem 0.6rem;border-radius:16px;text-decoration:none;color:#fff;background:var(--teal);border:1px solid var(--teal)">🏠 工作台</a>
+  <a href="coach-guide.html" style="font-size:0.7rem;font-weight:600;padding:0.25rem 0.6rem;border-radius:16px;text-decoration:none;color:var(--text-2);border:1px solid var(--border)">📚 指导书</a>
+  <a href="coach-manual-v2.html" style="font-size:0.7rem;font-weight:600;padding:0.25rem 0.6rem;border-radius:16px;text-decoration:none;color:var(--text-2);border:1px solid var(--border)">⚡ 速查手册</a>
+  <a href="test-report.html" style="font-size:0.7rem;font-weight:600;padding:0.25rem 0.6rem;border-radius:16px;text-decoration:none;color:var(--green);border:1px solid var(--green)">✅ 测试报告</a>
+</nav>
+
+<div class="header">
+  <div class="badge">ELITE ASSESSMENT v2</div>
+  <h1>羽毛球全面水平评估</h1>
+  <div class="sub">省队 · 市队 · 国家队选材级测评 · 数据驱动决策</div>
+  <div class="tags">
+    <span class="tag">6大维度</span><span class="tag">体能实测</span><span class="tag">技战术评估</span><span class="tag">心理画像</span><span class="tag">多结果路径</span>
+  </div>
+</div>
+
+<div class="progress-wrap" id="progressWrap">
+  <div class="progress-inner">
+    <div class="progress-top">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-text" id="progressText">0/0</div>
+    </div>
+    <div class="progress-section" id="progressSection">基础信息</div>
+  </div>
+</div>
+
+<div class="quiz-container" id="quizContainer"></div>
+
+<div class="quiz-container">
+  <div class="result-card" id="resultCard"></div>
+</div>
+
+<div class="footer">
+  <p>六专家联合设计 · 评估结果为选材参考 · 最终决策需结合现场测试</p>
+  <a href="index.html" style="display:inline-block;background:var(--surface-2);border:1px solid var(--border);color:var(--text);padding:0.4rem 1.2rem;border-radius:8px;text-decoration:none;font-size:0.8rem;margin-top:0.5rem">← 返回教练工作台</a>
+</div>
+
+<script>
+const sections = [
+  {name:"基础信息",icon:"📋",color:"var(--teal)"},
+  {name:"体能测试",icon:"💪",color:"var(--green)"},
+  {name:"技术水平",icon:"🏸",color:"var(--blue)"},
+  {name:"战术意识",icon:"🧠",color:"var(--purple)"},
+  {name:"比赛与训练",icon:"🏆",color:"var(--orange)"},
+  {name:"心理素质",icon:"🎯",color:"var(--pink)"}
+];
+
+const questions = [
+  // ===== 基础信息 =====
+  {sec:0,type:"input-group",fields:[
+    {id:"birthday",label:"出生日期",type:"date",required:true},
+    {id:"gender",label:"性别",type:"select",options:["男","女"],required:true}
+  ]},
+  {sec:0,type:"input-group",fields:[
+    {id:"height",label:"身高 (cm)",type:"number",placeholder:"例: 135",required:true},
+    {id:"weight",label:"体重 (kg)",type:"number",placeholder:"例: 30",required:true}
+  ]},
+  {sec:0,q:"训练经历",desc:"系统训练的时间",opts:[
+    {text:"无训练经历",score:1,detail:"纯兴趣/自学"},
+    {text:"不到6个月",score:2,detail:"刚开始系统训练"},
+    {text:"6个月-1年",score:3,detail:"基础阶段"},
+    {text:"1-2年",score:4,detail:"有一定基础"},
+    {text:"2-3年",score:5,detail:"进阶阶段"},
+    {text:"3年以上",score:6,detail:"系统训练多年"}
+  ]},
+  {sec:0,q:"训练频率",desc:"目前每周训练次数",opts:[
+    {text:"每周1次或更少",score:1},
+    {text:"每周2次",score:2},
+    {text:"每周3次",score:3},
+    {text:"每周4次",score:4},
+    {text:"每周5次及以上",score:5}
+  ]},
+  {sec:0,q:"当前所在级别",desc:"目前训练/比赛所在的层级",opts:[
+    {text:"兴趣班/业余",score:1},
+    {text:"俱乐部基础班",score:2},
+    {text:"俱乐部提高班",score:3},
+    {text:"俱乐部精英班",score:4},
+    {text:"区队/市体校",score:5},
+    {text:"省体校/省队",score:6}
+  ]},
+
+  // ===== 体能测试 =====
+  {sec:1,q:"50米冲刺",desc:"全力冲刺50米的成绩",opts:[
+    {text:"10秒以上",score:1},
+    {text:"9.0-9.9秒",score:2},
+    {text:"8.0-8.9秒",score:3},
+    {text:"7.5-7.9秒",score:4},
+    {text:"7.0-7.4秒",score:5},
+    {text:"7.0秒以内",score:6}
+  ]},
+  {sec:1,q:"立定跳远",desc:"双脚起跳的最远距离",opts:[
+    {text:"1.2米以下",score:1},
+    {text:"1.2-1.4米",score:2},
+    {text:"1.5-1.7米",score:3},
+    {text:"1.8-2.0米",score:4},
+    {text:"2.1-2.3米",score:5},
+    {text:"2.3米以上",score:6}
+  ]},
+  {sec:1,q:"T字灵敏测试",desc:"从起点跑到各点再返回的时间",opts:[
+    {text:"12秒以上",score:1},
+    {text:"10-12秒",score:2},
+    {text:"8-10秒",score:3},
+    {text:"7-8秒",score:4},
+    {text:"6-7秒",score:5},
+    {text:"6秒以内",score:6}
+  ]},
+  {sec:1,q:"1分钟双摇跳绳",desc:"1分钟内双摇跳绳的次数",opts:[
+    {text:"不会双摇",score:1},
+    {text:"20次以下",score:2},
+    {text:"20-50次",score:3},
+    {text:"50-80次",score:4},
+    {text:"80-120次",score:5},
+    {text:"120次以上",score:6}
+  ]},
+  {sec:1,q:"坐位体前屈",desc:"柔韧性测试",opts:[
+    {text:"手指碰不到脚尖",score:1},
+    {text:"刚好碰到脚尖",score:2},
+    {text:"超过脚尖5cm",score:3},
+    {text:"超过脚尖10cm",score:4},
+    {text:"超过脚尖15cm以上",score:5}
+  ]},
+  {sec:1,q:"全场6点移动计时",desc:"从中心出发跑到6个点再返回的时间",opts:[
+    {text:"还没练过全场步法",score:1},
+    {text:"6秒以上",score:2},
+    {text:"5-6秒",score:3},
+    {text:"4.5-5秒",score:4},
+    {text:"4-4.5秒",score:5},
+    {text:"4秒以内",score:6}
+  ]},
+  {sec:1,q:"平板支撑",desc:"标准平板支撑的最长时间",opts:[
+    {text:"30秒以下",score:1},
+    {text:"30-60秒",score:2},
+    {text:"1-2分钟",score:3},
+    {text:"2-3分钟",score:4},
+    {text:"3分钟以上",score:5}
+  ]},
+  {sec:1,q:"反应速度测试",desc:"听到信号后触碰目标的反应时间",opts:[
+    {text:"很慢，经常反应不过来",score:1},
+    {text:"偏慢，需要集中注意力",score:2},
+    {text:"中等水平",score:3},
+    {text:"较快，大部分能及时反应",score:4},
+    {text:"很快，反应敏捷",score:5}
+  ]},
+
+  // ===== 技术水平 =====
+  {sec:2,q:"正手握拍",desc:"握拍是否正确且自然",opts:[
+    {text:"不会/握成锤子",score:1},
+    {text:"能握对但经常变形",score:2},
+    {text:"基本正确，偶尔忘",score:3},
+    {text:"自然保持正确",score:4},
+    {text:"正确且能灵活转换正反手",score:5}
+  ]},
+  {sec:2,q:"正手高远球",desc:"原地正手高远球的能力",opts:[
+    {text:"不会挥拍",score:1},
+    {text:"能挥但动作不连贯",score:2},
+    {text:"原地能完成基本动作",score:3},
+    {text:"动作连贯+有侧身引拍",score:4},
+    {text:"移动中也能完成+落点稳定在后场",score:5}
+  ]},
+  {sec:2,q:"反手高远球",desc:"反手击高远球的能力",opts:[
+    {text:"完全不会",score:1},
+    {text:"能打到但很近",score:2},
+    {text:"能打到中后场",score:3},
+    {text:"能打到后场且有一定弧度",score:4},
+    {text:"质量稳定，落点可控",score:5}
+  ]},
+  {sec:2,q:"正手杀球",desc:"正手杀球的能力",opts:[
+    {text:"不会/没练过",score:1},
+    {text:"能挥但没有力量",score:2},
+    {text:"有基本杀球动作",score:3},
+    {text:"杀球有力量+角度",score:4},
+    {text:"杀球有力+落点变化+连续杀球",score:5}
+  ]},
+  {sec:2,q:"吊球",desc:"正手/反手吊球的能力",opts:[
+    {text:"不会/没练过",score:1},
+    {text:"能吊但过网太高",score:2},
+    {text:"基本能贴网过",score:3},
+    {text:"吊球质量稳定+有落点变化",score:4},
+    {text:"能结合杀球做吊杀配合",score:5}
+  ]},
+  {sec:2,q:"网前技术",desc:"搓球/推球/勾球的能力",opts:[
+    {text:"不会网前技术",score:1},
+    {text:"能搓球但质量一般",score:2},
+    {text:"搓球+推球基本掌握",score:3},
+    {text:"网前技术全面+质量稳定",score:4},
+    {text:"能做搓/推/勾/扑组合变化",score:5}
+  ]},
+  {sec:2,q:"发球",desc:"发球的稳定性和变化",opts:[
+    {text:"不会发球",score:1},
+    {text:"能发但不稳定",score:2},
+    {text:"反手发球基本稳定",score:3},
+    {text:"正反手发球都稳定",score:4},
+    {text:"发球有落点变化+偷后场",score:5}
+  ]},
+  {sec:2,q:"步法水平",desc:"场上移动的能力",opts:[
+    {text:"基本不动/原地打球",score:1},
+    {text:"能跑动但没有步法",score:2},
+    {text:"会启动步/并步",score:3},
+    {text:"启动步+并步+交叉步",score:4},
+    {text:"全场6点连贯+回位及时",score:5}
+  ]},
+  {sec:2,q:"颠球测试",desc:"正手颠球最多连续次数",opts:[
+    {text:"2次以下",score:1},
+    {text:"3-10次",score:2},
+    {text:"10-30次",score:3},
+    {text:"30-50次",score:4},
+    {text:"50次以上",score:5}
+  ]},
+  {sec:2,q:"多球命中率",desc:"教练喂球时的过网率",opts:[
+    {text:"很少过网/没测过",score:1},
+    {text:"30%以下",score:2},
+    {text:"30-50%",score:3},
+    {text:"50-70%",score:4},
+    {text:"70%以上",score:5}
+  ]},
+  {sec:2,q:"个人打法风格",desc:"是否有明确的打法风格",opts:[
+    {text:"没有/不知道",score:1},
+    {text:"倾向于防守",score:2},
+    {text:"倾向于进攻",score:3},
+    {text:"攻守兼备/有基本风格",score:4},
+    {text:"风格明确+能根据对手调整",score:5}
+  ]},
+
+  // ===== 战术意识 =====
+  {sec:3,q:"比赛中是否会主动调动对手",desc:"战术意识的主动性",opts:[
+    {text:"只会打回去",score:1},
+    {text:"知道要打到空位",score:2},
+    {text:"会有意识地拉吊",score:3},
+    {text:"能根据对手站位选择落点",score:4},
+    {text:"能主动创造空当+连续进攻",score:5}
+  ]},
+  {sec:3,q:"接发球判断",desc:"接发球时的判断能力",opts:[
+    {text:"经常判断错/不知道怎么接",score:1},
+    {text:"能接到大部分发球",score:2},
+    {text:"能判断长短球",score:3},
+    {text:"能判断落点+选择回球方式",score:4},
+    {text:"能预判+主动抢攻",score:5}
+  ]},
+  {sec:3,q:"比赛中的调整能力",desc:"发现对手特点后能否调整战术",opts:[
+    {text:"不会调整/一直用同一种打法",score:1},
+    {text:"教练提醒后能调整",score:2},
+    {text:"自己能发现并小调整",score:3},
+    {text:"能主动调整+有效果",score:4},
+    {text:"能快速识别对手弱点并制定策略",score:5}
+  ]},
+  {sec:3,q:"多拍能力",desc:"能持续多拍相持的能力",opts:[
+    {text:"3拍以内就失误",score:1},
+    {text:"能持续5-8拍",score:2},
+    {text:"能持续10拍以上",score:3},
+    {text:"能持续多拍+寻找机会",score:4},
+    {text:"多拍中能主动变线/变速",score:5}
+  ]},
+  {sec:3,q:"防守能力",desc:"被动球的处理能力",opts:[
+    {text:"被动球基本接不到",score:1},
+    {text:"能接到但质量差",score:2},
+    {text:"能过渡到对方场地",score:3},
+    {text:"能高质量过渡/反击",score:4},
+    {text:"能被动转主动",score:5}
+  ]},
+
+  // ===== 比赛与训练 =====
+  {sec:4,q:"比赛经历",desc:"正式比赛的参赛次数",opts:[
+    {text:"没打过比赛",score:1},
+    {text:"1-3次",score:2},
+    {text:"5-10次",score:3},
+    {text:"10-20次",score:4},
+    {text:"20次以上",score:5}
+  ]},
+  {sec:4,q:"最好比赛成绩",desc:"正式比赛的最好名次",opts:[
+    {text:"无/未获奖",score:1},
+    {text:"区级比赛前8",score:2},
+    {text:"区级比赛前4/市级前8",score:3},
+    {text:"市级比赛前4",score:4},
+    {text:"省级比赛前8",score:5},
+    {text:"省级比赛前4/全国赛有名次",score:6}
+  ]},
+  {sec:4,q:"比赛中的发挥稳定性",desc:"不同比赛中的表现是否一致",opts:[
+    {text:"起伏很大/经常发挥失常",score:1},
+    {text:"有时好有时差",score:2},
+    {text:"大部分比赛能正常发挥",score:3},
+    {text:"稳定发挥+偶尔超水平",score:4},
+    {text:"大赛型/越重要越兴奋",score:5}
+  ]},
+  {sec:4,q:"训练态度",desc:"日常训练的投入程度",opts:[
+    {text:"经常偷懒/需要不断督促",score:1},
+    {text:"基本配合但不够主动",score:2},
+    {text:"认真完成训练内容",score:3},
+    {text:"主动加练/训练投入",score:4},
+    {text:"训练狂人/自我要求高",score:5}
+  ]},
+  {sec:4,q:"家长支持度",desc:"家庭对训练的支持程度",opts:[
+    {text:"不太支持/经常因其他事请假",score:1},
+    {text:"基本支持",score:2},
+    {text:"全力支持+配合训练计划",score:3},
+    {text:"全力支持+愿意投入资源",score:4}
+  ]},
+
+  // ===== 心理素质 =====
+  {sec:5,q:"抗压能力",desc:"关键分/落后时的表现",opts:[
+    {text:"一紧张就完全发挥不出来",score:1},
+    {text:"明显紧张+失误增多",score:2},
+    {text:"有些紧张但能基本正常",score:3},
+    {text:"能控制紧张+关键分敢出手",score:4},
+    {text:"越关键越冷静+有关键分战术",score:5}
+  ]},
+  {sec:5,q:"面对失败的态度",desc:"输球后的反应",opts:[
+    {text:"大哭/发脾气/不想打了",score:1},
+    {text:"沮丧很久/影响后续训练",score:2},
+    {text:"能接受+很快恢复",score:3},
+    {text:"能分析原因+下次改进",score:4},
+    {text:"把失败当动力+主动复盘",score:5}
+  ]},
+  {sec:5,q:"注意力集中",desc:"训练/比赛中的专注度",opts:[
+    {text:"经常走神/需要不断提醒",score:1},
+    {text:"容易分心",score:2},
+    {text:"大部分时间能集中",score:3},
+    {text:"很专注/很少分心",score:4},
+    {text:"高度专注/进入心流状态",score:5}
+  ]},
+  {sec:5,q:"与教练的配合",desc:"接受指导和纠正的意愿",opts:[
+    {text:"抵触纠正/不愿听",score:1},
+    {text:"被动接受",score:2},
+    {text:"愿意听+尝试改正",score:3},
+    {text:"主动请教+快速改进",score:4},
+    {text:"举一反三+自我训练意识强",score:5}
+  ]},
+  {sec:5,q:"自我驱动力",desc:"训练的内在动力来源",opts:[
+    {text:"完全靠家长推动",score:1},
+    {text:"有兴趣但不强烈",score:2},
+    {text:"自己想打好",score:3},
+    {text:"有明确目标+主动训练",score:4},
+    {text:"强烈渴望进步+自我要求极高",score:5}
+  ]}
+];
+
+const resultTiers = [
+  {
+    min:0.82,max:1,
+    emoji:"🇨🇳",level:"国家队后备潜力",sub:"全国顶尖水平",
+    badge:"bg:linear-gradient(135deg,#dc2626,#f97316);color:#fff",
+    color:"#dc2626",
+    desc:"该学员具备进入国家青年队/国家集训队的潜力。各方面能力在同龄中处于顶尖水平，身体条件突出，技术全面，心理素质过硬。",
+    path:["兴趣班","基础班","提高班","区队","市体校","省体校","省青年队","国家青年队→国家集训队"],
+    pathColors:["var(--teal)","var(--teal)","var(--teal)","var(--blue)","var(--blue)","var(--purple)","var(--orange)","var(--red)"],
+    training:"每周6天×150分钟 · 全天候专业训练",
+    planColor:"var(--red)",
+    planItems:["立即联系省队/国家青年队选拔","参加全国青少年锦标赛","安排专业体能教练一对一","每月一次技术/体能评估","心理辅导师定期沟通","营养师制定饮食方案","建立完整的技术/体能档案"],
+    detailedPlan:"<strong>📅 每日训练安排</strong><br>上午(9:00-11:30)：技术训练(多球+步法+战术对抗)<br>下午(14:00-16:30)：体能训练(速度/力量/耐力)<br><br><strong>🏸 技术训练重点</strong><br>• 多球训练：2秒/球·6组×15球·含全场6点移动<br>• 战术对抗：70%比赛模拟·30%技术打磨<br>• 专项技术：杀球落点精度训练·吊球质量·网前小球<br><br><strong>💪 体能训练安排</strong><br>• 周一/三/五：速度灵敏(绳梯+冲刺+反应球)40min<br>• 周二/四/六：力量(弹力带+自重+轻负重)40min<br>• 每次课后：核心训练20min(平板/侧平板/药球旋转)<br><br><strong>🍎 营养方案</strong><br>• 每日蛋白质：体重×1.5-2g/kg<br>• 训练前2h：碳水+蛋白质(面包+鸡蛋)<br>• 训练中：每15min补水150-200ml<br>• 训练后30min：蛋白粉+香蕉<br><br><strong>🧠 心理辅导</strong><br>• 每周1次心理技能训练(呼吸/自我对话/意象)<br>• 每月1次与运动心理咨询师沟通<br><br><strong>📋 监控指标</strong><br>• 每周：训练日志+心率监控<br>• 每月：体能测试+技术评估<br>• 每季度：全面评估+调整训练计划",
+    nextSteps:["本月内完成省级选拔报名","联系国家队教练组获取推荐","安排一次高水平对抗测试","建立训练数据跟踪系统"]
+  },
+  {
+    min:0.72,max:0.82,
+    emoji:"🏆",level:"省队主力潜力",sub:"省级顶尖水平",
+    badge:"bg:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff",
+    color:"#7c3aed",
+    desc:"该学员具备进入省队主力阵容的潜力。技术全面，体能突出，心理素质良好，在省级比赛中具备竞争力。",
+    path:["兴趣班","基础班","提高班","区队","市体校","省体校→省青年队主力"],
+    pathColors:["var(--teal)","var(--teal)","var(--teal)","var(--blue)","var(--blue)","var(--purple)"],
+    training:"每周5-6天×120-150分钟 · 半专业训练",
+    planColor:"var(--purple)",
+    planItems:["进入省体校/省队训练体系","重点强化薄弱技术环节","增加比赛经验（省级赛事）","开始系统体能训练","每周一次技术录像分析","建立个人技术档案"],
+    detailedPlan:"<strong>📅 每日训练安排</strong><br>上午(9:00-11:00)：技术训练(多球+步法+对抗)<br>下午(14:00-15:30)：体能训练(专项体能)<br><br><strong>🏸 技术训练重点</strong><br>• 多球训练：2.5秒/球·5组×12球<br>• 战术训练：拉吊组合·杀吊配合·发接发套路<br>• 弱项强化：针对评估中技术短板专项突破<br><br><strong>💪 体能训练安排</strong><br>• 周一/三/五：速度灵敏+核心训练(45min)<br>• 周二/四：力量耐力训练(40min)<br>• 周六：有氧恢复+柔韧训练(30min)<br><br><strong>📊 评估周期</strong><br>• 每月：体能测试(50米/立定跳远/T字灵敏)<br>• 每季度：技术综合评估<br>• 每半年：全面评估+调整训练计划<br><br><strong>🏆 比赛目标</strong><br>• 参加省级青少年锦标赛<br>• 争取进入省队选拔名单<br>• 每季度至少参加1次正式比赛",
+    nextSteps:["准备省队选拔测试","参加省级青少年锦标赛","强化体能薄弱项","与省队教练建立联系"]
+  },
+  {
+    min:0.62,max:0.72,
+    emoji:"🥇",level:"省队替补/市队主力",sub:"市级顶尖水平",
+    badge:"bg:linear-gradient(135deg,#2563eb,#06b6d4);color:#fff",
+    color:"#2563eb",
+    desc:"该学员具备进入省队替补或市队主力阵容的能力。技术基本全面，体能良好，在市级比赛中具备竞争力，需要在某些方面继续提升。",
+    path:["兴趣班","基础班","提高班","区队","市体校→省队替补"],
+    pathColors:["var(--teal)","var(--teal)","var(--teal)","var(--blue)","var(--blue)"],
+    training:"每周5天×100-120分钟 · 专业训练",
+    planColor:"var(--blue)",
+    planItems:["进入市体校训练体系","针对性强化薄弱技术","增加比赛经验（市级赛事）","开始系统战术训练","每周技术评估","体能教练指导"],
+    detailedPlan:"<strong>📅 每周训练安排</strong><br>周二/四/六：技术+多球(90min)<br>周三/日：体能+战术(90min)<br><br><strong>🏸 技术训练重点</strong><br>• 基本功巩固：握拍·高远球·步法<br>• 新技术引入：杀球/吊球/网前技术<br>• 多球训练：3秒/球·4组×12球<br><br><strong>💪 体能训练安排</strong><br>• 速度训练：短距离冲刺+变向跑(2次/周)<br>• 力量训练：自重训练(深蹲/弓步/平板)(2次/周)<br>• 柔韧训练：每次课前动态拉伸+课后静态拉伸<br><br><strong>🏆 比赛目标</strong><br>• 参加市级青少年比赛<br>• 争取进入市级前8名<br>• 积累正式比赛经验",
+    nextSteps:["参加市级比赛争取好成绩","申请省队试训机会","强化体能短板","提高比赛稳定性"]
+  },
+  {
+    min:0.52,max:0.62,
+    emoji:"🥈",level:"市队水平",sub:"区域竞争力",
+    badge:"bg:linear-gradient(135deg,#ea580c,#eab308);color:#fff",
+    color:"#ea580c",
+    desc:"该学员达到市队选拔水平。技术有基础框架，体能达标，在区级比赛中表现良好，需要全面系统化训练。",
+    path:["兴趣班","基础班","提高班","区队→市体校"],
+    pathColors:["var(--teal)","var(--teal)","var(--teal)","var(--blue)"],
+    training:"每周4-5天×90-100分钟 · 强化训练",
+    planColor:"var(--orange)",
+    planItems:["进入区队/市体校选拔体系","全面巩固技术基础","加强体能训练","开始参加区级比赛","教练一对一技术指导","建立训练日志"],
+    detailedPlan:"<strong>📅 每周训练安排</strong><br>周二/四/六：技术训练(75-90min)<br>周日：体能+恢复(60min)<br><br><strong>🏸 技术训练重点</strong><br>• 握拍纠正+高远球动作框架<br>• 步法：启动步+并步+交叉步<br>• 发球：反手发球稳定训练<br>• 多球：3秒/球·4组×12球<br><br><strong>💪 体能训练安排</strong><br>• 绳梯训练(2次/周·20min)<br>• 自重力量(2次/周·20min)<br>• 平板支撑(每次课后·30-60秒×3组)<br><br><strong>🏆 比赛目标</strong><br>• 参加区级青少年比赛<br>• 争取区级前8名<br>• 每季度至少1次比赛",
+    nextSteps:["参加区级比赛积累经验","申请市体校选拔","强化技术细节","提高训练质量"]
+  },
+  {
+    min:0.42,max:0.52,
+    emoji:"🥉",level:"俱乐部精英",sub:"俱乐部顶尖",
+    badge:"bg:linear-gradient(135deg,#0d9488,#16a34a);color:#fff",
+    color:"#0d9488",
+    desc:"该学员在俱乐部中属于精英水平。基本技术框架已建立，有一定比赛经验，需要系统化提升。",
+    path:["兴趣班","基础班","提高班→俱乐部精英班"],
+    pathColors:["var(--teal)","var(--teal)","var(--teal)"],
+    training:"每周3-4天×75-90分钟 · 系统训练",
+    planColor:"var(--teal)",
+    planItems:["进入俱乐部精英班","强化基本技术","增加比赛经验","开始战术训练","体能基础训练","建立训练习惯"],
+    detailedPlan:"<strong>📅 每周训练安排</strong><br>周二/四/六：技术训练(75min)<br>周日：体能+游戏(60min)<br><br><strong>🏸 技术训练重点</strong><br>• 基本技术巩固(握拍/高远球/步法)<br>• 多球训练(3秒/球·4组×12球)<br>• 开始接触简单战术(拉吊概念)<br><br><strong>💪 体能训练安排</strong><br>• 绳梯训练(1次/周·15min)<br>• 自重力量(1次/周·15min)<br>• 平板支撑(每次课后·30秒×3组)<br><br><strong>🏆 比赛目标</strong><br>• 参加俱乐部内部比赛<br>• 开始参加区级选拔<br>• 每半年至少1次正式比赛",
+    nextSteps:["巩固技术基础","参加俱乐部内部比赛","开始参加区级选拔","评估上升潜力"]
+  },
+  {
+    min:0.32,max:0.42,
+    emoji:"📈",level:"俱乐部提高",sub:"进步空间大",
+    badge:"bg:linear-gradient(135deg,#6b7280,#9ca3af);color:#fff",
+    color:"#6b7280",
+    desc:"该学员处于俱乐部提高阶段。有基本运动能力，正在建立技术框架，需要持续训练和耐心培养。",
+    path:["兴趣班","基础班→俱乐部提高班"],
+    pathColors:["var(--teal)","var(--teal)"],
+    training:"每周2-3天×60-75分钟 · 基础训练",
+    planColor:"#6b7280",
+    planItems:["巩固基本技术","增加训练频率","培养运动兴趣","建立基本体能","参加趣味性比赛","教练定期评估"],
+    detailedPlan:"<strong>📅 每周训练安排</strong><br>周二/四：技术训练(60-75min)<br>周日：体能+游戏(60min)<br><br><strong>🏸 技术训练重点</strong><br>• 握拍纠正(游戏化方式)<br>• 高远球基本动作<br>• 步法入门(启动步+并步)<br>• 多球训练(3秒/球·4组×12球)<br><br><strong>💪 体能训练安排</strong><br>• 绳梯基础(1次/周·10min)<br>• 自重力量游戏(1次/周·15min)<br>• 平板支撑(每次课后·20-30秒×3组)<br><br><strong>🏆 比赛目标</strong><br>• 参加俱乐部趣味赛<br>• 每半年至少1次比赛体验",
+    nextSteps:["保持训练频率","强化薄弱技术","参加更多训练","评估进步速度"]
+  },
+  {
+    min:0,max:0.32,
+    emoji:"🌱",level:"基础建设期",sub:"打好运动基础",
+    badge:"bg:var(--surface-2);color:var(--text-3);border:1px solid var(--border)",
+    color:"var(--text-3)",
+    desc:"该学员处于基础建设阶段。需要先打好运动基础，培养兴趣，不急于追求技术成绩。",
+    path:["兴趣班→基础班"],
+    pathColors:["var(--teal)"],
+    training:"每周2次×60分钟 · 游戏化训练",
+    planColor:"var(--text-3)",
+    planItems:["以游戏化训练为主","培养运动兴趣","建立基本运动能力","不急于教复杂技术","关注训练态度","定期评估进步"],
+    detailedPlan:"<strong>📅 每周训练安排</strong><br>周二/四：游戏化训练(60min)<br><br><strong>🏸 训练内容</strong><br>• 动物热身(熊爬/青蛙跳/螃蟹走)10min<br>• 平衡游戏(单脚站接球/冰冻游戏)10min<br>• 手眼协调(抛接球/气球不落地)10min<br>• 移动游戏(红绿灯/变向追逐)10min<br>• 球拍初体验(拍面托球/颠球)10min<br>• 放松总结(拉伸+'今天我做到了')10min<br><br><strong>💪 体能训练</strong><br>• 全部融入游戏<br>• 不做专门力量训练<br>• 重点：平衡/协调/反应<br><br><strong>⚠️ 注意事项</strong><br>• 不使用标准拍(用短拍/软球)<br>• 每8分钟换一种活动<br>• 不重复挥拍超过20次<br>• 70%以上正面语言",
+    nextSteps:["保持训练兴趣","增加运动参与","定期评估基础能力","耐心等待发育窗口"]
+  }
+];
+
+const dimConfigs = [
+  {name:"体能",sec:1,color:"var(--green)"},
+  {name:"技术",sec:2,color:"var(--blue)"},
+  {name:"战术",sec:3,color:"var(--purple)"},
+  {name:"比赛",sec:4,color:"var(--orange)"},
+  {name:"心理",sec:5,color:"var(--pink)"}
+];
+
+let currentQ = 0;
+let answers = {};
+let inputValues = {};
+let totalQuestions = 0;
+
+function countQuestions(){
+  totalQuestions = 0;
+  questions.forEach(q => { if(q.q) totalQuestions++; });
+}
+
+function getVisibleIndex(qi){
+  let idx = 0;
+  for(let i=0;i<qi;i++){ if(questions[i].q) idx++; }
+  return idx;
+}
+
+function renderQuiz(){
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+  questions.forEach((q,i) => {
+    const card = document.createElement('div');
+    card.className = 'quiz-card' + (i===0?' active':'');
+    card.id = 'q'+i;
+
+    if(q.type === 'input-group'){
+      let fieldsHtml = q.fields.map(f => {
+        if(f.type === 'select'){
+          return `<div class="input-item"><label>${f.label}</label><select id="input_${f.id}">${f.options.map(o=>'<option>'+o+'</option>').join('')}</select></div>`;
+        } else {
+          return `<div class="input-item"><label>${f.label}</label><input type="${f.type}" id="input_${f.id}" placeholder="${f.placeholder||''}"></div>`;
+        }
+      }).join('');
+      card.innerHTML = `
+        <div class="quiz-header">
+          <div class="quiz-num">基础信息</div>
+          <div class="quiz-title">填写基本信息</div>
+          <div class="quiz-desc">用于计算年龄和评估发育阶段</div>
+        </div>
+        <div class="quiz-body">
+          <div class="input-group">${fieldsHtml}</div>
+          <div class="btn-row">
+            ${i>0?'<button class="btn btn-secondary" onclick="prevQ()">上一步</button>':''}
+            <button class="btn btn-primary" onclick="nextQ()">下一步</button>
+          </div>
+        </div>
+      `;
+    } else {
+      const optsHtml = q.opts.map((o,oi) => `
+        <div class="option" onclick="selectOption(${i},${oi})" id="opt_${i}_${oi}">
+          <div class="opt-icon" style="background:${['var(--red)','var(--orange)','var(--gold)','var(--teal)','var(--green)','var(--blue)'][Math.min(oi,5)]}">${oi+1}</div>
+          <div class="opt-text">${o.text}${o.detail?'<span style="color:var(--text-3);font-size:0.72rem;margin-left:0.3rem">'+o.detail+'</span>':''}</div>
+        </div>
+      `).join('');
+      const secInfo = sections[q.sec];
+      card.innerHTML = `
+        <div class="quiz-header">
+          <div class="quiz-num">${secInfo.icon} ${secInfo.name} · 第${getVisibleIndex(i)+1}题/共${totalQuestions}题</div>
+          <div class="quiz-title">${q.q}</div>
+          ${q.desc?'<div class="quiz-desc">'+q.desc+'</div>':''}
+        </div>
+        <div class="quiz-body">
+          <div class="options">${optsHtml}</div>
+          <div class="btn-row">
+            ${i>0?'<button class="btn btn-secondary" onclick="prevQ()">上一题</button>':''}
+            <button class="btn btn-primary" id="nextBtn_${i}" onclick="nextQ()" ${i<questions.length-1?'disabled':''}>${i<questions.length-1?'下一题':'查看结果'}</button>
+          </div>
+        </div>
+      `;
+    }
+    container.appendChild(card);
+  });
+}
+
+function selectOption(qi, oi){
+  questions[qi].opts.forEach((_,j) => {
+    const el = document.getElementById('opt_'+qi+'_'+j);
+    if(el) el.classList.remove('selected');
+  });
+  document.getElementById('opt_'+qi+'_'+oi).classList.add('selected');
+  answers[qi] = oi;
+  document.getElementById('nextBtn_'+qi).disabled = false;
+}
+
+function nextQ(){
+  // Save input values for input-group questions
+  if(questions[currentQ].type === 'input-group'){
+    questions[currentQ].fields.forEach(f => {
+      const el = document.getElementById('input_'+f.id);
+      if(el) inputValues[f.id] = el.value;
+    });
+  }
+
+  if(currentQ < questions.length - 1){
+    document.getElementById('q'+currentQ).classList.remove('active');
+    currentQ++;
+    document.getElementById('q'+currentQ).classList.add('active');
+    updateProgress();
+  } else {
+    showResults();
+  }
+}
+
+function prevQ(){
+  if(currentQ > 0){
+    document.getElementById('q'+currentQ).classList.remove('active');
+    currentQ--;
+    document.getElementById('q'+currentQ).classList.add('active');
+    updateProgress();
+  }
+}
+
+function updateProgress(){
+  let answered = 0;
+  questions.forEach((q,i) => {
+    if(i < currentQ && (q.type === 'input-group' || answers[i] !== undefined)) answered++;
+  });
+  if(questions[currentQ].type !== 'input-group' && answers[currentQ] !== undefined) answered++;
+
+  const pct = (answered / questions.length) * 100;
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressText').textContent = answered+'/'+questions.length;
+
+  const q = questions[currentQ];
+  if(q.sec !== undefined){
+    document.getElementById('progressSection').textContent = sections[q.sec].icon + ' ' + sections[q.sec].name;
+  } else {
+    document.getElementById('progressSection').textContent = '📋 基础信息';
+  }
+}
+
+function calcAge(){
+  if(!inputValues.birthday) return 10;
+  const bd = new Date(inputValues.birthday);
+  const now = new Date();
+  let age = now.getFullYear() - bd.getFullYear();
+  const m = now.getMonth() - bd.getMonth();
+  if(m < 0 || (m === 0 && now.getDate() < bd.getDate())) age--;
+  return Math.max(5, Math.min(18, age));
+}
+
+function calcBMI(){
+  const h = parseFloat(inputValues.height);
+  const w = parseFloat(inputValues.weight);
+  if(!h || !w) return 0;
+  return (w / ((h/100)*(h/100))).toFixed(1);
+}
+
+function calcTotalScore(){
+  let total = 0;
+  let maxTotal = 0;
+  questions.forEach((q,i) => {
+    if(q.type !== 'input-group' && answers[i] !== undefined){
+      const maxScore = q.opts[q.opts.length-1].score;
+      total += q.opts[answers[i]].score;
+      maxTotal += maxScore;
+    }
+  });
+  return maxTotal > 0 ? total / maxTotal : 0;
+}
+
+function calcDimScores(){
+  let dimScores = {};
+  dimConfigs.forEach(d => { dimScores[d.name] = {total:0,max:0,count:0}; });
+  questions.forEach((q,i) => {
+    if(q.sec !== undefined && q.type !== 'input-group' && answers[i] !== undefined){
+      const dc = dimConfigs.find(d => d.sec === q.sec);
+      if(dc){
+        const maxScore = q.opts[q.opts.length-1].score;
+        dimScores[dc.name].total += q.opts[answers[i]].score;
+        dimScores[dc.name].max += maxScore;
+        dimScores[dc.name].count++;
+      }
+    }
+  });
+  let result = {};
+  dimConfigs.forEach(d => {
+    const ds = dimScores[d.name];
+    result[d.name] = ds.max > 0 ? ds.total / ds.max : 0;
+  });
+  return result;
+}
+
+function getAgeBonus(age){
+  // Younger kids with same skill level get bonus (earlier development = higher potential)
+  if(age <= 7) return 1.15;
+  if(age <= 8) return 1.12;
+  if(age <= 9) return 1.08;
+  if(age <= 10) return 1.05;
+  if(age <= 11) return 1.0;
+  if(age <= 12) return 0.97;
+  if(age <= 13) return 0.94;
+  if(age <= 14) return 0.90;
+  return 0.85;
+}
+
+function getCompetitionBonus(){
+  // Check competition results
+  let bestComp = 0;
+  questions.forEach((q,i) => {
+    if(q.q === '最好比赛成绩' && answers[i] !== undefined){
+      bestComp = q.opts[answers[i]].score;
+    }
+  });
+  return 1 + (bestComp * 0.03);
+}
+
+function showResults(){
+  document.querySelectorAll('.quiz-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('quizContainer').style.display = 'none';
+  document.getElementById('progressWrap').style.display = 'none';
+
+  const age = calcAge();
+  const bmi = calcBMI();
+  const rawScore = calcTotalScore();
+  const dimScores = calcDimScores();
+  const ageBonus = getAgeBonus(age);
+  const compBonus = getCompetitionBonus();
+  const finalScore = Math.min(1, rawScore * ageBonus * compBonus);
+
+  // Find tier
+  let tier = resultTiers[resultTiers.length-1];
+  for(const t of resultTiers){
+    if(finalScore >= t.min && finalScore <= t.max){ tier = t; break; }
+  }
+  if(finalScore >= resultTiers[0].min) tier = resultTiers[0];
+
+  // Build result HTML
+  let html = '';
+
+  // Hero
+  html += `
+    <div class="result-hero" style="background:linear-gradient(135deg,${tier.color}11,${tier.color}22)">
+      <div class="result-emoji">${tier.emoji}</div>
+      <div class="result-level" style="color:${tier.color}">${tier.level}</div>
+      <div class="result-sub">${tier.sub}</div>
+      <div class="result-badge" style="${tier.badge}">综合指数 ${Math.round(finalScore*100)}分</div>
+      <div style="font-size:0.75rem;color:var(--text-3);margin-top:0.8rem">
+        年龄 ${age}岁 · 身高${inputValues.height||'?'}cm · 体重${inputValues.weight||'?'}kg · BMI ${bmi||'?'} · 年龄加成×${ageBonus.toFixed(2)}
+      </div>
+    </div>
+    <div class="result-body">
+  `;
+
+  // Dimension scores
+  html += `<div class="section-title">五维能力评分</div><div class="score-bars">`;
+  dimConfigs.forEach(d => {
+    const pct = Math.round(dimScores[d.name]*100);
+    html += `
+      <div class="score-bar">
+        <div class="sb-label">${d.name}</div>
+        <div class="sb-track"><div class="sb-fill" style="width:0%;background:${d.color}" data-target="${pct}"></div></div>
+        <div class="sb-val" style="color:${d.color}">${pct}</div>
+      </div>
+    `;
+  });
+  html += `</div>`;
+
+  // Strengths
+  let strengths = dimConfigs.filter(d => dimScores[d.name] >= 0.7).sort((a,b) => dimScores[b.name] - dimScores[a.name]);
+  if(strengths.length > 0){
+    html += `<div class="section-title">核心优势</div>`;
+    strengths.forEach(s => {
+      html += `<div class="strength-item"><strong style="color:${s.color}">${s.name}（${Math.round(dimScores[s.name]*100)}分）</strong> — ${getDimStrengthText(s.name, dimScores[s.name])}</div>`;
+    });
+  }
+
+  // Weaknesses
+  let weaknesses = dimConfigs.filter(d => dimScores[d.name] < 0.55).sort((a,b) => dimScores[a.name] - dimScores[b.name]);
+  if(weaknesses.length > 0){
+    html += `<div class="section-title">需要提升</div><div class="weak-grid">`;
+    weaknesses.forEach(w => {
+      html += `
+        <div class="weak-item" style="border-color:${w.color}">
+          <div class="wi-label" style="color:${w.color}">${w.name}（${Math.round(dimScores[w.name]*100)}分）</div>
+          <div class="wi-tip">${getDimWeaknessText(w.name, dimScores[w.name])}</div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+  }
+
+  // Development path
+  html += `<div class="section-title">推荐发展路径</div><div class="path-flow">`;
+  tier.path.forEach((p,i) => {
+    html += `<span class="path-node" style="background:${tier.pathColors[i]}22;color:${tier.pathColors[i]}">${p}</span>`;
+    if(i < tier.path.length-1) html += `<span class="path-arrow">→</span>`;
+  });
+  html += `</div>`;
+
+  // Training plan
+  html += `
+    <div class="section-title">训练计划建议</div>
+    <div class="plan-card">
+      <div class="plan-header" style="background:${tier.planColor}">📅 ${tier.training}</div>
+      <div class="plan-body">${tier.detailedPlan}</div>
+    </div>
+    <div class="plan-card">
+      <div class="plan-header" style="background:${tier.planColor}">📋 行动清单</div>
+      <div class="plan-body"><ul>${tier.planItems.map(i=>'<li>'+i+'</li>').join('')}</ul></div>
+    </div>
+  `;
+
+  // Next steps
+  html += `
+    <div class="section-title">下一步行动</div>
+    <div class="plan-card">
+      <div class="plan-header" style="background:${tier.color}">🎯 近期目标</div>
+      <div class="plan-body"><ul>${tier.nextSteps.map(i=>'<li>'+i+'</li>').join('')}</ul></div>
+    </div>
+  `;
+
+  // Age-specific advice
+  html += `<div class="section-title">${age}岁年龄段特别提醒</div>`;
+  html += `<div class="radar-card">${getAgeAdvice(age)}</div>`;
+
+  // Restart
+  html += `<div class="restart"><button class="restart-btn" onclick="restart()">重新测评</button></div>`;
+
+  html += `</div>`;
+
+  document.getElementById('resultCard').innerHTML = html;
+  document.getElementById('resultCard').classList.add('active');
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.sb-fill').forEach(bar => {
+      bar.style.width = bar.dataset.target + '%';
+    });
+  }, 100);
+}
+
+function getDimStrengthText(dim, score){
+  const texts = {
+    "体能": score>=0.8?"体能素质突出，具备高水平竞技的身体条件":"体能基础良好，有进一步提升空间",
+    "技术": score>=0.8?"技术全面扎实，动作标准化程度高":"技术框架已建立，细节需要打磨",
+    "战术": score>=0.8?"战术意识敏锐，能主动阅读比赛":"有基本战术意识，需要更多比赛磨练",
+    "比赛": score>=0.8?"比赛经验丰富，发挥稳定":"有一定比赛经验，需要更多实战",
+    "心理": score>=0.8?"心理素质过硬，抗压能力强":"心理状态良好，关键分处理需要加强"
+  };
+  return texts[dim] || "";
+}
+
+function getDimWeaknessText(dim, score){
+  const texts = {
+    "体能": "建议增加体能训练频次，重点提升速度/敏捷性",
+    "技术": "建议回到基本功训练，强化动作规范性",
+    "战术": "建议多看比赛录像+参加实战，培养比赛阅读能力",
+    "比赛": "建议多参加正式比赛，积累大赛经验",
+    "心理": "建议增加抗压训练，学习心理调控技巧"
+  };
+  return texts[dim] || "";
+}
+
+function getAgeAdvice(age){
+  if(age <= 7) return `<h4 style="color:var(--teal)">🌱 7岁及以下</h4><p>7岁是<strong>基础运动能力的黄金期</strong>。当前阶段应以游戏化训练为主，重点培养平衡/协调/反应能力。不建议过早进行高强度专项训练。<strong>注意：</strong>使用短拍，不重复挥拍超过20次，不进行力量训练。</p>`;
+  if(age <= 9) return `<h4 style="color:var(--blue)">🧩 8-9岁</h4><p>这个年龄是<strong>神经可塑性高峰期</strong>，技术学习效率最高。建议开始系统学习基本技术（握拍/高远球/步法），但仍以游戏化方式为主。<strong>每周训练不超过6小时。</strong></p>`;
+  if(age <= 11) return `<h4 style="color:var(--purple)">⚙️ 10-11岁</h4><p>技术学习的<strong>关键窗口期</strong>。应建立完整的技术框架（杀球/吊球/网前/步法），开始接触战术概念。<strong>注意肩袖保护，每次课杀球不超过50个。</strong></p>`;
+  if(age <= 13) return `<h4 style="color:var(--orange)">📈 12-13岁</h4><p>青春期前期，<strong>体能训练开始显效</strong>。技术+战术+体能三线并进。开始参加正式比赛，建立比赛经验。<strong>注意骨骺炎预警，每次课问孩子膝盖/脚后跟是否疼痛。</strong></p>`;
+  return `<h4 style="color:var(--red)">🏆 14岁以上</h4><p>专项化阶段，训练重心从"学动作"转向<strong>"用动作"</strong>。70%对抗/比赛，30%技术打磨。需要明确发展路径（竞技/特长/爱好）。<strong>13-16岁是流失高峰期，维持动机比增加训练量更重要。</strong></p>`;
+}
+
+function restart(){
+  currentQ = 0;
+  answers = {};
+  inputValues = {};
+  document.getElementById('quizContainer').style.display = '';
+  document.getElementById('progressWrap').style.display = '';
+  document.getElementById('resultCard').classList.remove('active');
+  document.getElementById('resultCard').innerHTML = '';
+  renderQuiz();
+  updateProgress();
+}
+
+countQuestions();
+renderQuiz();
+updateProgress();
+</script>
+</body>
+</html>

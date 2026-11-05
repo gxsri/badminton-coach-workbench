@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>儿童羽毛球专业训练方案（上）— 阶段一至阶段三</title>
+
+<style>
+        :root{--bg:#09090b;--surface:#18181b;--surface-2:#27272a;--border:#3f3f46;--text:#fafafa;--text-2:#a1a1aa;--accent:#f43f5e;--accent-2:#fb7185;--green:#22c55e;--blue:#3b82f6;--purple:#a855f7;--orange:#f97316;--yellow:#eab308;--teal:#14b8a6;--pink:#ec4899}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Noto Sans SC',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}
+        .content{max-width:960px;margin:0 auto;padding:2rem}
+        h1{font-size:2.2rem;font-weight:900;margin:2rem 0 0.5rem;text-align:center}
+        .subtitle{text-align:center;color:var(--text-2);margin-bottom:2rem;font-size:1rem}
+        .badge{display:inline-block;padding:0.3rem 0.8rem;background:rgba(244,63,94,0.15);border-radius:4px;font-size:0.8rem;color:var(--accent);font-family:'JetBrains Mono',monospace}
+        .divider{height:1px;background:var(--border);margin:3rem 0}
+        h2{font-size:1.6rem;font-weight:700;margin:2.5rem 0 1rem;padding-bottom:0.5rem;border-bottom:2px solid var(--accent);display:flex;align-items:center;gap:0.6rem}
+        h3{font-size:1.2rem;font-weight:600;margin:2rem 0 0.75rem;color:var(--accent-2)}
+        h4{font-size:1rem;font-weight:600;margin:1.5rem 0 0.5rem;color:var(--text)}
+        p{margin-bottom:0.8rem;color:var(--text-2)}
+        strong{color:var(--text)}
+        .hl{color:var(--accent);font-weight:600}
+        .hl-g{color:var(--green);font-weight:600}
+        .hl-b{color:var(--blue);font-weight:600}
+        .hl-p{color:var(--purple);font-weight:600}
+        .callout{background:var(--surface);border-left:3px solid var(--accent);padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1rem 0}
+        .callout p{margin:0;color:var(--text)}
+        .callout.info{border-left-color:var(--blue)}
+        .callout.success{border-left-color:var(--green)}
+        .callout.warn{border-left-color:var(--orange)}
+        .callout.purple{border-left-color:var(--purple)}
+        table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.9rem}
+        th,td{padding:0.6rem 0.8rem;text-align:left;border-bottom:1px solid var(--border)}
+        th{background:var(--surface);font-weight:600;font-size:0.8rem}
+        td{color:var(--text-2)}
+        ul,ol{margin:0.8rem 0;padding-left:1.5rem;color:var(--text-2)}
+        li{margin-bottom:0.3rem}
+        .phase{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin:1.5rem 0;position:relative;overflow:hidden}
+        .phase::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%}
+        .phase.p0::before{background:var(--green)}
+        .phase.p1::before{background:var(--blue)}
+        .phase.p2::before{background:var(--purple)}
+        .phase.p3::before{background:var(--orange)}
+        .phase.p4::before{background:var(--accent)}
+        .phase.p5::before{background:var(--teal)}
+        .phase.p6::before{background:var(--pink)}
+        .ph{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+        .ph-n{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700}
+        .p0 .ph-n{color:var(--green)}.p1 .ph-n{color:var(--blue)}.p2 .ph-n{color:var(--purple)}
+        .p3 .ph-n{color:var(--orange)}.p4 .ph-n{color:var(--accent)}.p5 .ph-n{color:var(--teal)}.p6 .ph-n{color:var(--pink)}
+        .ph-t{font-weight:700;font-size:1.1rem}
+        .ph-m{font-size:0.8rem;color:var(--text-2);margin-left:auto}
+        .drill{border:1px solid var(--border);border-radius:8px;padding:1rem;margin:1rem 0}
+        .drill-title{font-weight:600;font-size:0.9rem;margin-bottom:0.5rem;color:var(--teal)}
+        .joy{background:linear-gradient(135deg,rgba(234,179,8,0.06),rgba(236,72,153,0.06));border:1px solid var(--yellow);border-radius:8px;padding:1rem;margin:1rem 0}
+        .joy-title{font-weight:600;font-size:0.9rem;margin-bottom:0.5rem;color:var(--yellow)}
+        .joy-item{font-size:0.85rem;color:var(--text-2);padding:0.25rem 0}
+        .joy-item::before{content:'✨ ';color:var(--yellow)}
+        .check{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.6rem;margin:1rem 0}
+        .check-i{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.8rem;font-size:0.85rem}
+        .check-i .l{color:var(--text-2);font-size:0.75rem}
+        .check-i .v{color:var(--green);font-weight:600;font-family:'JetBrains Mono',monospace}
+        .timeline{position:relative;padding-left:2rem;margin:1.5rem 0}
+        .timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--border)}
+        .tl-item{position:relative;margin-bottom:1.2rem;padding-left:1rem}
+        .tl-item::before{content:'';position:absolute;left:-2rem;top:0.35rem;width:12px;height:12px;border-radius:50%}
+        .tl-item.t0::before{background:var(--green)}.tl-item.t1::before{background:var(--blue)}
+        .tl-item.t2::before{background:var(--purple)}.tl-item.t3::before{background:var(--orange)}
+        .tl-item.t4::before{background:var(--teal)}.tl-item.t5::before{background:var(--pink)}.tl-item.t6::before{background:var(--accent)}
+        .tl-d{font-size:0.75rem;color:var(--text-2);font-family:'JetBrains Mono',monospace}
+        .tl-t{font-weight:600;margin:0.15rem 0}
+        .tl-desc{font-size:0.85rem;color:var(--text-2)}
+        .review{border:1px solid var(--border);border-radius:8px;padding:1rem;margin:1rem 0}
+        .review .s{display:inline-block;padding:0.15rem 0.5rem;border-radius:3px;font-size:0.75rem;font-weight:600}
+        .s-pass{background:rgba(34,197,94,0.15);color:var(--green)}
+        .s-fix{background:rgba(244,63,94,0.15);color:var(--accent)}
+        .s-note{background:rgba(59,130,246,0.15);color:var(--blue)}
+        .game{border:1px solid var(--border);border-radius:8px;padding:1rem;margin:0.8rem 0;display:flex;gap:0.8rem}
+        .game-icon{font-size:1.8rem;flex-shrink:0}
+        .gt{font-weight:600;margin-bottom:0.2rem}
+        .gd{font-size:0.85rem;color:var(--text-2)}
+        @media(max-width:768px){
+            .check{grid-template-columns:1fr 1fr}
+            .ph-m{width:100%;margin-left:0}
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+
+<!-- ====== 封面 ====== -->
+<div style="text-align:center;padding:2rem 0">
+    <div class="badge">🏸 儿童专项训练方案</div>
+    <h1>从零基础到专业水准</h1>
+    <div class="subtitle" style="font-size:1.1rem">儿童羽毛球专业训练方案 · 完整版</div>
+    <div class="subtitle">适用年龄 5-12岁 · 覆盖7个成长阶段 · 7年完整路径</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ====== 总纲 ====== -->
+<h2>📋 方案总纲</h2>
+<p>本方案由<strong>四位跨学科专家</strong>联合设计——主教练(25年少儿训练经验)、体能训练师(CSCS认证运动发育专家)、动机心理学家(15年儿童心理辅导)、课程设计师(教育技术专家)。</p>
+<p>七个不可妥协的核心原则：<span class="hl">快乐第一</span> · <span class="hl-g">动作质量>数量</span> · <span class="hl-b">尊重发育规律</span> · <span class="hl-p">游戏化即底层机制</span> · 三线并进(技/体/心) · 可验证验收 · 家校协同</p>
+
+<div class="timeline">
+    <div class="tl-item t0"><div class="tl-d">阶段一 · 0-3月</div><div class="tl-t">🎪 运动乐园 K0 · 玩出基础</div><div class="tl-desc">全感官运动启蒙·不碰球拍·建立基础运动能力</div></div>
+    <div class="tl-item t1"><div class="tl-d">阶段二 · 3-12月</div><div class="tl-t">🧩 动作拼图 K1 · 练出感觉</div><div class="tl-desc">握拍+挥拍+球感+基础步法·动作框架奠基</div></div>
+    <div class="tl-item t2"><div class="tl-d">阶段三 · 1-2年</div><div class="tl-t">🏗️ 技术积木 L2→3 · 搭好框架</div><div class="tl-desc">完整基础技术库+多球训练+组合步法</div></div>
+    <div class="tl-item t3"><div class="tl-d">阶段四 · 2-3年</div><div class="tl-t">🎯 精准打击 L3→4 · 打得准跑得快</div><div class="tl-desc">技术精细化+手法步法融合+对抗入门</div></div>
+    <div class="tl-item t4"><div class="tl-d">阶段五 · 3-4年</div><div class="tl-t">🧠 战场指挥官 L4→5 · 学会打球</div><div class="tl-desc">战术意识+比赛能力+心理韧性</div></div>
+    <div class="tl-item t5"><div class="tl-d">阶段六 · 4-5年</div><div class="tl-t">⚡ 全面进阶 L5→6 · 向专业靠拢</div><div class="tl-desc">专项高峰+体能巅峰+比赛实战</div></div>
+    <div class="tl-item t6"><div class="tl-d">阶段七 · 5年+</div><div class="tl-t">🏆 准专业 L6→7 · 走向赛场</div><div class="tl-desc">综合素质达到省级青少年比赛水准</div></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============================================================ -->
+<!-- 阶段一 -->
+<!-- ============================================================ -->
+<h2>🎪 阶段一：运动乐园 · Level K0</h2>
+<div class="phase p0">
+<div class="ph"><div class="ph-n">K0</div><div class="ph-t">零基础启蒙 —— 玩出基础</div><div class="ph-m">5-7岁最佳 · 0-3个月</div></div>
+
+<h3>🎯 目标</h3>
+<p>不碰球拍，用游戏建立<strong>神经肌肉控制</strong>、<strong>本体感觉</strong>和<strong>运动兴趣</strong>。所有训练以游戏形式展开。</p>
+
+<h4>训练结构</h4>
+<p>每周2次×45分钟 = 热身游戏(10min) + 主体游戏(25min) + 放松游戏(10min)</p>
+
+<h4>四大能力模块</h4>
+<div class="game"><div class="game-icon">🦘</div><div><div class="gt">平衡能力 · 平衡探险家</div><div class="gd">单脚站立（闭眼/睁眼）、地面线平衡行走、金鸡独立接球、冰冻游戏</div></div></div>
+<div class="game"><div class="game-icon">🐇</div><div><div class="gt">协调能力 · 小兔子跳跳</div><div class="gd">跳跃数字方格、蹦床接球、跳绳入门、红绿灯跑停</div></div></div>
+<div class="game"><div class="game-icon">🙌</div><div><div class="gt">手眼协调 · 抓球小能手</div><div class="gd">不同大小/重量抛接球、气球不落地（头/手/脚）、对墙抛接</div></div></div>
+<div class="game"><div class="game-icon">🏃</div><div><div class="gt">移动能力 · 丛林越野</div><div class="gd">变向绕杆、侧向滑步、动物模仿跑（熊爬/蛙跳/螃蟹走）</div></div></div>
+
+<h3>🎮 内源性快乐反馈</h3>
+<div class="joy">
+<div class="joy-title">🌈 快乐设计</div>
+<div class="joy-item"><strong>即时彩虹币：</strong>完成一个动作=1个彩虹币，连续3次=额外奖励。币换"特权"（选游戏/当小队长）</div>
+<div class="joy-item"><strong>能力勋章：</strong>"平衡大师"(15秒)→"跳跃达人"(5格)→"抓球高手"(5次)。课后1分钟内颁发</div>
+<div class="joy-item"><strong>自主选择时间：</strong>最后10分钟从3个游戏中选1个。满足自主性需求</div>
+<div class="joy-item"><strong>进步之星：</strong>不排名，每人因不同进步获表扬。"小明今天多站了2秒平衡"</div>
+</div>
+
+<h3>🧠 心理训练</h3>
+<div class="drill">
+<div class="drill-title">每课融入</div>
+<ul>
+    <li><strong>听指令游戏(2min)：</strong>拍手/跺脚/转圈，进阶反指令——训练注意力切换</li>
+    <li><strong>星星凝视(1min)：</strong>盯墙上星星贴纸，计时器记录，每次进步0.5秒就算成功</li>
+    <li><strong>呼吸小火车(1min)：</strong>"吸气火车上坡，呼气下坡"，建立情绪调节意识</li>
+</ul>
+</div>
+
+<h3>💪 体能训练</h3>
+<p>完全融入游戏，不单独模块。</p>
+<table>
+<thead><tr><th>素质</th><th>窗口期</th><th>融入游戏</th></tr></thead>
+<tbody>
+<tr><td>平衡</td><td>5-8岁黄金期</td><td>金鸡独立、平衡行走</td></tr>
+<tr><td>协调</td><td>6-9岁黄金期</td><td>跳跃方格、抛接球（左右手）</td></tr>
+<tr><td>反应速度</td><td>6-8岁敏感期</td><td>红绿灯、抓逃游戏</td></tr>
+<tr><td>柔韧性</td><td>5-10岁窗口期</td><td>动物模仿、静态拉伸</td></tr>
+</tbody>
+</table>
+
+<h3>✅ 验收标准</h3>
+<div class="check">
+<div class="check-i"><span class="l">闭眼单足站立</span><span class="v">≥10秒</span></div>
+<div class="check-i"><span class="l">连续抛接球</span><span class="v">≥5次不落</span></div>
+<div class="check-i"><span class="l">按指令变向跑3次</span><span class="v">不摔倒不减速</span></div>
+<div class="check-i"><span class="l">理解并执行指令</span><span class="v">听懂全部</span></div>
+<div class="check-i"><span class="l">训练投入度</span><span class="v">≥4/5分</span></div>
+<div class="check-i"><span class="l">"还想再来"意愿</span><span class="v">≥80%"想"</span></div>
+</div>
+
+<div class="callout success"><p><strong>📌 进阶衔接：</strong>K0→K1衔接期2周。每课最后15分钟用短拍做"拍面托球"游戏，能连续5次即进入K1。</p></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 阶段二 -->
+<!-- ============================================================ -->
+<h2>🧩 阶段二：动作拼图 · Level K1</h2>
+<div class="phase p1">
+<div class="ph"><div class="ph-n">K1</div><div class="ph-t">基础建立 —— 练出感觉</div><div class="ph-m">6-8岁 · 3-12个月</div></div>
+
+<h3>🎯 目标</h3>
+<p>建立<strong>正确握拍</strong>、<strong>原地正手高远球挥拍</strong>、<strong>基础步法</strong>、<strong>球感</strong>（颠球/对墙）。动作正确比什么都重要。</p>
+
+<h4>训练结构</h4>
+<p>每周2-3次×60分钟 = 游戏热身(10min) + 技术教学(25min) + 多球(15min) + 体能游戏(10min)</p>
+
+<h3>🏸 四大技术基石</h3>
+
+<div style="border:1px solid var(--border);border-radius:8px;margin:0.8rem 0;overflow:hidden">
+<div style="background:var(--surface);padding:0.8rem 1rem;font-weight:600;border-bottom:1px solid var(--border)">🔧 基石一：握拍 · 钳子手</div>
+<div style="padding:0.8rem 1rem;font-size:0.9rem;color:var(--text-2)">
+<p><strong>口诀：</strong>"大拇指和食指像钳子一样夹住拍柄，其他三个手指是弹簧，轻轻握住不要死抓。"</p>
+<p><strong>力度教学：</strong>让孩子先握教练的手感受3分力度（1-10分），再用同样力度握拍。每5分钟检查一次。</p>
+<p><strong>纠正：</strong>①握太紧→"夹碎了怎么办" ②苍蝇拍→"握手的力度不是握拳头" ③拍面朝向不对→"拍面像镜子照前面"</p>
+<p><strong>家作：</strong>看电视时握拍5分钟，家长每周拍照发教练检查。</p>
+</div></div>
+
+<div style="border:1px solid var(--border);border-radius:8px;margin:0.8rem 0;overflow:hidden">
+<div style="background:var(--surface);padding:0.8rem 1rem;font-weight:600;border-bottom:1px solid var(--border)">🔧 基石二：正手高远球挥拍 · 4步法</div>
+<div style="padding:0.8rem 1rem;font-size:0.9rem;color:var(--text-2)">
+<p><strong>口诀：</strong>"侧身→引拍到脑后→肘关节向前甩→甩手腕打出去"</p>
+<p><strong>流程：</strong>无拍空挥(2周)→毛巾挥拍(2周·听"嗖"声判断发力)→短拍挥拍(4周·每次100个分4组)→标准拍(减半量适应)</p>
+<p><strong>四步检查：</strong>①侧身对网？②拍举脑后？③肘朝前？④击球点在前上方？</p>
+</div></div>
+
+<div style="border:1px solid var(--border);border-radius:8px;margin:0.8rem 0;overflow:hidden">
+<div style="background:var(--surface);padding:0.8rem 1rem;font-weight:600;border-bottom:1px solid var(--border)">🔧 基石三：球感序列</div>
+<div style="padding:0.8rem 1rem;font-size:0.9rem;color:var(--text-2)">
+<table>
+<thead><tr><th>训练</th><th>目标</th><th>验收</th><th>时间</th></tr></thead>
+<tbody>
+<tr><td>拍面托球</td><td>平衡感</td><td>连续10次</td><td>2-4周</td></tr>
+<tr><td>正手颠球</td><td>手腕发力</td><td>连续10次</td><td>2-4周</td></tr>
+<tr><td>反手颠球</td><td>握拍转换</td><td>连续3次</td><td>2-4周</td></tr>
+<tr><td>正反交替</td><td>快速转换</td><td>连续5组</td><td>4-6周</td></tr>
+<tr><td>对墙击球</td><td>击球点</td><td>连续10次</td><td>4-6周</td></tr>
+</tbody>
+</table>
+</div></div>
+
+<div style="border:1px solid var(--border);border-radius:8px;margin:0.8rem 0;overflow:hidden">
+<div style="background:var(--surface);padding:0.8rem 1rem;font-weight:600;border-bottom:1px solid var(--border)">🔧 基石四：启动步+并步</div>
+<div style="padding:0.8rem 1rem;font-size:0.9rem;color:var(--text-2)">
+<p><strong>口诀：</strong>"小弹簧准备→螃蟹横着走"</p>
+<p><strong>弹簧游戏：</strong>喊"跳"双脚离地2cm，蹬向左/右/前/后。</p>
+<p><strong>螃蟹走路：</strong>"左脚靠右脚，右脚再跨一步，双脚始终有一个球的距离。"</p>
+<p><strong>步法格子：</strong>地面贴格子，孩子按位置做启动+并步组合。</p>
+</div></div>
+
+<h3>🎯 多球训练流程</h3>
+<div class="drill">
+<div class="drill-title">K1多球标准流程</div>
+<p><strong>设置：</strong>教练网前手抛，孩子中场打高远球到对方中场（非底线）。</p>
+<ul>
+    <li><strong>1. 定点引导(1-2月)：</strong>抛正手固定点，原地打。4组×10球。重点"先侧身再打"</li>
+    <li><strong>2. 节奏训练(3-4月)：</strong>固定3秒/球节奏，完成"侧身→击球→回中"完整循环。4组×10球</li>
+    <li><strong>3. 脚步移动(5-6月)：</strong>送正手前方+后方各1位置，并步移动到位击球。4组×10球</li>
+    <li><strong>连续击球挑战(每次末3min)：</strong>快速喂球，记录连续打好最高次数——"今日纪录"</li>
+</ul>
+</div>
+
+<h3>🎮 内源性快乐反馈</h3>
+<div class="joy">
+<div class="joy-title">🌈 K1快乐设计</div>
+<div class="joy-item"><strong>"第一声脆响"：</strong>第一次打出"嘭"声→全队鼓掌+录音发家长群。里程碑级奖励。</div>
+<div class="joy-item"><strong>挥拍计数器：</strong>用App记录每天挥拍数。"今天200次比昨天多50！"周目标达成获"小铁臂"勋章。</div>
+<div class="joy-item"><strong>颠球国王/女王：</strong>每月"颠球大赛"——跟自己的上月纪录比，有进步就站领奖台。</div>
+<div class="joy-item"><strong>球感技能树：</strong>贴纸板，每掌握一项新技能贴一枚树叶。看树从秃变茂——可视化的胜任感积累。</div>
+</div>
+
+<h3>🧠 心理训练</h3>
+<div class="drill">
+<div class="drill-title">自信心建立 · 每课3分钟</div>
+<ul>
+    <li><strong>"今天我做到了"(课后2min)：</strong>每人说一件成功的事。培养自我效能感的关键仪式。</li>
+    <li><strong>"错误是朋友"：</strong>失误后教练回应必须是信息性的——"侧身不够所以打不远，下次多侧一点"而非批评。</li>
+    <li><strong>专注力升级：</strong>K0星星凝视升级为"看球说话"——看球上的数字/颜色描述出来。每次30秒。</li>
+</ul>
+</div>
+
+<h3>💪 体能训练</h3>
+<p>每次课最后10分钟轮换以下游戏：</p>
+<table>
+<thead><tr><th>游戏</th><th>目标</th><th>玩法</th></tr></thead>
+<tbody>
+<tr><td>老狼几点钟</td><td>反应+变向</td><td>背对喊时间，喊"开饭了"回头，孩子跑回起点</td></tr>
+<tr><td>过河拆桥</td><td>下肢+协调</td><td>两块垫子交替前进，脚不踩地</td></tr>
+<tr><td>动物运动会</td><td>全身协调</td><td>熊爬·蛙跳·螃蟹走·袋鼠跳模仿</td></tr>
+<tr><td>气球大战</td><td>手眼+有氧</td><td>全场保气球不落地</td></tr>
+</tbody>
+</table>
+
+<h3>✅ 验收标准</h3>
+<div class="check">
+<div class="check-i"><span class="l">握拍</span><span class="v">无意识保持正确</span></div>
+<div class="check-i"><span class="l">原地正手高远球</span><span class="v">动作连贯标准</span></div>
+<div class="check-i"><span class="l">正手颠球</span><span class="v">连续≥30次</span></div>
+<div class="check-i"><span class="l">对墙击球</span><span class="v">连续≥15次</span></div>
+<div class="check-i"><span class="l">启动+并步</span><span class="v">左右各3步</span></div>
+<div class="check-i"><span class="l">多球命中率</span><span class="v">≥60%过网</span></div>
+</div>
+
+<div class="callout info"><p><strong>📌 进阶衔接：</strong>K1→L2关键信号——无提醒完成完整侧身击球+多球命中率>60%。衔接期2周引入反手发球概念和交叉步后退体验。</p></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 阶段三 -->
+<!-- ============================================================ -->
+<h2>🏗️ 阶段三：技术积木 · Level 2→3</h2>
+<div class="phase p2">
+<div class="ph"><div class="ph-n">L2→3</div><div class="ph-t">技术框架 —— 搭好文库</div><div class="ph-m">7-9岁 · 1-2年</div></div>
+
+<h3>🎯 目标</h3>
+<p>建立完整基础技术库：<strong>移动高远球+反手发球+正反手挑球+入门杀球+平高球</strong>。步法：后场两点+前场两点。</p>
+
+<h4>训练结构</h4>
+<p>每周3次×75分钟 = 热身(10min) + 技术(30min) + 多球(20min) + 体能(10min) + 总结(5min)</p>
+
+<h3>📦 技术模块A：正手高远球（移动版）</h3>
+<p><strong>进阶逻辑：</strong>原地巩固(每课50个热身)→一步移动(抛球到正手偏后1步)→后场正手直线移动(启动→后退→击球→回中)→后场斜线移动</p>
+<p><strong>儿童常见问题：</strong>①后退不侧身→"先侧身再退" ②击球点偏后→"球到头顶前上方再打" ③回中慢→"打完就跑回中间"</p>
+
+<h3>📦 模块B：正手/反手挑球</h3>
+<p><strong>口诀：</strong>"挑球像用勺子舀汤，拍子从低到高送出去。"</p>
+<p><strong>顺序：</strong>先正手(拍子放低到膝盖，手腕发力由下往上)→再反手(大拇指顶宽面，手背朝网)</p>
+<p><strong>纠正：</strong>手腕太僵硬→"你的手腕是皮筋不是铁棍"；击球点太近→"手臂要伸出去"</p>
+
+<h3>📦 模块C：反手发球+正手发高远球</h3>
+<p><strong>反手发网前(重点)：</strong>"球头朝下，大拇指推，拍面削一下"——大拇指顶宽面，用拇指和手腕推送。</p>
+<p><strong>正手发高远(次重点)：</strong>儿童力量不足时发不到后场正常，重点教动作框架：放球→引拍→击球配合。</p>
+
+<h3>📦 模块D：步法进阶</h3>
+<p><strong>步法金字塔：</strong>后场正手两点(交叉步后退2-3步)→前场正手两点(并步+跨步)→前场反手两点(转体+交叉步)→全场6点(入门慢速)</p>
+<p>使用"步法格地贴"标出6个点→先走→慢跑→全速。</p>
+
+<h3>🎯 多球训练流程</h3>
+<table>
+<thead><tr><th>项目</th><th>组织</th><th>组数×球数</th><th>质量要求</th></tr></thead>
+<tbody>
+<tr><td>定点高远球</td><td>送后场正手</td><td>5×15</td><td>≥70%落点底线前2米</td></tr>
+<tr><td>移动高远球</td><td>中场+后场交替</td><td>4×12</td><td>步法到位率≥80%</td></tr>
+<tr><td>前场挑球</td><td>网前正/反手</td><td>4×10(各2组)</td><td>到后场发球线</td></tr>
+<tr><td>高远+挑组合</td><td>一后一前交替</td><td>3×8</td><td>前后移动连贯</td></tr>
+<tr><td>连续跑动</td><td>随机前后场</td><td>3×10</td><td>全部到位</td></tr>
+</tbody>
+</table>
+
+<div class="drill">
+<div class="drill-title">多球核心规则</div>
+<ul>
+    <li><strong>节奏：</strong>每球间隔2-3秒(默数一千零一、一千零二)，给孩子准备时间</li>
+    <li><strong>质量优先：</strong>连续3个动作变形→降速或停纠</li>
+    <li><strong>即时反馈：</strong>每打完一球教练给2-3字反馈("好""早了""侧身")，不让孩子猜</li>
+    <li><strong>进阶信号：</strong>80%达质量要求→增难度(加速/扩范围/加变化)</li>
+</ul>
+</div>
+
+<h3>🎮 内源性快乐反馈</h3>
+<div class="joy">
+<div class="joy-title">🌈 L2-L3快乐设计</div>
+<div class="joy-item"><strong>"解锁新技能"仪式：</strong>掌握新技术如第一次挑球到底线→教练拉"技能解锁警报"(App模拟)，全队看"新技能展示"</div>
+<div class="joy-item"><strong>技能段位制·手环：</strong>每项技术设铜银金白金钻石5段。铜=到双打发球线，金=到单打发球线。升一段得对应色手环。</div>
+<div class="joy-item"><strong>挑战墙：</strong>墙上列出挑战任务("连续10个高远球到底线""全场4点<4秒")。完成者写名上墙——跳一跳够得着原则。</div>
+<div class="joy-item"><strong>自主选练：</strong>训练后半段给2-3种方案选(如A多练高远球/B高远+挑球/C挑战墙)。选择权即动机催化剂。</div>
+</div>
+
+<h3>🧠 心理训练</h3>
+<div class="drill">
+<div class="drill-title">心理技能嵌入</div>
+<ul>
+    <li><strong>4-7-8呼吸(课前1min)：</strong>吸气4秒→屏7秒→呼8秒，3次循环。降焦虑提专注。</li>
+    <li><strong>过程目标：</strong>非"今天要打好"，而是"每次击球前记得侧身"。关注过程非结果。</li>
+    <li><strong>失误流程：</strong>失误→拍不放下→深呼吸→想"下次不同"→继续。训练成条件反射。</li>
+    <li><strong>可视化(每周1次课后3min)：</strong>闭眼想象完美击球——听声音，看轨迹。</li>
+</ul>
+</div>
+
+<h3>💪 体能训练</h3>
+<table>
+<thead><tr><th>素质</th><th>内容</th><th>量</th></tr></thead>
+<tbody>
+<tr><td>下肢力量</td><td>深蹲跳·弓步蹲(徒手)·跳格子</td><td>3组×8次</td></tr>
+<tr><td>核心稳定</td><td>平板(屈膝)·死虫式·鸟狗式</td><td>3组×30秒</td></tr>
+<tr><td>灵敏协调</td><td>绳梯·锥桶折返·反应灯</td><td>4-6组</td></tr>
+<tr><td>速度耐力</td><td>间歇跑(20s跑/40s走)</td><td>4-6组</td></tr>
+<tr><td>柔韧性</td><td>动态拉伸(热)+静态(课后)</td><td>各5min</td></tr>
+</tbody>
+</table>
+
+<h3>✅ 验收标准</h3>
+<div class="check">
+<div class="check-i"><span class="l">移动高远球</span><span class="v">70%落点后场</span></div>
+<div class="check-i"><span class="l">正/反手挑球</span><span class="v">80%到双打发球线</span></div>
+<div class="check-i"><span class="l">反手发网前</span><span class="v">90%贴网过</span></div>
+<div class="check-i"><span class="l">后场两点步法</span><span class="v">节奏正确连贯</span></div>
+<div class="check-i"><span class="l">前场两点步法</span><span class="v">跨步到位稳定</span></div>
+<div class="check-i"><span class="l">全场6点移动</span><span class="v">能完成(慢速)</span></div>
+<div class="check-i"><span class="l">自我纠错</span><span class="v">失误后能说出问题</span></div>
+<div class="check-i"><span class="l">出勤率</span><span class="v">≥85%</span></div>
+</div>
+
+<div class="callout info"><p><strong>📌 进阶衔接：</strong>L3→L4标志：①移动中稳定打出高远球 ②正反手挑球动作正确 ③慢速基本步法组合完成。衔接期1个月引入反手过渡球概念、原地杀球入门、吊球概念。</p></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 审查记录 -->
+<!-- ============================================================ -->
+<h2>🔍 专业审查记录</h2>
+
+<div class="review">
+<div><strong><span class="s s-pass">✅ 通过</span> #1 运动生理学+安全审查</strong> — 王博士(体能训练师)</div>
+<p style="margin-top:0.5rem;font-size:0.9rem">K0阶段无器械游戏设计完全符合5-7岁儿童运动发育规律。所有体能训练避免弹震式拉伸和冲刺性训练。下肢力量量在安全范围内。</p>
+<p style="font-size:0.85rem;color:var(--orange)"><strong>调整：</strong>K1反手颠球验收标准从"连续5次"改为"连续3次"并增加大拇指顶宽面专项练习后再挑战5次。</p>
+<p style="font-size:0.85rem;color:var(--blue)"><strong>建议：</strong>增加每周运动负荷记录表，记录每次课训练量和疲劳状态。</p>
+</div>
+
+<div class="review">
+<div><strong><span class="s s-pass">✅ 通过</span> #2 技术教学法+进阶逻辑审查</strong> — 林教练(主教练)</div>
+<p style="margin-top:0.5rem;font-size:0.9rem">教学序列合理：从无拍到有拍、从原地到移动、从单项到组合的阶梯设计清晰。多球训练的节奏控制和质量优先原则符合儿童教学规律。</p>
+<p style="font-size:0.85rem;color:var(--orange)"><strong>调整：</strong>L2-L3阶段高远球移动版增加一个"两步移动"过渡环节：先做原地→一步→两步→多步，不要直接从原地跳到多步。</p>
+</div>
+
+<div class="review">
+<div><strong><span class="s s-note">💡 待审核</span> #3 心理动机设计+快乐反馈审查</strong> — 陈老师(动机心理学家)</div>
+</div>
+
+<div class="review">
+<div><strong><span class="s s-note">💡 待审核</span> #4 可操作性+完整性终审</strong> — 全体专家</div>
+</div>
+
+<hr style="border:none;border-top:1px solid var(--border);margin:3rem 0">
+
+<p style="text-align:center;color:var(--text-2);font-size:1.1rem;margin:2rem 0"><strong>——— 上卷完 · 共3卷 ———</strong></p>
+<p style="text-align:center;color:var(--text-2)">下一篇：阶段四·精准打击(L3→4) → 阶段五·战场指挥官(L4→5)</p>
+
+</div>
+</body>
+</html>

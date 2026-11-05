@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>羽毛球专项训练体系 · 导航台</title>
+<style>
+:root{--bg:#f5f7fb;--surface:#fff;--surface-2:#f8fafc;--line:#e2e8f0;--text:#16203a;--text-2:#5b6780;--text-3:#8b97ad;
+--accent:#3f51b5;--accent-soft:#eef1fb;--teal:#0d9488;--green:#16a34a;--amber:#d97706;--purple:#7c3aed;
+--shadow:0 1px 2px rgba(16,32,64,.05),0 6px 18px rgba(16,32,64,.06)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+a{text-decoration:none;color:inherit}
+.sprite{position:absolute;width:0;height:0;overflow:hidden}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.wrap{max-width:1160px;margin:0 auto;padding:0 18px}
+header{border-bottom:1px solid var(--line);background:rgba(255,255,255,.94);backdrop-filter:blur(10px);position:sticky;top:0;z-index:20}
+.hd{max-width:1160px;margin:0 auto;padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--teal));color:#fff;display:flex;align-items:center;justify-content:center}
+.brand{font-weight:800;font-size:1rem}
+.brand small{display:block;font-size:.6rem;color:var(--text-3);letter-spacing:1.2px;font-weight:600}
+.hd .right{margin-left:auto;display:flex;gap:7px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:700;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.pill.g{background:#e9f7ef;color:var(--green)}
+.hero{padding:34px 0 20px;text-align:center}
+.badge{display:inline-block;padding:4px 13px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:.7rem;font-weight:800;letter-spacing:1.2px;margin-bottom:10px}
+h1{font-size:2.15rem;font-weight:900;letter-spacing:.5px;margin-bottom:7px}
+.sub{color:var(--text-2);font-size:.94rem;max-width:700px;margin:0 auto}
+.stats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:18px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:9px 18px;min-width:100px;box-shadow:var(--shadow)}
+.stat b{display:block;font-size:1.5rem;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+.stat span{font-size:.68rem;color:var(--text-3);font-weight:700}
+section{margin:26px 0}
+h2{font-size:1.06rem;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+h2::before{content:'';width:4px;height:16px;border-radius:2px;background:var(--accent)}
+h2 .hint{font-size:.74rem;color:var(--text-3);font-weight:500}
+.main-card{display:flex;gap:22px;align-items:center;background:linear-gradient(120deg,#3f51b5,#5c6bc0 55%,#0d9488);color:#fff;border-radius:16px;padding:24px 26px;box-shadow:0 12px 34px rgba(63,81,181,.22);transition:.2s}
+.main-card:hover{transform:translateY(-3px);box-shadow:0 16px 42px rgba(63,81,181,.3)}
+.main-card .mc-ic{width:56px;height:56px;border-radius:14px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.main-card .mc-ic .ic{width:30px;height:30px}
+.main-card h3{font-size:1.35rem;font-weight:800;margin-bottom:4px}
+.main-card p{font-size:.85rem;opacity:.92;max-width:660px}
+.main-card ul{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px;list-style:none}
+.main-card li{font-size:.72rem;background:rgba(255,255,255,.16);padding:3px 9px;border-radius:6px}
+.cta{margin-left:auto;flex-shrink:0;background:#fff;color:var(--accent);font-weight:800;font-size:.85rem;padding:11px 18px;border-radius:10px;display:flex;align-items:center;gap:7px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px;box-shadow:var(--shadow);transition:.18s;display:block}
+.tile:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 10px 26px rgba(63,81,181,.14)}
+.tile .ti{width:34px;height:34px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:9px}
+.tile b{display:block;font-size:.9rem;font-weight:800;margin-bottom:3px}
+.tile span{font-size:.74rem;color:var(--text-2);display:block;line-height:1.55}
+.tile em{font-style:normal;font-size:.68rem;color:var(--accent);font-weight:700;display:block;margin-top:7px}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px;transition:.18s;position:relative}
+.step:hover{border-color:var(--accent);transform:translateY(-3px)}
+.step .sn{font-size:.66rem;color:var(--accent);font-weight:800;letter-spacing:1px}
+.step b{display:block;font-size:.84rem;font-weight:800;margin:3px 0}
+.step span{font-size:.72rem;color:var(--text-2)}
+.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.doc{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;transition:.18s;display:block}
+.doc:hover{border-color:var(--accent);background:var(--accent-soft)}
+.doc b{display:block;font-size:.87rem;margin-bottom:4px}
+.doc span{font-size:.74rem;color:var(--text-2);display:block;min-height:36px}
+.doc em{font-style:normal;font-size:.68rem;color:var(--teal);font-weight:700}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:.77rem;font-weight:600;transition:.15s}
+.chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.chip .ic{width:14px;height:14px}
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:11px 14px;border-radius:0 10px 10px 0;font-size:.82rem;color:var(--text-2)}
+.note b{color:var(--text)}
+.howto{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;counter-reset:s}
+.howto div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px;position:relative}
+.howto div::before{counter-increment:s;content:counter(s);position:absolute;top:10px;right:12px;font-weight:900;color:var(--accent-soft);font-size:1.5rem}
+.howto b{display:block;font-size:.85rem;margin-bottom:3px;padding-right:22px}
+.howto span{font-size:.74rem;color:var(--text-2)}
+table{width:100%;border-collapse:collapse;font-size:.78rem;background:var(--surface);border-radius:12px;overflow:hidden}
+th{text-align:left;padding:8px 11px;background:var(--surface-2);color:var(--text-3);font-size:.68rem;letter-spacing:.5px;text-transform:uppercase}
+td{padding:8px 11px;border-top:1px solid var(--line);color:var(--text-2)}
+td a{color:var(--accent);font-weight:700}
+td a:hover{text-decoration:underline}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:18px;color:var(--text-3);font-size:.74rem;text-align:center;line-height:1.8}
+footer a{color:var(--accent);font-weight:700}
+@media(max-width:900px){.tiles,.docs,.howto{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:repeat(2,1fr)}.main-card{flex-wrap:wrap}.cta{margin-left:0}}
+@media(max-width:560px){.tiles,.docs,.howto,.steps{grid-template-columns:1fr}h1{font-size:1.6rem}}
+@media print{header,.cta{display:none}.main-card{background:#fff;color:#16203a;border:1px solid #ccc}}
+</style>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true">
+  <symbol id="i-today" viewBox="0 0 24 24"><path d="M3 9h18M7 3v2M17 3v2M4 5h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z"/></symbol>
+  <symbol id="i-level" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/><path d="M3 21h18"/></symbol>
+  <symbol id="i-lib" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></symbol>
+  <symbol id="i-log" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7zM1 5h15v14H1z"/></symbol>
+  <symbol id="i-data" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></symbol>
+  <symbol id="i-diag" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 3 5-8"/></symbol>
+  <symbol id="i-profile" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+</svg>
+
+<header><div class="hd">
+  <span class="logo"><svg class="ic" style="width:17px;height:17px"><use href="#i-diag"/></svg></span>
+  <span class="brand">羽毛球专项训练体系<small>ATHLETEIQ · TRAINING DESIGN</small></span>
+  <div class="right">
+    <span class="pill g">全站离线可用</span>
+    <span class="pill">数据只存本机</span>
+    <a class="pill" href="https://github.com/gxsri/badminton-coach-workbench" target="_blank" rel="noopener">GitHub 仓库</a>
+  </div>
+</div></header>
+
+<main class="wrap">
+  <div class="hero">
+    <div class="badge">COACH WORKBENCH · 2026</div>
+    <h1>羽毛球专项训练体系</h1>
+    <p class="sub">从等级定级到每日执行清单、从技术动作到体能康复、从视频姿态评估到瓶颈突破——一个随身的专业训练团队。</p>
+    <div class="stats">
+      <div class="stat"><b>7</b><span>技术模块</span></div>
+      <div class="stat"><b>3</b><span>内容板块</span></div>
+      <div class="stat"><b>8</b><span>工作台功能</span></div>
+      <div class="stat"><b>0</b><span>外部依赖</span></div>
+    </div>
+  </div>
+
+  <section>
+    <h2>主入口 <span class="hint">所有交互功能集中在这一个页面</span></h2>
+    <a class="main-card" href="coach-workbench.html">
+      <span class="mc-ic"><svg class="ic"><use href="#i-today"/></svg></span>
+      <div>
+        <h3>专项教练工作台</h3>
+        <p>技术 / 体能 / 康复三大内容体系，专业与简单双模式，训练日志、问卷自评、穿戴数据、视频评估，自动判定瓶颈并生成 4 周突破计划。单文件、零依赖、可断网。</p>
+        <ul><li>中羽 0-7 级定级问卷</li><li>YOLO 姿态解算</li><li>ACWR 负荷与伤病预警</li><li>每日打卡沉淀</li></ul>
+      </div>
+      <span class="cta">打开工作台 <svg class="ic" style="width:15px;height:15px"><use href="#i-arrow"/></svg></span>
+    </a>
+  </section>
+
+  <section>
+    <h2>功能直达 <span class="hint">每张卡片都直达工作台对应模块</span></h2>
+    <div class="tiles">
+      <a class="tile" href="coach-workbench.html#today"><span class="ti"><svg class="ic"><use href="#i-today"/></svg></span><b>今日执行清单</b><span>周期化课表、负荷微调、预康复与打卡；简单模式只看要做什么。</span><em>进入 #today</em></a>
+      <a class="tile" href="coach-workbench.html#level"><span class="ti"><svg class="ic"><use href="#i-level"/></svg></span><b>等级定级问卷</b><span>参考中羽在线 0-7 级分级帖，11 题得到等级、十维画像与突破重点。</span><em>进入 #level</em></a>
+      <a class="tile" href="coach-workbench.html#lib"><span class="ti"><svg class="ic"><use href="#i-lib"/></svg></span><b>技术 / 体能 / 康复库</b><span>7 项技术动作要领、配套五项素质训练、8 个部位预康复处方。</span><em>进入 #lib</em></a>
+      <a class="tile" href="coach-workbench.html#log"><span class="ti"><svg class="ic"><use href="#i-log"/></svg></span><b>训练记录与自评</b><span>手动日志、每日 / 周期问卷、16 项体能测评基准。</span><em>进入 #log</em></a>
+      <a class="tile" href="coach-workbench.html#video"><span class="ti"><svg class="ic"><use href="#i-video"/></svg></span><b>视频动作评估</b><span>内置像素运动分析 + YOLO 姿态 JSON，输出角度指标与水平分级。</span><em>进入 #video</em></a>
+      <a class="tile" href="coach-workbench.html#data"><span class="ti"><svg class="ic"><use href="#i-data"/></svg></span><b>穿戴数据接入</b><span>CSV / JSON 导入心率、HRV、睡眠、步数、训练负荷，支持备份迁移。</span><em>进入 #data</em></a>
+      <a class="tile" href="coach-workbench.html#diag"><span class="ti"><svg class="ic"><use href="#i-diag"/></svg></span><b>瓶颈诊断</b><span>自动判断技术 / 体能 / 恢复限制因素，输出预警与 4 周突破计划。</span><em>进入 #diag</em></a>
+      <a class="tile" href="coach-workbench.html#profile"><span class="ti"><svg class="ic"><use href="#i-profile"/></svg></span><b>个人档案</b><span>身体参数、每周频次、目标等级、七项技术基线与数据管理。</span><em>进入 #profile</em></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>标准使用流程 <span class="hint">按顺序走一遍，系统就能开始为你工作</span></h2>
+    <div class="steps">
+      <a class="step" href="coach-workbench.html#level"><span class="sn">STEP 1</span><b>定级</b><span>填问卷，得到中羽等级与技术基线</span></a>
+      <a class="step" href="coach-workbench.html#today"><span class="sn">STEP 2</span><b>执行</b><span>照今日清单训练，完成后打卡</span></a>
+      <a class="step" href="coach-workbench.html#log"><span class="sn">STEP 3</span><b>记录</b><span>训练日志 + 每日问卷 + 穿戴数据</span></a>
+      <a class="step" href="coach-workbench.html#video"><span class="sn">STEP 4</span><b>拍视频</b><span>上传动作或导入姿态 JSON 做评估</span></a>
+      <a class="step" href="coach-workbench.html#diag"><span class="sn">STEP 5</span><b>诊断</b><span>看瓶颈、预警与下阶段突破计划</span></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>文档资料 <span class="hint">静态资料，均可离线打开、可打印</span></h2>
+    <div class="docs">
+      <a class="doc" href="coach-guide.html"><b>教练速成指导书（13 章）</b><span>教练素养 → 运动科学 → 训练方法 → 体能 → 营养 → 康复 → 心理 → 课例 → 评估 → 应急 → 家长沟通 → 实战案例。</span><em>打开文档</em></a>
+      <a class="doc" href="coach-manual-v2.html"><b>7-16 岁速查手册</b><span>按年龄给答案：发育窗口期、多球参数、技术时间线、周训练模板、家长沟通模板。</span><em>打开手册</em></a>
+      <a class="doc" href="level-assessment.html"><b>青少儿水平评估（交互）</b><span>30+ 题目、6 大维度、年龄加成、7 级结果路径，适合新学员入学测评。</span><em>开始评估</em></a>
+      <a class="doc" href="kids-training-program-part1.html"><b>儿童训练方案 · 上</b><span>基础技术与游戏化教学、7-9 岁阶段课程设计。</span><em>打开上篇</em></a>
+      <a class="doc" href="kids-training-program-part2.html"><b>儿童训练方案 · 中</b><span>9-13 岁技术进阶、多球与步法组织。</span><em>打开中篇</em></a>
+      <a class="doc" href="kids-training-program-part3.html"><b>儿童训练方案 · 下</b><span>13-16 岁专项强化与对抗衔接。</span><em>打开下篇</em></a>
+      <a class="doc" href="drill-cards.html"><b>训练卡片库（打印裁剪）</b><span>按年龄标注的场边卡片：设置、玩法、要点、变体，A4 双栏排版。</span><em>打开卡片库</em></a>
+      <a class="doc" href="poster-cheatsheet.html"><b>海报速查表</b><span>一页纸技术要点与训练口令，适合贴墙或带到场边。</span><em>打开海报</em></a>
+      <a class="doc" href="tracking-and-parent-letter.html"><b>成长追踪与家长信</b><span>阶段追踪表与可直接使用的家长沟通模板。</span><em>打开模板</em></a>
+      <a class="doc" href="test-report.html"><b>系统测试报告</b><span>内容准确性、功能完整性与 UI 检查的验证记录。</span><em>查看报告</em></a>
+      <a class="doc" href="coach-manual-7to16.html"><b>教练手册（初版 · 归档）</b><span>已整合进 v2 速查手册，仅作历史版本留存。</span><em>查看归档</em></a>
+      <a class="doc" href="yolo-pose-bridge.py"><b>YOLO 姿态桥接脚本</b><span>本地把训练视频解算成 COCO-17 关键点 JSON，供视频评估页导入。</span><em>查看脚本源码</em></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>快速入口 <span class="hint">全部指向已验证存在的章节锚点</span></h2>
+    <div class="chips">
+      <a class="chip" href="coach-guide.html#ch4"><svg class="ic"><use href="#i-doc"/></svg>体能训练动作库</a>
+      <a class="chip" href="coach-guide.html#ch5"><svg class="ic"><use href="#i-doc"/></svg>营养指导</a>
+      <a class="chip" href="coach-guide.html#ch6"><svg class="ic"><use href="#i-doc"/></svg>伤病预防</a>
+      <a class="chip" href="coach-guide.html#ch7"><svg class="ic"><use href="#i-doc"/></svg>运动心理</a>
+      <a class="chip" href="coach-guide.html#ch8"><svg class="ic"><use href="#i-doc"/></svg>课例模板库</a>
+      <a class="chip" href="coach-guide.html#ch10"><svg class="ic"><use href="#i-doc"/></svg>应急处理</a>
+      <a class="chip" href="coach-guide.html#ch11"><svg class="ic"><use href="#i-doc"/></svg>家长沟通</a>
+      <a class="chip" href="coach-guide.html#ch13"><svg class="ic"><use href="#i-doc"/></svg>实战案例</a>
+      <a class="chip" href="coach-manual-v2.html#window"><svg class="ic"><use href="#i-doc"/></svg>发育窗口期</a>
+      <a class="chip" href="coach-manual-v2.html#multi"><svg class="ic"><use href="#i-doc"/></svg>多球参数速查</a>
+      <a class="chip" href="coach-manual-v2.html#tech"><svg class="ic"><use href="#i-doc"/></svg>技术教学时间线</a>
+      <a class="chip" href="coach-manual-v2.html#weekly"><svg class="ic"><use href="#i-doc"/></svg>周训练模板</a>
+      <a class="chip" href="coach-manual-v2.html#flow"><svg class="ic"><use href="#i-doc"/></svg>7-16 岁一图流</a>
+      <a class="chip" href="coach-manual-v2.html#faq"><svg class="ic"><use href="#i-doc"/></svg>教练常见问题</a>
+    </div>
+  </section>
+
+  <section>
+    <h2>使用说明 <span class="hint">零安装、零联网、零构建</span></h2>
+    <div class="howto">
+      <div><b>打开 index.html</b><span>双击本文件即可，无需服务器、无需 npm、无需联网。</span></div>
+      <div><b>先做等级定级</b><span>问卷结果会自动写入技术基线与目标等级，今日清单随之调整。</span></div>
+      <div><b>每天打卡</b><span>训练后记录时长与 RPE，并填每日问卷；有穿戴设备可导入 CSV。</span></div>
+      <div><b>拍视频 + 看诊断</b><span>视频评估可先点「载入示例姿态数据」试用；诊断页给出瓶颈与预警。</span></div>
+    </div>
+    <div class="note" style="margin-top:12px"><b>数据说明：</b>所有记录保存在浏览器 localStorage，不上传任何服务器。换设备请用工作台「数据接入 → 导出备份」迁移。YOLO 真实姿态解算需要本机安装 <code>ultralytics</code> 与 <code>opencv-python</code> 后运行 yolo-pose-bridge.py；不装也能用内置像素分析或示例数据。</div>
+  </section>
+
+  <section>
+    <h2>完整文件索引</h2>
+    <table>
+      <thead><tr><th>文件</th><th>用途</th><th>类型</th></tr></thead>
+      <tbody>
+        <tr><td><a href="index.html">index.html</a></td><td>本站导航台（入口）</td><td>导航页</td></tr>
+        <tr><td><a href="coach-workbench.html">coach-workbench.html</a></td><td>专项教练工作台（全部交互功能）</td><td>交互式应用</td></tr>
+        <tr><td><a href="level-assessment.html">level-assessment.html</a></td><td>青少儿水平评估</td><td>交互式评估</td></tr>
+        <tr><td><a href="coach-guide.html">coach-guide.html</a></td><td>教练速成指导书 13 章</td><td>静态文档</td></tr>
+        <tr><td><a href="coach-manual-v2.html">coach-manual-v2.html</a></td><td>7-16 岁速查手册</td><td>静态文档</td></tr>
+        <tr><td><a href="coach-manual-7to16.html">coach-manual-7to16.html</a></td><td>教练手册初版（归档）</td><td>静态文档</td></tr>
+        <tr><td><a href="kids-training-program-part1.html">kids-training-program-part1.html</a></td><td>儿童训练方案 上</td><td>静态文档</td></tr>
+        <tr><td><a href="kids-training-program-part2.html">kids-training-program-part2.html</a></td><td>儿童训练方案 中</td><td>静态文档</td></tr>
+        <tr><td><a href="kids-training-program-part3.html">kids-training-program-part3.html</a></td><td>儿童训练方案 下</td><td>静态文档</td></tr>
+        <tr><td><a href="drill-cards.html">drill-cards.html</a></td><td>场边训练卡片（A4 打印）</td><td>打印物料</td></tr>
+        <tr><td><a href="poster-cheatsheet.html">poster-cheatsheet.html</a></td><td>海报速查表</td><td>打印物料</td></tr>
+        <tr><td><a href="tracking-and-parent-letter.html">tracking-and-parent-letter.html</a></td><td>成长追踪与家长信模板</td><td>打印物料</td></tr>
+        <tr><td><a href="test-report.html">test-report.html</a></td><td>系统测试与质量报告</td><td>静态文档</td></tr>
+        <tr><td><a href="yolo-pose-bridge.py">yolo-pose-bridge.py</a></td><td>本地 YOLOv8-pose 视频解算桥接脚本</td><td>可选 Python 工具</td></tr>
+        <tr><td><a href="reasonix.toml">reasonix.toml</a></td><td>项目配置</td><td>配置</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<footer>
+  <p>羽毛球专项训练体系 · 单文件离线应用 · 数据保存在本机</p>
+  <p>等级标准参考中羽在线分级讨论帖，仅作自评参考，不替代教练现场评估或医疗诊断。</p>
+  <p>源码：<a href="https://github.com/gxsri/badminton-coach-workbench" target="_blank" rel="noopener">github.com/gxsri/badminton-coach-workbench</a></p>
+</footer>
+</body>
+</html>

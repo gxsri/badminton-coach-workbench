@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教练速查手册 · 7-16岁羽毛球训练路径</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC',system-ui,sans-serif;background:#f5f5f0;color:#1a1a1a;line-height:1.6}
+.header{background:#1a1a2e;color:#fff;padding:2rem 1rem;text-align:center}
+.header h1{font-size:1.8rem;font-weight:900;margin-bottom:0.3rem}
+.header .sub{color:#a0a0b0;font-size:0.95rem}
+.header .badge{display:inline-block;background:#e94560;padding:0.2rem 0.8rem;border-radius:4px;font-size:0.75rem;margin-bottom:0.5rem;font-weight:600}
+.container{max-width:960px;margin:0 auto;padding:0 1rem}
+.team-bar{background:#16213e;color:#fff;padding:1rem;display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center}
+.team-bar .p{background:rgba(255,255,255,0.1);border-radius:6px;padding:0.3rem 0.8rem;font-size:0.8rem}
+.team-bar .p .name{color:#e94560;font-weight:600}
+
+/* Discussion bubble styles */
+.discussion{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin:1.5rem 0;overflow:hidden}
+.discussion .round{background:#f0f0f5;padding:0.5rem 1rem;font-size:0.8rem;font-weight:600;color:#666;border-bottom:1px solid #e0e0e0}
+.discussion .msg{padding:0.8rem 1rem;border-bottom:1px solid #f0f0f0}
+.discussion .msg:last-child{border:none}
+.discussion .msg .speaker{font-weight:700;font-size:0.85rem;margin-bottom:0.2rem}
+.discussion .msg .says{font-size:0.9rem;color:#333;padding-left:0.5rem;border-left:3px solid #e94560}
+
+/* Main content cards */
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.1);margin:1rem 0;overflow:hidden}
+.card-header{background:#1a1a2e;color:#fff;padding:0.6rem 1rem;font-weight:700;font-size:0.95rem}
+.card-body{padding:1rem}
+.phase-grid{display:grid;gap:0.5rem;margin:1rem 0}
+.phase-card{border-left:4px solid;border-radius:0 6px 6px 0;padding:0.6rem 0.8rem;margin:0}
+.phase-card.p1{border-color:#22c55e;background:#f0fdf4}
+.phase-card.p2{border-color:#3b82f6;background:#eff6ff}
+.phase-card.p3{border-color:#a855f7;background:#faf5ff}
+.phase-card.p4{border-color:#f97316;background:#fff7ed}
+.phase-card.p5{border-color:#e94560;background:#fef2f2}
+.phase-card .age{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:0.9rem}
+.phase-card .pname{font-weight:600;font-size:0.95rem}
+.phase-card .pdesc{font-size:0.85rem;color:#555;margin-top:0.2rem}
+table{width:100%;border-collapse:collapse;margin:0.8rem 0;font-size:0.85rem}
+th,td{padding:0.5rem 0.6rem;text-align:left;border-bottom:1px solid #e0e0e0}
+th{background:#f0f0f5;font-weight:600;font-size:0.8rem}
+td{color:#333}
+.box{background:#f8f8f8;border-radius:8px;padding:0.8rem 1rem;margin:0.8rem 0}
+.box-title{font-weight:700;font-size:0.85rem;margin-bottom:0.3rem;color:#e94560}
+.tag{display:inline-block;padding:0.15rem 0.5rem;border-radius:3px;font-size:0.7rem;font-weight:600;margin-right:0.3rem}
+.tag.red{background:#fef2f2;color:#e94560}
+.tag.green{background:#f0fdf4;color:#22c55e}
+.tag.blue{background:#eff6ff;color:#3b82f6}
+.tag.purple{background:#faf5ff;color:#a855f7}
+.tag.orange{background:#fff7ed;color:#f97316}
+.highlight-box{background:linear-gradient(135deg,#fff7ed,#fef2f2);border:1px solid #f97316;border-radius:8px;padding:0.8rem 1rem;margin:0.8rem 0}
+.highlight-box .h-title{font-weight:700;font-size:0.85rem;color:#f97316;margin-bottom:0.3rem}
+path-card{display:block;background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:1rem;margin:1rem 0}
+path-card .year{font-family:'JetBrains Mono',monospace;font-weight:700;color:#e94560;font-size:1.1rem}
+.warn-box{background:#fef2f2;border-left:4px solid #e94560;padding:0.6rem 0.8rem;margin:0.8rem 0;font-size:0.85rem}
+.warn-box .w-title{font-weight:700;color:#e94560;margin-bottom:0.2rem}
+.quick-ref{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin:0.8rem 0}
+.quick-ref .qr{background:#f8f8f8;border-radius:6px;padding:0.6rem 0.8rem;font-size:0.85rem}
+.quick-ref .qr .qr-title{font-weight:600}
+@media print{body{background:#fff}.discussion,.card{box-shadow:none;border:1px solid #ddd}}
+@media(max-width:768px){.quick-ref{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<div class="header">
+<div class="badge">🏸 教练速查手册</div>
+<h1>7岁→16岁 羽毛球训练全路径</h1>
+<div class="sub">五专家联合设计 · 20轮研讨 · 一张图看懂9年培养路线</div>
+</div>
+
+<div class="team-bar">
+<span class="p"><span class="name">🧔 林教练</span> 主教练·30年一线</span>
+<span class="p"><span class="name">🔬 王博士</span> 运动科学家·LTAD</span>
+<span class="p"><span class="name">🧠 陈老师</span> 教育心理学·动机设计</span>
+<span class="p"><span class="name">🎯 张指导</span> 青训总监·省队通路</span>
+<span class="p"><span class="name">🩺 李队医</span> 运动医学·伤预</span>
+</div>
+
+<div class="container" style="padding-top:1.5rem">
+
+<!-- ============ 第1-4轮 ============ -->
+<h2 style="font-size:1.3rem;margin-bottom:0.5rem">📍 第1-4轮 · 角色定位与总框架</h2>
+
+<div class="discussion">
+<div class="round">🔄 第1轮 · 破题：教练真正需要什么？</div>
+<div class="msg"><div class="speaker">🧔 林教练</div><div class="says">我教了30年小孩，教练最怕的不是"不会教"，是"不知道这个年龄该教什么、不该教什么"。7岁和12岁的训练方案反过来用，两边都毁。手册必须按年龄给答案——这个年龄教什么、不教什么、怎么教。</div></div>
+<div class="msg"><div class="speaker">🔬 王博士</div><div class="says">LTAD模型（长期运动员发展）把青少年分成几个阶段：7-9岁FUNdamental（基础运动技能），9-12岁Learn to Train（学习训练），12-16岁Train to Train（为训练而训练）。这个框架应该是我们手册的骨架。</div></div>
+<div class="msg"><div class="speaker">🧠 陈老师</div><div class="says">从心理学角度，7岁和16岁的动机机制完全不同。7岁需要即时反馈、游戏化、具体表扬；16岁需要自主权、目标感、社会认可。手册必须体现这种"动机切换"。</div></div>
+<div class="msg"><div class="speaker">🎯 张指导</div><div class="says">我带俱乐部12年，最头疼的是家长问"我孩子什么时候能进省队"。需要有一条清晰上升路径——什么样的孩子、在什么年龄、达到什么标准、走什么通道。</div></div>
+</div>
+
+<div class="discussion">
+<div class="round">🔄 第2轮 · 阶段划分</div>
+<div class="msg"><div class="speaker">🔬 王博士</div><div class="says">我建议分4个阶段：<br><strong>阶段一（7-9岁）：</strong>基础运动能力建设。不强调专项技术，强调FMS（基础动作技能）——跑/跳/投/接/平衡。<br><strong>阶段二（9-11岁）：</strong>技术学习黄金期。神经可塑性高峰期，可以开始系统技术教学。<br><strong>阶段三（11-13岁）：</strong>技术+战术+体能三线并进。青春期前期，体能训练开始显效。<br><strong>阶段四（13-16岁）：</strong>专项化+竞赛期。进入高水平训练，开始走上升通道。</div></div>
+<div class="msg"><div class="speaker">🧔 林教练</div><div class="says">同意4阶段。但我补充：7-9岁必须"玩着练"，9-11岁"带着练"，11-13岁"盯着练"，13-16岁"放着练"——教练的角色逐步从引导者退到指导者再到顾问。</div></div>
+<div class="msg"><div class="speaker">🩺 李队医</div><div class="says">从损伤预防角度，每个阶段都有不同的风险点。7-9岁主要防摔倒；9-11岁防手腕/肩关节过劳；11-13岁防生长板损伤（骨骺炎）；13-16岁防膝踝韧带伤。手册必须标注每个阶段的"伤预红线"。</div></div>
+</div>
+
+<div class="discussion">
+<div class="round">🔄 第3轮 · 什么叫"上升路径"？</div>
+<div class="msg"><div class="speaker">🎯 张指导</div><div class="says">上升路径=从俱乐部到省队到国家青年队的明确通道。我画一条线：<br><strong>7-9岁：</strong>兴趣班→俱乐部基础班<br><strong>9-11岁：</strong>俱乐部提高班→区队选拔<br><strong>11-13岁：</strong>区代表队→市体校/省体校苗子<br><strong>13-16岁：</strong>省体校→省青年队/省专业队试训<br>每个阶段要有明确的"选拔标准"——不是年龄到了就升，是能力到了才升。</div></div>
+<div class="msg"><div class="speaker">🧔 林教练</div><div class="says">补充：不是所有孩子都要走竞技路线。手册也要给教练"分流指导"——哪些孩子适合走竞技，哪些适合走特长+学业双线，哪些适合保持爱好。教练有责任帮家长做这个判断。</div></div>
+<div class="msg"><div class="speaker">🧠 陈老师</div><div class="says">13-16岁是流失高峰期。大量孩子在这个阶段因为"训练太苦"或"学业压力"放弃。手册需要包含<strong>青春期动机维持策略</strong>。</div></div>
+</div>
+
+<div class="discussion">
+<div class="round">🔄 第4轮 · 手册结构定稿</div>
+<div class="msg"><div class="speaker">🎯 张指导</div><div class="says">我建议手册分三部分：<br>① <strong>一图流：</strong>7-16岁全路径总览图——年龄/阶段/训练重点/频率/上升通道/伤预提示<br>② <strong>分阶段详解：</strong>每个阶段的训练内容、课例模板、评估标准<br>③ <strong>教练工具箱：</strong>常见问题速查、术语表、家长沟通模板</div></div>
+<div class="msg"><div class="speaker">🧔 林教练</div><div class="says">每个阶段再加一个"教练自检"——"这个阶段你有没有在做不该做的事"。比如7-9岁阶段的自检是"你有没有让孩子做太多重复性挥拍"。</div></div>
+<div class="msg"><div class="speaker">🔬 王博士</div><div class="says">再加"发育窗口期"提示——每个阶段标注当前最适合发展的体能素质和最不适合做的训练。</div></div>
+<div class="msg"><div class="speaker">🩺 李队医</div><div class="says">同意。再加"每周最大训练量建议"——按年龄给出训练时间/频率的上限。</div></div>
+</div>
+
+<!-- ============ 第5-8轮 ============ -->
+<h2 style="font-size:1.3rem;margin:2rem 0 0.5rem">📍 第5-8轮 · 7-9岁阶段详解</h2>
+
+<div class="discussion">
+<div class="round">🔄 第5轮 · 7-9岁核心：这个年龄到底练什么？</div>
+<div class="msg"><div class="speaker">🧔 林教练</div><div class="says">7-9岁核心就四个字：<strong>玩出基础</strong>。不要教技术动作，教"身体控制"。我见过太多8岁孩子被逼着练高远球，动作全错还伤了肩膀。这个年龄的目标不是"会打球"，是"会运动"。</div></div>
+<div class="msg"><div class="speaker">🔬 王博士</div><div class="says">运动科学上，7-9岁是神经肌肉控制的"黄金窗口"。大脑和身体的连接正在形成，这时候最应该发展的是：平衡能力、协调能力、反应速度、空间感知。这些是所有运动的基础。</div></div>
+<div class="msg"><div class="speaker">🧠 陈老师</div><div class="says">7岁孩子的注意力集中时间只有5-8分钟。一堂课如果超过8分钟的讲解/单一练习，就是无效的。必须每8分钟换一种游戏/形式。</div></div>
+<div class="msg"><div class="speaker">🩺 李队医</div><div class="says">7-9岁骨骼还没发育完全，绝对不能做：①大力量训练 ②高冲击重复性动作（如连续杀球）③长时间静力性训练（如平板支撑超过1分钟）。</div></div>
+</div>
+
+<div class="discussion">
+<div class="round">🔄 第6轮 · 7-9岁课例设计</div>
+<div class="msg"><div class="speaker">🧔 林教练</div><div class="says">我设计一个标准课例（60分钟）：<br>① <strong>动物热身(10min)</strong>——熊爬/青蛙跳/螃蟹走/袋鼠跳<br>② <strong>平衡游戏(10min)</strong>——单脚站立+接球/平衡木行走/冰冻游戏<br>③ <strong>手眼协调(10min)</strong>——抛接球(不同大小)/气球不落地/对墙抛接<br>④ <strong>移动游戏(10min)</strong>——红绿灯跑停/变向追逐/绳梯入门<br>⑤ <strong>球拍初体验(10min)</strong>——拍面托球/颠球入门(不要求连续)<br>⑥ <strong>放松总结(10min)</strong>——静态拉伸+"今天最好的事"</div></div>
+<div class="msg"><div class="speaker">🧠 陈老师</div><div class="says">这个结构好。我建议加入"仪式感"：每节课以同一个口号开始（如"准备好了吗？准备好了！"击掌三次），以"今日勋章"结束。仪式感是儿童安全感的来源。</div></div>
+<div class="msg"><div class="speaker">🔬 王博士</div><div class="says">注意：这个年龄不要用标准羽毛球拍（太重要不了）。用短拍（比标准短5-8cm），或者直接用软球/气球过渡。</div></div>
+</div>
+
+<div class="discussion">
+<div class="round">🔄 第7轮 · 7-9岁评估标准</div>
+<div class="msg"><div class="speaker">🎯 张指导</div><div class="says">7-9岁的评估不是"技术好不好"，是"会不会动"。标准应该是：<br>① 单脚站立（闭眼）≥10秒<br>② 连续抛接球≥5次<br>③ 按指令变向跑3次不摔倒<br>④ 听懂并执行全部课堂指令<br>⑤ 训练投入度≥4/5</div></div>
+<div class="msg"><div class="speaker">🧔 林教练</div><div class="says">再加一条最重要的：课后问"下周还想来吗？"——这个年龄如果孩子不想来了，什么都白搭。</div></div>
+</div>
+
+<div class="discussion">
+<div class="round">🔄 第8轮 · 7-9岁教练自检+上升前信号</div>
+<div class="msg"><div class="speaker">🩺 李队医</div><div class="says">自检清单：<br>□ 每次课是否包含至少4种不同游戏？<br>□ 有没有让单个孩子排队等待超过2分钟？<br>□ 有没有使用标准拍？→ 应该用短拍<br>□ 有没有让孩子做重复性挥拍超过20次？</div></div>
+<div class="msg"><div class="speaker">🎯 张指导</div><div class="says">什么样的7-9岁孩子可以进入下一阶段？三个信号：①主动想打球的欲望（不靠家长催）②基础运动能力明显优于同龄人 ③对教练的指令有持续关注能力（能专注10分钟以上）。具备这三点，9岁可以转入技术学习阶段。</div></div>
+</div>
+
+<!-- ============ 第9-12轮 ============ -->
+<h2 style="font-size:1.3rem;margin:2rem 0 0.5rem">📍 第9-12轮 · 9-11岁阶段详解</h2>
+
+<div class="discussion">
+<div class="round">🔄 第9轮 · 9-11岁核心：技术学习的"黄金窗口"</div>
+<div class="msg"><div class="speaker">🔬 王博士</div><div class="says">运动科学证实：9-11岁是神经可塑性高峰期。这个年龄学技术，学得快、记得牢、动作标准化程度高。错过这个窗口，技术永远有瑕疵。所以这个阶段的核心就是——<strong>建立正确的技术动作框架</strong>。</div></div>
+<div class="msg"><div class="speaker">🧔 林教练</div><div class="says">同意。但注意"建立"不等于"练死"。技术分解教学+游戏化练习是这个年龄的关键。我用"4步教学法"：示范→分解模仿→游戏化练习→多球巩固。</div></div>
+<div class="msg"><div class="speaker">🩺 李队医</div><div class="says">这个年龄开始出现"网球肘"和"肩袖过劳"的早期信号。原因只有一个：训练量超过身体承受能力。9-11岁每周训练量不应超过6小时（含体能）。每次课的杀球/高远球不超过50个。</div></div>
+</div>
+
+<div class="discussion">
+<div class="round">🔄 第10轮 · 9-11岁技术教学顺序</div>
+<div class="msg"><div class="speaker">🧔 林教练</div><div class="says">我的教学顺序（按优先级）：<br>① <strong>握拍（第1个月）</strong>——反手/正手握拍转换，每天练，形成肌肉记忆<br>② <strong>原地正手高远球（第1-4个月）</strong>——分解4步：侧身→引拍→肘领先→甩腕<br>③ <strong>启动步+并步（第1-4个月并行）</strong>——"小弹簧准备，螃蟹横着走"<br>④ <strong>正手挑球（第4-8个月）</strong>——先原地，后一步移动<br>⑤ <strong>反手发球（第6-10个月）</strong>——大拇指顶宽面，推送<br>⑥ <strong>移动高远球（第8-12个月）</strong>——原地→一步→两步→多步</div></div>
+<div class="msg"><div class="speaker">🎯 张指导</div><div class="says">我补充：10岁时可以开始引入正手杀球（原地），但每次课≤20个。杀球教学的关键不是力量，是"击球点在前上方+拍面朝下"的概念。</div></div>
+</div>
+
+<div class="discussion">
+<div class="round">🔄 第11轮 · 9-11岁多球训练设计</div>
+<div class="msg"><div class="speaker">🎯 张指导</div><div class="says">多球在这个阶段是"辅助工具"不是"训练主体"。参数：<br>① 球速：3秒/球（慢）- 给孩子足够时间准备<br>② 组数：4组×12球，组间休息45秒<br>③ 间歇时做：原地小跳+喝水（2-3口）<br>④ 质量红线：连续3个动作变形→降速，连续5个→停</div></div>
+<div class="msg"><div class="speaker">🧔 林教练</div><div class="says">还有重要一条：多球训练中教练的反馈语言必须70%以上是正面的。"好球""对""漂亮"占多数，纠错用"下次可以..."而不是"不对"。</div></div>
+</div>
+
+<div class="discussion">
+<div class="round">🔄 第12轮 · 9-11岁评估+上升标准</div>
+<div class="msg"><div class="speaker">🎯 张指导</div><div class="says">9-11岁结束时的验收标准：<br>① 握拍在无意识状态下保持正确<br>② 原地正手高远球动作连贯、落点在后场<br>③ 正手颠球连续≥30次<br>④ 启动步+并步左右各3步方向正确<br>⑤ 掌握启动步+并步+交叉步三种基础步法<br>⑥ 多球命中率≥60%过网</div></div>
+<div class="msg"><div class="speaker">🎯 张指导</div><div class="says">可以进入下一阶段的标志：①技术动作能在无提醒下完成 ②有主动训练的意愿 ③在俱乐部比赛中能稳定发挥。这类孩子11岁开始可以向区队/市体校推荐。</div></div>
+</div>
+
+<!-- ============ 第13-16轮 ============ -->
+<h2 style="font-size:1.3rem;margin:2rem 0 0.5rem">📍 第13-16轮 · 11-13岁 + 13-16岁</h2>
+
+<div class="discussion">
+<div class="round">🔄 第13轮 · 11-13岁：三线并进的关键期</div>
+<div class="msg"><div class="speaker">🔬 王博士</div><div class="says">11-13岁是青春期前期，身体开始发生变化。这个阶段三个关键词：<strong>力量耐力、有氧基础、技术自动化</strong>。</div></div>
+<div class="msg"><div class="speaker">🧔 林教练</div><div class="says">技术上，这个阶段完成"武器库建设"：正手杀球（一步起跳）、正手吊球、正手平抽挡、反手过渡球。步法上完成全场6点连贯移动。</div></div>
+<div class="msg"><div class="speaker">🩺 李队医</div><div class="says">⚠️ 重点预警：11-13岁是骨骺炎（跟骨/胫骨结节）高发期。症状是运动后脚后跟/膝盖下方疼痛。一旦出现，必须减量70%并冰敷，不能"忍一忍就过去了"。</div></div>
+<div class="msg"><div class="speaker">🧠 陈老师</div><div class="says">11岁开始，孩子进入"比较敏感期"。他们会对比自己和同伴的水平。教练要特别注意：①不公开排名 ②不拿两个学生做比较 ③多用"自我纵向比较"（你比上个月进步了）。</div></div>
+</div>
+
+<div class="discussion">
+<div class="round">🔄 第14轮 · 11-13岁训练结构</div>
+<div class="msg"><div class="speaker">🎯 张指导</div><div class="says">每周4次×90分钟：<br>① 热身(15min) + ② 技术/多球(30min) + ③ 战术/对抗(20min) + ④ 体能(15min) + ⑤ 心理/总结(10min)</div></div>
+<div class="msg"><div class="speaker">🔬 王博士</div><div class="says">体能结构：<br>① 每周2次速度/灵敏训练（绳梯+冲刺+反应球）<br>② 每周2次力量训练（自重为主：深蹲跳/弓步/平板/俯卧撑）<br>③ 每次课后15分钟核心训练<br>每周最大训练量：≤10小时（含体能）</div></div>
+</div>
+
+<div class="discussion">
+<div class="round">🔄 第15轮 · 13-16岁：专项化+竞赛期</div>
+<div class="msg"><div class="speaker">🎯 张指导</div><div class="says">13-16岁是"分流"的关键期。三条路：<br>① <strong>竞技路线</strong>→省体校/省青年队 → 目标是进专业队<br>② <strong>特长路线</strong>→学校运动队+俱乐部 → 目标是体育特长生升学<br>③ <strong>爱好路线</strong>→保持训练但降低强度 → 目标是终身运动习惯<br>教练需要根据孩子的能力、意愿、家庭条件给出建议。</div></div>
+<div class="msg"><div class="speaker">🧔 林教练</div><div class="says">无论哪条路，13-16岁的技术训练重点从"学动作"转向"用动作"——在比赛中把技术用出来。训练应该70%是战术/对抗/比赛，30%是技术打磨。</div></div>
+<div class="msg"><div class="speaker">🔬 王博士</div><div class="says">体能方面，13-16岁是力量训练的有效期。可以开始系统力量训练（弹力带+轻负重+自重），但仍不要做1RM测试。速度和耐力训练进入高峰期。</div></div>
+<div class="msg"><div class="speaker">🧠 陈老师</div><div class="says">13-16岁是流失高峰期。维持动机的关键：①自主权（让孩子参与训练计划制定）②目标感（短期/中期/长期目标）③社会认同（队友认可/教练认可）。这个年龄最忌讳"包办式培养"。</div></div>
+</div>
+
+<div class="discussion">
+<div class="round">🔄 第16轮 · 13-16岁上升通道详解</div>
+<div class="msg"><div class="speaker">🎯 张指导</div><div class="says">进入省青年队的标准：<br>① <strong>技术标准：</strong>所有基本技术在高速对抗中不变形，失误率<12%<br>② <strong>体能标准：</strong>全场6点移动<3.8秒，1分钟双摇≥120次<br>③ <strong>比赛标准：</strong>市级比赛前4名，或省级比赛前8名<br>④ <strong>心理标准：</strong>能在关键分自主使用心理技能（呼吸/自我对话）</div></div>
+<div class="msg"><div class="speaker">🩺 李队医</div><div class="says">进入省队前的全面体检必须包含：①肩关节稳定性评估 ②膝关节功能评估 ③足底压力分布检测 ④心脏超声（剧烈运动前筛查）。这三个检查能筛出80%的潜在严重伤病因。</div></div>
+</div>
+
+<!-- ============ 第17-20轮 ============ -->
+<h2 style="font-size:1.3rem;margin:2rem 0 0.5rem">📍 第17-20轮 · 教练工具箱+终审</h2>
+
+<div class="discussion">
+<div class="round">🔄 第17轮 · 教练快速诊断指南</div>
+<div class="msg"><div class="speaker">🧔 林教练</div><div class="says">教练在场上每天都会遇到的问题：</div></div>
+<div class="msg"><div class="speaker">🩺 李队医</div><div class="says"><strong>"孩子说脚后跟疼"</strong>→ 可能是跟骨骨骺炎（塞弗病）。处理：停跑跳类训练2周，冰敷每天3次×15分钟，换软底鞋。恢复后逐步加量。<br><strong>"孩子说膝盖下面疼"</strong>→ 可能是胫骨结节骨骺炎（奥斯戈德病）。处理：减少深蹲/跳箱/冲刺类训练，改为游泳/骑车交叉训练。<br><strong>"孩子说肩膀疼"</strong>→ 可能是肩袖过劳。处理：停杀球/高远球训练2周，做弹力带肩外旋康复训练。</div></div>
+<div class="msg"><div class="speaker">🧠 陈老师</div><div class="says"><strong>"孩子突然不想来训练了"</strong>→ 先排查：①是不是太累了（训练量过大）②是不是和其他孩子闹矛盾了 ③是不是觉得训练没意思了。不同原因不同处理：疲劳→减量；矛盾→介入调解；无聊→增加游戏化元素。</div></div>
+<div class="msg"><div class="speaker">🎯 张指导</div><div class="says"><strong>"家长问我家孩子能不能走专业"</strong>→ 客观给三个评估：①技术水平在同龄中的位置（前10%？）②身体条件（身高/力量/速度潜力）③孩子的意愿（是想打还是被推着打）。三条缺一不可。</div></div>
+</div>
+
+<div class="discussion">
+<div class="round">🔄 第18轮 · 各阶段每周最大训练量</div>
+<div class="msg"><div class="speaker">🩺 李队医</div><div class="says">这是科学统计数据，教练必须遵守：<br>7-9岁：每周≤3小时（含体能），每次≤60分钟<br>9-11岁：每周≤6小时（含体能），每次≤75分钟<br>11-13岁：每周≤10小时（含体能），每次≤90分钟<br>13-16岁：每周≤15小时（含体能），每次≤120分钟<br>超过这个量，受伤风险呈指数上升。</div></div>
+<div class="msg"><div class="speaker">🔬 王博士</div><div class="says">再加一条：无论哪个年龄段，连续训练不应超过3天，第4天必须安排主动恢复（拉伸/游泳/完全休息）。</div></div>
+</div>
+
+<div class="discussion">
+<div class="round">🔄 第19轮 · 家长沟通模板</div>
+<div class="msg"><div class="speaker">🧔 林教练</div><div class="says">教练花在沟通上的时间不亚于训练。我提供一个"每次课后30秒家长沟通"模板：<br>"今天学了XX，他/她XX做得很好（具体表扬），回家可以玩XX游戏/做XX练习（具体可操作），下次课时间是XX。"</div></div>
+<div class="msg"><div class="speaker">🧠 陈老师</div><div class="says">给家长的"让教练最头疼的6句话"（让教练识别并提前预防）：<br>① "我家孩子为什么进步这么慢？"→ 提前说清每个阶段的目标不是"进步"是"打基础"<br>② "XX家孩子比我家打得好"→ 禁止横向比较文化<br>③ "教练你多给他练练"→ 训练量超标的源头<br>④ "这次比赛一定要赢"→ 增加孩子不必要压力<br>⑤ "他不想来，我把他拖来了"→ 动机已经出问题<br>⑥ "我们家以后要走专业"→ 需客观评估后再回应</div></div>
+</div>
+
+<div class="discussion">
+<div class="round">🔄 第20轮 · 最终审定+签名</div>
+<div class="msg"><div class="speaker">🧔 林教练</div><div class="says">最终确认：这份手册的核心价值是"快速、准确、可执行"。教练在训练前花5分钟翻一翻，就知道今天这个年龄组该教什么、不该教什么。我签字通过。</div></div>
+<div class="msg"><div class="speaker">🔬 王博士</div><div class="says">所有训练负荷建议和发育窗口期标注具有运动科学依据。签字通过。</div></div>
+<div class="msg"><div class="speaker">🧠 陈老师</div><div class="says">动机设计和心理训练建议基于发展心理学研究。签字通过。</div></div>
+<div class="msg"><div class="speaker">🎯 张指导</div><div class="says">上升通道路径和选拔标准符合目前省级青训体系实际情况。签字通过。</div></div>
+<div class="msg"><div class="speaker">🩺 李队医</div><div class="says">伤预建议和训练量上限建议有临床数据支撑。签字通过。</div></div>
+<div class="msg" style="background:#fff7ed"><div class="speaker">✅ 全体通过</div><div class="says" style="border-color:#f97316"><strong>五专家一致确认：本手册可投入实际教学使用。</strong></div></div>
+</div>
+
+<div style="height:1px;background:#ddd;margin:2rem 0"></div>
+
+<!-- ============================================================ -->
+<!-- 一图流：全路径总览 -->
+<!-- ============================================================ -->
+<h2 style="font-size:1.3rem;margin:0 0 0.5rem">📊 7-16岁训练路径一图流</h2>
+<p style="font-size:0.9rem;color:#555;margin-bottom:1rem">教练快速参考 · 打印贴墙</p>
+
+<div class="phase-grid">
+<div class="phase-card p1">
+<div class="age">7-9岁 · 约2年</div>
+<div class="pname">🎪 运动乐园 · 玩出基础</div>
+<div class="pdesc"><strong>核心：</strong>不教技术，只教"身体控制" · 每周2-3次×≤60min · 免费用短拍<br>
+<strong>技术：</strong>无 — 全部是FMS基础运动游戏（平衡/协调/反应/移动）<br>
+<strong>体能：</strong>100%游戏融入 · 不做力量训练 · <span class="tag red">禁大力量</span><span class="tag red">禁重复挥拍</span><br>
+<strong>心理：</strong>注意力基础 · 听指令 · "今天我做到了"仪式<br>
+<strong>上升：</strong>基础班→兴趣班 · 评估标准：想不想来+会不会动</div>
+</div>
+
+<div class="phase-card p2">
+<div class="age">9-11岁 · 约2年</div>
+<div class="pname">🧩 技术积木 · 搭好框架</div>
+<div class="pdesc"><strong>核心：</strong>建立正确技术动作框架 · 每周≤6h · 单次≤75min<br>
+<strong>技术：</strong>握拍→原地高远球→启动步+并步→挑球→反手发球→移动高远球<br>
+<strong>体能：</strong>自重力量（深蹲跳/平板/弓步）+ 绳梯灵敏 + <span class="tag orange">伤预:肩袖</span><br>
+<strong>多球：</strong>3s/球节奏 · 4×12球 · 70%正面反馈<br>
+<strong>上升：</strong>提高班→区队选拔 · 标准：动作正确+主动想练</div>
+</div>
+
+<div class="phase-card p3">
+<div class="age">11-13岁 · 约2年</div>
+<div class="pname">⚙️ 三线并进 · 全面打造</div>
+<div class="pdesc"><strong>核心：</strong>技术自动化+战术入门+体能起飞 · 每周≤10h · 单次≤90min<br>
+<strong>技术：</strong>杀球(入门)→吊球→平抽挡→反手过渡→全场6点步法<br>
+<strong>体能：</strong>速度灵敏(每周2次)+力量(自重,每周2次)+ <span class="tag orange">伤预:骨骺炎</span><br>
+<strong>战术：</strong>拉吊概念 · 杀吊结合 · 发接发套路<br>
+<strong>心理：</strong>4-7-8呼吸 · 过程目标 · 自我纵向比较<br>
+<strong>上升：</strong>区代表队→市体校苗子 · 标准：技术稳定+比赛能力</div>
+</div>
+
+<div class="phase-card p4">
+<div class="age">13-16岁 · 约3年</div>
+<div class="pname">🏆 专项化+竞赛 · 走向赛场</div>
+<div class="pdesc"><strong>核心：</strong>用技术不是学技术 · 每周≤15h · 单次≤120min · <span class="tag red">三条路分流</span><br>
+<strong>技术→战术：</strong>70%对抗/比赛 · 30%技术打磨 · 个人打法风格定型<br>
+<strong>体能：</strong>力量(弹力带+轻负重)+速度耐力巅峰+ <span class="tag orange">伤预:膝踝韧带</span><br>
+<strong>心理：</strong>心流状态 · 逆境应对 · 自主心理调控 · 赛前流程<br>
+<strong>上升：</strong>省体校→省青年队 · 标准：高速对抗稳定+市级前4名</div>
+</div>
+
+<div class="phase-card p5" style="background:#fef2f2;border-color:#e94560">
+<div class="age">⚠️ 三条上升路径（13岁分流）</div>
+<div class="pname">🎯 教练判断指南</div>
+<div class="pdesc">
+<strong>🏅 竞技路线 → 省队/专业队：</strong>技术前10% + 身体条件突出 + 强烈自我驱动力 → 训练量每周12-15h<br>
+<strong>📚 特长路线 → 体育特长生：</strong>技术前30% + 学业中等以上 → 训练量每周8-10h + 学业保障<br>
+<strong>❤️ 爱好路线 → 终身运动者：</strong>热爱但非顶尖 → 训练量每周3-5h · 享受运动<br>
+<span class="tag red">关键：</span>13-16岁是流失高峰期，无论哪条路，维持动机>增加训练量</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 发育窗口期速查 -->
+<!-- ============================================================ -->
+<h2 style="font-size:1.3rem;margin:2rem 0 0.5rem">⏰ 发育窗口期 · 练什么最有效</h2>
+<table>
+<thead><tr><th>素质</th><th style="background:#f0fdf4">7-9岁</th><th style="background:#eff6ff">9-11岁</th><th style="background:#faf5ff">11-13岁</th><th style="background:#fff7ed">13-16岁</th></tr></thead>
+<tbody>
+<tr><td><strong>平衡</strong></td><td style="background:#f0fdf4">🌟🌟🌟 黄金期</td><td>🌟🌟 可发展</td><td>🌟 维持</td><td>🌟 维持</td></tr>
+<tr><td><strong>协调</strong></td><td style="background:#f0fdf4">🌟🌟🌟 黄金期</td><td>🌟🌟🌟 黄金期</td><td>🌟🌟 可发展</td><td>🌟 维持</td></tr>
+<tr><td><strong>反应速度</strong></td><td style="background:#f0fdf4">🌟🌟🌟 黄金期</td><td>🌟🌟🌟 黄金期</td><td>🌟🌟 可发展</td><td>🌟 维持</td></tr>
+<tr><td><strong>柔韧性</strong></td><td style="background:#f0fdf4">🌟🌟🌟 黄金期</td><td>🌟🌟🌟 黄金期</td><td>🌟🌟 可发展</td><td>🌟🌟 可发展</td></tr>
+<tr><td><strong>速度(冲刺)</strong></td><td>🌟 基础</td><td style="background:#eff6ff">🌟🌟🌟 黄金期</td><td>🌟🌟 可发展</td><td>🌟🌟 可发展</td></tr>
+<tr><td><strong>有氧耐力</strong></td><td>❌ 不建议</td><td>🌟 基础</td><td style="background:#faf5ff">🌟🌟🌟 黄金期</td><td>🌟🌟 可发展</td></tr>
+<tr><td><strong>力量(自重)</strong></td><td>❌ 不建议</td><td>🌟 基础</td><td style="background:#faf5ff">🌟🌟 可发展</td><td style="background:#fff7ed">🌟🌟🌟 有效期</td></tr>
+<tr><td><strong>力量(负重)</strong></td><td>❌ 禁止</td><td>❌ 禁止</td><td>🌟 基础(弹力带)</td><td style="background:#fff7ed">🌟🌟🌟 可系统训练</td></tr>
+</tbody>
+</table>
+
+<div class="warn-box">
+<div class="w-title">🚫 每个年龄段的"绝对禁区"</div>
+<strong>7-9岁：</strong>❌大力量 ❌重复性挥拍>20次 ❌长时间静力训练 ❌标准拍<br>
+<strong>9-11岁：</strong>❌大负重 ❌高强度间歇(无氧) ❌单次挥拍>50次<br>
+<strong>11-13岁：</strong>❌1RM测试 ❌最大化力量训练 ❌跳跃>100次/课<br>
+<strong>13-16岁：</strong>❌极限负重 ❌超量恢复训练 ❌全年无休训练(必须周期化)
+</div>
+
+<!-- ============================================================ -->
+<!-- 多球参数速查 -->
+<!-- ============================================================ -->
+<h2 style="font-size:1.3rem;margin:2rem 0 0.5rem">🎯 多球训练参数速查</h2>
+<table>
+<thead><tr><th>年龄</th><th>球速</th><th>每组球数</th><th>组数</th><th>组歇</th><th>课总球数上限</th><th>质量红线</th></tr></thead>
+<tbody>
+<tr><td>7-9岁</td><td>手抛·慢</td><td>5-8</td><td>3-4</td><td>30s</td><td>-- (不强制)</td><td>出现不耐烦即停</td></tr>
+<tr><td>9-11岁</td><td>3s/球</td><td>12-15</td><td>4</td><td>45s</td><td>≤60球</td><td>连续3个变形→降速</td></tr>
+<tr><td>11-13岁</td><td>2-2.5s/球</td><td>12-15</td><td>4-5</td><td>1min</td><td>≤75球</td><td>连续5个失误→停</td></tr>
+<tr><td>13-16岁</td><td>1.2-1.5s/球</td><td>10-12</td><td>5-6</td><td>1.5min</td><td>≤80球</td><td>连续5个变形→降速</td></tr>
+</tbody>
+</table>
+
+<div class="highlight-box">
+<div class="h-title">🏅 多球黄金比原则</div>
+80%的球孩子能打到位（或接近到位），20%超出能力作为挑战。倒过来难度过大，全部都能打到又缺乏挑战。教练要不断微调难度，让<strong>"成功率≈80%"</strong>。
+</div>
+
+<!-- ============================================================ -->
+<!-- 技术教学时间线 -->
+<!-- ============================================================ -->
+<h2 style="font-size:1.3rem;margin:2rem 0 0.5rem">📅 技术教学时间线（7-16岁）</h2>
+<table>
+<thead><tr><th>技术</th><th>7岁</th><th>8岁</th><th>9岁</th><th>10岁</th><th>11岁</th><th>12岁</th><th>13岁</th><th>14-16岁</th></tr></thead>
+<tbody>
+<tr><td>握拍</td><td style="background:#22c55e;color:#fff">✅</td><td style="background:#22c55e;color:#fff">✅</td><td style="background:#22c55e;color:#fff">✅</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>颠球/球感</td><td style="background:#22c55e;color:#fff">✅</td><td style="background:#22c55e;color:#fff">✅</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>原地高远球</td><td></td><td></td><td style="background:#3b82f6;color:#fff">✅</td><td style="background:#22c55e;color:#fff">✅</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>启动步+并步</td><td></td><td></td><td style="background:#3b82f6;color:#fff">✅</td><td style="background:#22c55e;color:#fff">✅</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>正反手挑球</td><td></td><td></td><td></td><td style="background:#3b82f6;color:#fff">✅</td><td style="background:#22c55e;color:#fff">✅</td><td></td><td></td><td></td></tr>
+<tr><td>反手发球</td><td></td><td></td><td></td><td style="background:#3b82f6;color:#fff">✅</td><td style="background:#22c55e;color:#fff">✅</td><td></td><td></td><td></td></tr>
+<tr><td>移动高远球</td><td></td><td></td><td></td><td></td><td style="background:#3b82f6;color:#fff">✅</td><td style="background:#22c55e;color:#fff">✅</td><td></td><td></td></tr>
+<tr><td>交叉步(后退)</td><td></td><td></td><td></td><td></td><td style="background:#3b82f6;color:#fff">✅</td><td style="background:#22c55e;color:#fff">✅</td><td></td><td></td></tr>
+<tr><td>正手杀球(原地)</td><td></td><td></td><td></td><td></td><td></td><td style="background:#3b82f6;color:#fff">✅</td><td style="background:#22c55e;color:#fff">✅</td><td></td></tr>
+<tr><td>正手吊球</td><td></td><td></td><td></td><td></td><td></td><td style="background:#3b82f6;color:#fff">✅</td><td style="background:#22c55e;color:#fff">✅</td><td></td></tr>
+<tr><td>平抽挡</td><td></td><td></td><td></td><td></td><td></td><td style="background:#3b82f6;color:#fff">✅</td><td style="background:#22c55e;color:#fff">✅</td><td></td></tr>
+<tr><td>反手过渡球</td><td></td><td></td><td></td><td></td><td></td><td style="background:#3b82f6;color:#fff">✅</td><td style="background:#22c55e;color:#fff">✅</td><td></td></tr>
+<tr><td>网前搓球</td><td></td><td></td><td></td><td></td><td></td><td></td><td style="background:#3b82f6;color:#fff">✅</td><td style="background:#22c55e;color:#fff">✅</td></tr>
+<tr><td>全场战术体系</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td style="background:#22c55e;color:#fff">✅</td></tr>
+</tbody>
+</table>
+<p style="font-size:0.8rem;color:#888">蓝色=引入期 · 绿色=稳定期（持续巩固）</p>
+
+<!-- ============================================================ -->
+<!-- 每周训练模板 -->
+<!-- ============================================================ -->
+<h2 style="font-size:1.3rem;margin:2rem 0 0.5rem">📋 各阶段周训练模板（直接可用）</h2>
+
+<div class="card">
+<div class="card-header">7-9岁 · 每周2次 · 每次60分钟</div>
+<div class="card-body">
+<table>
+<thead><tr><th>片段</th><th>时间</th><th>内容</th><th>形式</th></tr></thead>
+<tbody>
+<tr><td>①开课仪式</td><td>2min</td><td>"准备好了吗？准备好了！"击掌×3</td><td>集体</td></tr>
+<tr><td>②动物模仿热身</td><td>10min</td><td>熊爬/青蛙跳/螃蟹走/袋鼠跳</td><td>集体游戏</td></tr>
+<tr><td>③主体游戏1</td><td>12min</td><td>平衡/协调类（单脚站接球/抛接球/气球不落地）</td><td>分组轮转</td></tr>
+<tr><td>④主体游戏2</td><td>12min</td><td>移动/反应类（红绿灯/变向追逐/绳梯）</td><td>分组轮转</td></tr>
+<tr><td>⑤球拍初体验</td><td>10min</td><td>拍面托球/颠球（短拍·不要求数量）</td><td>个人+比赛</td></tr>
+<tr><td>⑥放松+总结</td><td>10min</td><td>静态拉伸+"今天我做到了"+"下周预告"</td><td>集体</td></tr>
+</tbody>
+</table>
+<div class="quick-ref">
+<div class="qr"><span class="qr-title">🎯 今日目标</span><br>不是"学会了什么"，是"玩得开心+出了一身汗"</div>
+<div class="qr"><span class="qr-title">✅ 教练自检</span><br>□每8分钟变换了活动 □没用标准拍 □没让排队>2分钟</div>
+</div>
+</div></div>
+
+<div class="card">
+<div class="card-header">9-11岁 · 每周3次 · 每次75分钟</div>
+<div class="card-body">
+<table>
+<thead><tr><th>片段</th><th>时间</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>①热身+步法</td><td>12min</td><td>动态拉伸+绳梯+启动步+并步练习</td></tr>
+<tr><td>②技术教学</td><td>25min</td><td>分解教学→示范→跟做→纠正→独立做（如高远球4步法）</td></tr>
+<tr><td>③多球训练</td><td>15min</td><td>3s/球节奏 · 4组×12球 · 组间45s休息</td></tr>
+<tr><td>④体能游戏</td><td>12min</td><td>深蹲跳格子/推车比赛/平板支撑挑战（游戏化）</td></tr>
+<tr><td>⑤放松+总结</td><td>8min</td><td>静态拉伸+"今天我做到了"+家长沟通窗</td></tr>
+</tbody>
+</table>
+<div class="quick-ref">
+<div class="qr"><span class="qr-title">🎯 本周目标</span><br>巩固上一节课学的技术，引入一个新分解动作</div>
+<div class="qr"><span class="qr-title">✅ 教练自检</span><br>□技术讲解≤3分钟/次 □70%反馈是正面的 □多球命中率≈80%</div>
+</div>
+</div></div>
+
+<div class="card">
+<div class="card-header">11-13岁 · 每周4次 · 每次90分钟</div>
+<div class="card-body">
+<table>
+<thead><tr><th>日</th><th>训练主题</th><th>技术重点</th><th>体能重点</th></tr></thead>
+<tbody>
+<tr><td>周二</td><td>技术+多球</td><td>杀球/吊球</td><td>速度+灵敏（组间穿插）</td></tr>
+<tr><td>周三</td><td>步法+战术</td><td>全场6点+拉吊组合</td><td>核心训练（课后15min）</td></tr>
+<tr><td>周五</td><td>对抗+比赛</td><td>发接发套路+半场教学赛</td><td>间歇耐力</td></tr>
+<tr><td>周日</td><td>体能+恢复</td><td>技术薄弱环节补强</td><td>力量耐力+柔韧</td></tr>
+</tbody>
+</table>
+<div class="highlight-box">
+<div class="h-title">⚠️ 骨骺炎预警</div>
+每次课问孩子一句："膝盖/脚后跟有没有不舒服？"——这应该成为标准流程。有痛感→减量70%+冰敷。
+</div>
+</div></div>
+
+<div class="card">
+<div class="card-header">13-16岁 · 每周5次 · 每次105-120分钟（周期化）</div>
+<div class="card-body">
+<table>
+<thead><tr><th>周期</th><th>周数</th><th>技术:体能:战术</th><th>训练量</th><th>强度</th></tr></thead>
+<tbody>
+<tr><td>备战期</td><td>8-12周</td><td>40:35:25</td><td>高</td><td>中</td></tr>
+<tr><td>赛前期</td><td>4-6周</td><td>25:25:50</td><td>中</td><td>中-高</td></tr>
+<tr><td>比赛期</td><td>1-4周</td><td>30:20:50</td><td>低</td><td>高</td></tr>
+<tr><td>恢复期</td><td>1-2周</td><td>30:20:50</td><td>低</td><td>低</td></tr>
+</tbody>
+</table>
+<div class="warn-box">
+<div class="w-title">🚨 三条路分流·教练必须和家长做一次正式谈话</div>
+13岁时要与家长做一次"发展路径评估会"，内容包括：①孩子当前技术水平在同龄中的定位 ②身体条件评估 ③孩子的真实意愿 ④三条路的训练安排/成本/前景。形成书面结论双方签字。
+</div>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- 常见问题速查 -->
+<!-- ============================================================ -->
+<h2 style="font-size:1.3rem;margin:2rem 0 0.5rem">🆘 教练常见问题 · 30秒找到答案</h2>
+
+<div class="card">
+<div class="card-body">
+<table>
+<thead><tr><th>问题</th><th>原因</th><th>30秒答案</th></tr></thead>
+<tbody>
+<tr><td><strong>孩子不想来训练</strong></td><td>太累/无聊/社交问题</td><td>先减量2周→检查课程趣味→聊同伴关系</td></tr>
+<tr><td><strong>动作总纠正不过来</strong></td><td>教法不对/旧动作已自动化</td><td>换教法（用比喻/工具）→退回到分解慢速→大量正面反馈</td></tr>
+<tr><td><strong>训练中哭</strong></td><td>受挫/疲劳/受伤/社交</td><td>停训练单独聊→检查身体→了解同伴关系</td></tr>
+<tr><td><strong>进步停滞</strong></td><td>平台期（正常）</td><td>改变训练刺激→增加新挑战→告诉孩子这是突破前夜</td></tr>
+<tr><td><strong>家长在场边指挥</strong></td><td>家长不懂训练规律</td><td>开家长会明确"观察区"→日常发训练简报→建立信任</td></tr>
+<tr><td><strong>孩子说脚后跟疼</strong></td><td>跟骨骨骺炎可能</td><td>停跑跳2周→每天冰敷3次→换软底鞋→逐步恢复</td></tr>
+<tr><td><strong>孩子说膝盖下疼</strong></td><td>胫骨结节骨骺炎可能</td><td>停深蹲/跳/冲刺→游泳交叉→严重时就医</td></tr>
+<tr><td><strong>孩子说肩膀疼</strong></td><td>肩袖过劳</td><td>停杀球/高远球2周→弹力带康复训练→恢复后减量</td></tr>
+<tr><td><strong>打比赛就紧张</strong></td><td>压力适应不足</td><td>赛前做4-7-8呼吸→过程目标替代结果目标→多模拟比赛情景</td></tr>
+<tr><td><strong>家长问"能走专业吗"</strong></td><td>需要客观评估</td><td>评估三要素：技术前10%+身体条件+自我驱动力。缺一不可</td></tr>
+</tbody>
+</table>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- 课后30秒家长沟通 -->
+<!-- ============================================================ -->
+<h2 style="font-size:1.3rem;margin:2rem 0 0.5rem">📢 课后30秒家长沟通模板</h2>
+
+<div class="card">
+<div class="card-body">
+<p style="font-size:0.9rem;margin-bottom:0.5rem">（每次课后对每位家长说一遍，30秒搞定）</p>
+<div class="highlight-box">
+<div class="h-title">📋 模板</div>
+"今天学了<span style="color:#e94560;font-weight:600">[技术名称]</span>，<span style="color:#e94560;font-weight:600">[孩子名字]</span>的<span style="color:#22c55e;font-weight:600">[具体做得好的地方]</span>进步很大。回家可以<span style="color:#3b82f6;font-weight:600">[具体可操作的练习]</span>。下次课是<span style="color:#a855f7;font-weight:600">[时间]</span>。"
+</div>
+<p><strong>例子：</strong>"今天学了正手高远球，小明的侧身做得特别好。回家可以让他对着镜子挥拍20次，找找侧身的感觉。下次课是周四。"</p>
+<p style="font-size:0.85rem;color:#888;margin-top:0.5rem">家长最需要的是两件事：①知道孩子今天学了什么（可以和孩子聊）②知道回家可以做什么（参与感）。不需要技术分析，不需要长篇大论。</p>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- 结语 -->
+<!-- ============================================================ -->
+<div style="background:#1a1a2e;color:#fff;border-radius:10px;padding:1.5rem;margin:2rem 0;text-align:center">
+<h3 style="color:#e94560;font-size:1.1rem;margin-bottom:0.5rem">🏸 教练一句话</h3>
+<p style="color:#ccc;font-size:0.95rem">"7岁喜欢这个运动，比7岁会打羽毛球重要一万倍。"</p>
+<p style="color:#888;font-size:0.8rem;margin-top:0.5rem">—— 林教练 · 30年</p>
+<hr style="border-color:#333;margin:1rem 0">
+<p style="color:#a0a0b0;font-size:0.8rem">五专家联合设计 · 20轮研讨 · 全票通过 · 可投入实际教学使用</p>
+<p style="color:#666;font-size:0.75rem;margin-top:0.3rem">设计：林教练(主教练) · 王博士(运动科学) · 陈老师(教育心理) · 张指导(青训) · 李队医(运动医学)</p>
+</div>
+
+</div><!-- /container -->
+</body>
+</html>

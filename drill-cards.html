@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>训练卡片库 · 打印裁剪即用</title>
+<style>
+
+@page{size:A4;margin:0.5cm}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC',sans-serif;background:#fff;color:#111;padding:1cm}
+h1{font-size:1.6rem;text-align:center;margin-bottom:0.2cm}
+.sub{text-align:center;font-size:0.7rem;color:#888;margin-bottom:0.5cm}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:0.4cm}
+.card{border:1.5px solid #333;border-radius:6px;padding:0.35cm;page-break-inside:avoid;background:#fff}
+.card .ct{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.15cm}
+.card .ct .age-tag{background:#eee;padding:0.05cm 0.25cm;border-radius:3px;font-size:0.5rem;font-weight:700}
+.card .ct .skill-tag{background:#e94560;color:#fff;padding:0.05cm 0.25cm;border-radius:3px;font-size:0.5rem;font-weight:700}
+.card h3{font-size:0.8rem;margin-bottom:0.1cm}
+.card .meta{display:flex;gap:0.3cm;margin-bottom:0.1cm;font-size:0.5rem;color:#666}
+.card .meta span{border:1px solid #ddd;padding:0.03cm 0.15cm;border-radius:2px}
+.card .setup{margin-bottom:0.1cm}
+.card .setup-title{font-weight:700;font-size:0.6rem;color:#555}
+.card .setup-body{font-size:0.55rem;color:#333;line-height:1.4}
+.card .setup-body ol{padding-left:0.8cm;margin:0}
+.card .setup-body ol li{margin:0}
+.card .key{font-size:0.5rem;color:#e94560;margin-top:0.05cm}
+.card .var{font-size:0.5rem;color:#3b82f6;margin-top:0.02cm}
+.cut-line{border:none;border-top:1px dashed #ccc;margin:0.2cm 0}
+@media print{
+    body{padding:0.3cm}
+    .card{border-color:#222}
+    .cut-line{display:none}
+}
+</style>
+</head>
+<body>
+<h1>🏸 训练卡片库 · 打印裁剪即用</h1>
+<div class="sub">每张卡片一个训练项目 · 按年龄标注 · 可直接带到场边使用</div>
+
+<div class="cards">
+
+<!-- ====== 7-9岁 卡片 ====== -->
+<div class="card"><div class="ct"><h3>🦘 袋鼠跳格子</h3><span class="age-tag">7-9岁</span><span class="skill-tag">协调+下肢</span></div>
+<div class="meta"><span>⏱ 8min</span><span>👥 4-8人</span><span>📍 场地</span><span>🎒 数字贴纸</span></div>
+<div class="setup"><div class="setup-title">设置</div><div class="setup-body">地面贴数字1-10格子（间距30cm），孩子从1跳到10。单脚→双脚→转身跳。</div></div>
+<div class="setup"><div class="setup-title">玩法</div><div class="setup-body"><ol><li>教练喊一个数字，孩子跳到那个数字</li><li>进阶：喊"5+3="，孩子跳到8</li><li>再进阶：用左手/右手摸数字的同时保持平衡</li></ol></div></div>
+<div class="key">🔑 要点：落地要轻、膝盖微弯、不摔倒比跳得快重要</div>
+<div class="var">🔀 变体：改成颜色格子/形状格子/动物格子</div>
+</div>
+
+<div class="card"><div class="ct"><h3>🎈 气球不落地</h3><span class="age-tag">7-9岁</span><span class="skill-tag">手眼协调+移动</span></div>
+<div class="meta"><span>⏱ 10min</span><span>👥 2-6人</span><span>📍 全场</span></div>
+<div class="setup"><div class="setup-title">设置</div><div class="setup-body">每人一个气球（或2人共用一个），用身体除手臂外的任何部位触球，保持气球不落地。</div></div>
+<div class="setup"><div class="setup-title">玩法</div><div class="setup-body"><ol><li>第一阶段：自由打，保气球不落</li><li>第二阶段：只能用头/脚/肩膀轮流触球</li><li>第三阶段：对打——两人一组，互相传球不落地</li></ol></div></div>
+<div class="key">🔑 要点：鼓励孩子跑动、跳起、下蹲去救球——这是羽毛球步法的启蒙</div>
+</div>
+
+<div class="card"><div class="ct"><h3>🚦 红绿灯跑停</h3><span class="age-tag">7-9岁</span><span class="skill-tag">反应速度+启动</span></div>
+<div class="meta"><span>⏱ 6min</span><span>👥 全队</span><span>📍 半场</span></div>
+<div class="setup"><div class="setup-title">设置</div><div class="setup-body">教练背对站一端，孩子站另一端（距离8-10米）。教练喊"绿灯"孩子前进，喊"红灯"停。</div></div>
+<div class="setup"><div class="setup-title">玩法</div><div class="setup-body"><ol><li>基础版：喊"红灯"时必须完全静止，动的人返回起点</li><li>羽毛球版：喊"绿灯"用并步/交叉步前进，喊"红灯"做启动步姿势</li><li>终极版：喊"红灯"的同时回头，看到有人动就点名返回</li></ol></div></div>
+<div class="key">🔑 要点：启动步的"小弹簧"姿势——膝盖微弯、重心压低</div>
+</div>
+
+<div class="card"><div class="ct"><h3>🦀 螃蟹运动会</h3><span class="age-tag">7-9岁</span><span class="skill-tag">侧向移动+协调</span></div>
+<div class="meta"><span>⏱ 8min</span><span>👥 4-8人</span><span>📍 全场</span></div>
+<div class="setup"><div class="setup-title">设置</div><div class="setup-body">地面贴两条平行线（间距5米），孩子在线之间做侧向滑步移动。</div></div>
+<div class="setup"><div class="setup-title">玩法</div><div class="setup-body"><ol><li>基础版：来回侧滑，手做钳子状（模仿螃蟹）</li><li>接力版：分成两组，侧滑到对面拍手返回，下一人出发</li><li>障碍版：中间放锥桶，侧滑绕桶S形</li></ol></div></div>
+<div class="key">🔑 要点："右脚靠左脚，左脚再跨一步"——双脚始终不交叉、不并拢</div>
+<div class="var">🔀 变体：持拍侧滑（拍面托球不落）→ 进阶为持拍+颠球侧滑</div>
+</div>
+
+<div class="card"><div class="ct"><h3>🎪 动物模仿秀</h3><span class="age-tag">7-9岁</span><span class="skill-tag">全身热身+柔韧</span></div>
+<div class="meta"><span>⏱ 8min</span><span>👥 全队</span><span>📍 半场</span></div>
+<div class="setup"><div class="setup-title">设置</div><div class="setup-body">教练喊动物名，孩子模仿该动物的移动方式前进/原地做动作。</div></div>
+<div class="setup"><div class="setup-title">动物库</div><div class="setup-body">🐻熊爬(四肢着地前进) / 🐸青蛙跳(深蹲跳) / 🦀螃蟹走(侧滑步) / 🐇兔子跳(双脚连续跳) / 🦩火烈鸟(单脚站立) / 🐊鳄鱼爬(俯卧爬行) / 🦎壁虎(俯撑侧移)</div></div>
+<div class="key">🔑 要点：每个动物模仿不是"做做样子"，要真的在运动——熊爬要膝盖离地、青蛙跳要蹲到底</div>
+</div>
+
+<!-- ====== 9-11岁 卡片 ====== -->
+<div class="card"><div class="ct"><h3>🏸 握拍转换挑战</h3><span class="age-tag">9-11岁</span><span class="skill-tag">握拍</span></div>
+<div class="meta"><span>⏱ 5min</span><span>👥 个人</span><span>🎒 球拍</span></div>
+<div class="setup"><div class="setup-title">玩法</div><div class="setup-body"><ol><li>孩子握拍，教练喊"正手"→拇指食指夹住宽面；喊"反手"→大拇指顶宽面</li><li>计时30秒，记录转换次数</li><li>进阶：边小跳边做握拍转换（模拟比赛中握拍切换）</li></ol></div></div>
+<div class="key">🔑 要点：转换时不看拍子、不调整手位、看前方。每次课后做3组。</div>
+<div class="var">🔀 家庭作业：看电视时做握拍转换，每天5分钟</div>
+</div>
+
+<div class="card"><div class="ct"><h3>🎾 高远球4步法</h3><span class="age-tag">9-11岁</span><span class="skill-tag">高远球</span></div>
+<div class="meta"><span>⏱ 15min</span><span>👥 1对1</span><span>📍 半场</span><span>🎒 拍+球</span></div>
+<div class="setup"><div class="setup-title">教学分解</div><div class="setup-body">四步口诀：<strong>①侧身</strong>→<strong>②引拍到脑后</strong>→<strong>③肘关节向前</strong>→<strong>④甩腕打出</strong><br>
+<strong>教学流程：</strong>无拍空挥(2周)→毛巾挥拍听"嗖"声(2周)→短拍挥拍(4周)→标准拍(减半量)</div></div>
+<div class="setup"><div class="setup-title">多球练习</div><div class="setup-body">教练手抛到位→孩子边喊步骤边打（"侧身→引拍→肘→打！"）→ 每组12球×4组</div></div>
+<div class="key">🔑 检查清单：①侧身对网？②拍在脑后？③肘朝前？④击球点在前上方？</div>
+<div class="var">🔀 纠错：打不远=侧身不够或没抬肘</div>
+</div>
+
+<div class="card"><div class="ct"><h3>🔧 高远球·两步移动</h3><span class="age-tag">9-11岁</span><span class="skill-tag">高远球+步法</span></div>
+<div class="meta"><span>⏱ 12min</span><span>👥 1对1</span><span>📍 全场</span><span>🎒 多球</span></div>
+<div class="setup"><div class="setup-title">设置</div><div class="setup-body">孩子站中场T位。教练送球到正手后场。孩子用两步后退到位后击高远球。</div></div>
+<div class="setup"><div class="setup-title">流程</div><div class="setup-body"><ol><li>第一步：交叉步后退（右脚先撤）</li><li>第二步：交叉步到位+同时引拍</li><li>击球：在最高点击球</li><li>回中：击球后并步回中</li></ol></div></div>
+<div class="key">🔑 要点："先转身再退"——不是面向网后退，是先侧身再退。4组×10球，组间45s。</div>
+</div>
+
+<div class="card"><div class="ct"><h3>🥄 挑球·舀汤游戏</h3><span class="age-tag">9-11岁</span><span class="skill-tag">正/反手挑球</span></div>
+<div class="meta"><span>⏱ 12min</span><span>👥 1对1</span><span>📍 网前</span><span>🎒 多球</span></div>
+<div class="setup"><div class="setup-title">口诀</div><div class="setup-body">"挑球像用勺子舀汤——拍子从低到高送出去"</div></div>
+<div class="setup"><div class="setup-title">教学</div><div class="setup-body"><ol><li>教练网前手抛球到正手位→孩子做正手挑球（拍子降到膝盖高度，由下往上送）</li><li>同上→反手位（大拇指顶宽面，手背朝网）</li><li>一正一反交替</li></ol></div></div>
+<div class="key">🔑 要点：正手手腕放松（"手腕是皮筋不是铁棍"）；反手大拇指顶宽面是正确与错误的唯一区别</div>
+</div>
+
+<div class="card"><div class="ct"><h3>📮 发球·投信游戏</h3><span class="age-tag">9-11岁</span><span class="skill-tag">反手发球</span></div>
+<div class="meta"><span>⏱ 10min</span><span>👥 2人一组</span><span>📍 网前</span></div>
+<div class="setup"><div class="setup-title">口诀</div><div class="setup-body">"球头朝下，大拇指推，拍面削一下"</div></div>
+<div class="setup"><div class="setup-title">玩法</div><div class="setup-body"><ol><li>两人隔网站，相距2米，目标是把球发到对方手能接到的高度</li><li>逐渐退远到发球线标准距离</li><li>进阶：在对方场区画一个"信箱"（用锥桶围成50×50cm方框），发进信箱得1分</li></ol></div></div>
+<div class="key">🔑 检查：①大拇指在宽面？②球头朝下？③推送（不发死力）？④拍面过网高度在1m以下？</div>
+</div>
+
+<div class="card"><div class="ct"><h3>🏃 启动步·弹簧训练</h3><span class="age-tag">9-11岁</span><span class="skill-tag">步法基础</span></div>
+<div class="meta"><span>⏱ 8min</span><span>👥 全队</span><span>📍 半场</span></div>
+<div class="setup"><div class="setup-title">口诀</div><div class="setup-body">"小弹簧准备——蹲！跳！蹬出去！"</div></div>
+<div class="setup"><div class="setup-title">训练</div><div class="setup-body"><ol><li>所有孩子原地站好，膝盖微弯（弹簧压缩状态）</li><li>教练喊"左"→同时左脚蹬地、右脚跨出→落地后立刻回中（小跳一下恢复弹簧状态）</li><li>左右前后四个方向都练</li><li>进阶：连续2个方向（"左右""前后""左前"）</li></ol></div></div>
+<div class="key">🔑 要点：启动步不是"跳一下再跑"——是"跳的过程中已经决定了方向"。跳=启动，不是跳了再想往哪跑。</div>
+</div>
+
+<!-- ====== 11-13岁 卡片 ====== -->
+<div class="card"><div class="ct"><h3>⚡ 杀球·压拍体验</h3><span class="age-tag">11-13岁</span><span class="skill-tag">杀球</span></div>
+<div class="meta"><span>⏱ 15min</span><span>👥 1对1</span><span>📍 中场</span><span>🎒 多球</span></div>
+<div class="setup"><div class="setup-title">安全红线</div><div class="setup-body"><span style="color:#e94560;font-weight:700">每课≤30个杀球。肩痛立即停+冰敷。</span></div></div>
+<div class="setup"><div class="setup-title">教学流程</div><div class="setup-body"><ol><li>网前1米压拍：教练抛高球到头顶→用向下压拍动作打过去（只动手腕）</li><li>中场杀球：退到中场→原地杀球→重点：击球点在前上方、拍面朝下</li><li>一步起跳：右脚蹬地起跳→空中转体→杀球。先练"起跳不杀球"再组合</li></ol></div></div>
+<div class="key">🔑 要点：杀球=高远球的"用力版+朝下版"，不要一开始追求力量，追求"方向对"</div>
+</div>
+
+<div class="card"><div class="ct"><h3>🔪 吊球·切蛋糕</h3><span class="age-tag">11-13岁</span><span class="skill-tag">吊球</span></div>
+<div class="meta"><span>⏱ 12min</span><span>👥 1对1</span><span>📍 中场+网前</span></div>
+<div class="setup"><div class="setup-title">口诀</div><div class="setup-body">"高远球打后部，吊球切侧面——像刀切蛋糕"</div></div>
+<div class="setup"><div class="setup-title">教学</div><div class="setup-body"><ol><li>用拍做"切"的动作——拍面斜着下压</li><li>站网前1米，教练抛球到头顶→切球到对方网前</li><li>退到中场做吊球：前半段动作和高远球一致（迷惑对手），后半段变切</li></ol></div></div>
+<div class="key">🔑 检测：落点在对方发球线以内，过网高度<网带50cm</div>
+</div>
+
+<div class="card"><div class="ct"><h3>🔄 高吊杀三选一</h3><span class="age-tag">11-13岁</span><span class="skill-tag">组合技术</span></div>
+<div class="meta"><span>⏱ 12min</span><span>👥 1对1</span><span>📍 全场</span><span>🎒 多球</span></div>
+<div class="setup"><div class="setup-title">设置</div><div class="setup-body">教练送后场高球，孩子在空中决定打高远球/吊球/杀球。教练喊指令版→孩子自主决策版。</div></div>
+<div class="setup"><div class="setup-title">流程</div><div class="setup-body"><ol><li>阶段1：教练喊"高/吊/杀"，孩子按指令打（训练切换能力）</li><li>阶段2：教练不喊，孩子看网前有无队友站位→有吊/无杀/不确定高远</li><li>3组×10球，组间1min</li></ol></div></div>
+<div class="key">🔑 决策原则：对手站位偏后→吊；偏前→杀；中间→拉后场</div>
+</div>
+
+<div class="card"><div class="ct"><h3>🧩 四点拉吊</h3><span class="age-tag">11-13岁</span><span class="skill-tag">战术+步法</span></div>
+<div class="meta"><span>⏱ 12min</span><span>👥 1对1</span><span>📍 全场</span><span>🎒 多球</span></div>
+<div class="setup"><div class="setup-title">设置</div><div class="setup-body">教练送4个点的球：正手后场→反手后场→正手网前→反手网前。孩子连续跑4个点打4拍。</div></div>
+<div class="setup"><div class="setup-title">流程</div><div class="setup-body"><ol><li>固定顺序：后场正→后场反→网前正→网前反</li><li>随机顺序：教练任意送4个点，孩子判断方向并移动</li><li>计时版：记录完成一轮的时间，每次课挑战缩短</li></ol></div></div>
+<div class="key">🔑 要点：每打完一拍必须回中（T位）+ 启动步 → 再出发</div>
+</div>
+
+<div class="card"><div class="ct"><h3>🎯 发接发套路练习</h3><span class="age-tag">11-13岁</span><span class="skill-tag">战术</span></div>
+<div class="meta"><span>⏱ 15min</span><span>👥 2人一组</span><span>📍 全场</span></div>
+<div class="setup"><div class="setup-title">套路库</div><div class="setup-body"><strong>套路A（进攻型）：</strong>反手发网前→接发推后场→准备杀球<br>
+<strong>套路B（拉吊型）：</strong>反手发网前→接发放网→挑后场→拉吊<br>
+<strong>套路C（变化型）：</strong>偶尔反手发后场平快球→打乱对手节奏</div></div>
+<div class="setup"><div class="setup-title">训练</div><div class="setup-body">规定回合制——"这10分你必须用套路A"→再换套路B。让孩子在实践中感受不同套路的优劣。</div></div>
+<div class="key">🔑 重点：套路不是死记硬背，是理解"我为什么这样打"</div>
+</div>
+
+<!-- ====== 13-16岁 卡片 ====== -->
+<div class="card"><div class="ct"><h3>🔥 比赛模拟多球</h3><span class="age-tag">13-16岁</span><span class="skill-tag">抗压+实战</span></div>
+<div class="meta"><span>⏱ 15min</span><span>👥 1对1</span><span>📍 全场</span><span>🎒 多球</span></div>
+<div class="setup"><div class="setup-title">设置</div><div class="setup-body">模拟比赛真实情景。教练按比赛节奏送球（1.2s/球），孩子每打一球想象在比赛。</div></div>
+<div class="setup"><div class="setup-title">情景</div><div class="setup-body">①"关键分"：模拟14-13领先1分或12-12平，必须拿下这一分<br>
+②"落后追分"：从9-15开始追，每追一分喊出比分<br>
+③"体力极限"：连续20球不间歇，模拟第三局体力透支时的技术稳定性</div></div>
+<div class="key">🔑 要点：技术动作在疲劳/压力下不变形，是这个阶段的最高追求</div>
+</div>
+
+<div class="card"><div class="ct"><h3>🧠 逆境·心理模拟</h3><span class="age-tag">13-16岁</span><span class="skill-tag">心理训练</span></div>
+<div class="meta"><span>⏱ 10min</span><span>👥 个人</span><span>📍 场边</span></div>
+<div class="setup"><div class="setup-title">训练</div>
+<div class="setup-body"><strong>①连输5分模拟：</strong>教练中断比赛，制造干扰/争议判罚/比分落后假象。孩子需要在逆境中重新聚焦并追分。<br>
+<strong>② 4-7-8呼吸锚定：</strong>吸气4秒→屏7秒→呼8秒，3次循环。建立"呼吸锚"——关键分前做一次，回到冷静状态。<br>
+<strong>③自我对话：</strong>把"我要打好"换成"看球头·侧身·压拍"——具体的指令型自我对话。</div></div>
+<div class="key">🔑 心理流程卡：孩子自己做一张卡——"发球前：深呼吸+看目标→失误后：放下拍+呼吸+想下一步→得分后：握拳+看下个球"</div>
+</div>
+
+<div class="card"><div class="ct"><h3>📊 体能·6点折返跑</h3><span class="age-tag">13-16岁</span><span class="skill-tag">速度+耐力</span></div>
+<div class="meta"><span>⏱ 10min</span><span>👥 个人</span><span>📍 全场</span></div>
+<div class="setup"><div class="setup-title">设置</div><div class="setup-body">在羽毛球场的6个位置放标志物（前场正/反→中场正/反→后场正/反）。孩子从中心出发。</div></div>
+<div class="setup"><div class="setup-title">玩法</div><div class="setup-body"><ol><li>教练喊数字（对应点的编号）→孩子快速冲刺到该点摸地→回中→等下一个指令</li><li>计时30秒，看能摸到几</li><li>进阶：连续摸完6个点计时</li></ol></div></div>
+<div class="key">🔑 目标：13岁<5s · 14岁<4.5s · 15岁+<4s · 回中时必须用启动步（不能减速跑回）</div>
+</div>
+
+<div class="card"><div class="ct"><h3>🎮 战术棋局·录像分析</h3><span class="age-tag">13-16岁</span><span class="skill-tag">战术意识</span></div>
+<div class="meta"><span>⏱ 20min</span><span>👥 1对1</span><span>📍 室内</span></div>
+<div class="setup"><div class="setup-title">设置</div><div class="setup-body">用平板/手机播放孩子或职业选手的比赛录像。教练引导孩子自己分析。</div></div>
+<div class="setup"><div class="setup-title">引导问题</div><div class="setup-body">①"你看这里，对手站位偏后，如果吊球会怎样？"<br>
+②"这一分你丢了，是因为技术问题还是决策问题？"<br>
+③"他的发球套路是什么？你是怎么应对的？有没有更好的方式？"<br>
+④"这场比赛你的三种得分方式分别是什么？"</div></div>
+<div class="key">🔑 原则：让孩子自己发现（"你觉得..."）比教练直接告诉（"你应该..."）效果好10倍</div>
+</div>
+
+</div>
+
+<div style="text-align:center;font-size:0.6rem;color:#999;margin-top:0.5cm;border-top:1px solid #ddd;padding-top:0.3cm">
+共24张训练卡片 · 7-9岁×5张 / 9-11岁×7张 / 11-13岁×6张 / 13-16岁×6张 · 打印裁剪后使用
+</div>
+
+</body>
+</html>
