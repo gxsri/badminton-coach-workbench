@@ -117,7 +117,7 @@ footer a{color:var(--accent);font-weight:700}
     <div class="stats">
       <div class="stat"><b>7</b><span>技术模块</span></div>
       <div class="stat"><b>3</b><span>内容板块</span></div>
-      <div class="stat"><b>8</b><span>工作台功能</span></div>
+      <div class="stat"><b>9</b><span>工作台功能</span></div>
       <div class="stat"><b>0</b><span>外部依赖</span></div>
     </div>
   </div>
@@ -136,6 +136,15 @@ footer a{color:var(--accent);font-weight:700}
   </section>
 
   <section>
+    <h2>数据闭环与泛化能力 <span class="hint">输入不同 → 输出不同，配置也可改</span></h2>
+    <div class="tiles">
+      <a class="tile" href="data-collector.html"><span class="ti"><svg class="ic"><use href="#i-data"/></svg></span><b>训练数据采集器</b><span>离线多人采集：打卡、训练日志、周期问卷、穿戴 CSV、体能测评、视频记录；导出工作台可直接导入的采集包。</span><em>打开采集器</em></a>
+      <a class="tile" href="data-schema.html"><span class="ti"><svg class="ic"><use href="#i-doc"/></svg></span><b>数据规范与采集方案</b><span>字段字典、单位与范围、采集频率 SOP、多人命名、去重与质量控制、泛化验收清单。</span><em>查看 SOP</em></a>
+      <a class="tile" href="coach-workbench.html#cfg"><span class="ti"><svg class="ic"><use href="#i-diag"/></svg></span><b>规则配置与 A/B 验证</b><span>技术库、动作、问卷、测评基准、姿态阈值与 70+ 算法参数全部可编辑；A/B 两组输入直接对比输出差异。</span><em>进入 #cfg</em></a>
+    </div>
+  </section>
+
+  <section>
     <h2>功能直达 <span class="hint">每张卡片都直达工作台对应模块</span></h2>
     <div class="tiles">
       <a class="tile" href="coach-workbench.html#today"><span class="ti"><svg class="ic"><use href="#i-today"/></svg></span><b>今日执行清单</b><span>周期化课表、负荷微调、预康复与打卡；简单模式只看要做什么。</span><em>进入 #today</em></a>
@@ -145,7 +154,8 @@ footer a{color:var(--accent);font-weight:700}
       <a class="tile" href="coach-workbench.html#video"><span class="ti"><svg class="ic"><use href="#i-video"/></svg></span><b>视频动作评估</b><span>内置像素运动分析 + YOLO 姿态 JSON，输出角度指标与水平分级。</span><em>进入 #video</em></a>
       <a class="tile" href="coach-workbench.html#data"><span class="ti"><svg class="ic"><use href="#i-data"/></svg></span><b>穿戴数据接入</b><span>CSV / JSON 导入心率、HRV、睡眠、步数、训练负荷，支持备份迁移。</span><em>进入 #data</em></a>
       <a class="tile" href="coach-workbench.html#diag"><span class="ti"><svg class="ic"><use href="#i-diag"/></svg></span><b>瓶颈诊断</b><span>自动判断技术 / 体能 / 恢复限制因素，输出预警与 4 周突破计划。</span><em>进入 #diag</em></a>
-      <a class="tile" href="coach-workbench.html#profile"><span class="ti"><svg class="ic"><use href="#i-profile"/></svg></span><b>个人档案</b><span>身体参数、每周频次、目标等级、七项技术基线与数据管理。</span><em>进入 #profile</em></a>
+      <a class="tile" href="coach-workbench.html#profile"><span class="ti"><svg class="ic"><use href="#i-profile"/></svg></span><b>个人档案</b><span>身体参数、每周频次、目标等级、各项技术基线与数据管理。</span><em>进入 #profile</em></a>
+      <a class="tile" href="coach-workbench.html#cfg"><span class="ti"><svg class="ic"><use href="#i-diag"/></svg></span><b>规则配置</b><span>编辑全部内容库与算法参数，导入导出配置包，运行 A/B 灵敏度验证。</span><em>进入 #cfg</em></a>
     </div>
   </section>
 
@@ -205,8 +215,10 @@ footer a{color:var(--accent);font-weight:700}
       <div><b>先做等级定级</b><span>问卷结果会自动写入技术基线与目标等级，今日清单随之调整。</span></div>
       <div><b>每天打卡</b><span>训练后记录时长与 RPE，并填每日问卷；有穿戴设备可导入 CSV。</span></div>
       <div><b>拍视频 + 看诊断</b><span>视频评估可先点「载入示例姿态数据」试用；诊断页给出瓶颈与预警。</span></div>
+      <div><b>多人 / 批量采集</b><span>用数据采集器在手机或场边录入，导出采集包 → 工作台「数据接入」合并去重。</span></div>
+      <div><b>改规则、做验证</b><span>在「规则配置」修改内容库与阈值，用 A/B 灵敏度验证确认输入变化真的改变输出。</span></div>
     </div>
-    <div class="note" style="margin-top:12px"><b>数据说明：</b>所有记录保存在浏览器 localStorage，不上传任何服务器。换设备请用工作台「数据接入 → 导出备份」迁移。YOLO 真实姿态解算需要本机安装 <code>ultralytics</code> 与 <code>opencv-python</code> 后运行 yolo-pose-bridge.py；不装也能用内置像素分析或示例数据。</div>
+    <div class="note" style="margin-top:12px"><b>数据说明：</b>所有记录保存在浏览器 localStorage，不上传任何服务器。换设备请用工作台「数据接入 → 导出备份」迁移；采集器与工作台通过配置包保持字段一致。空数据时系统显示「未评估」，不会用默认分数冒充真实状态。YOLO 真实姿态解算需要本机安装 <code>ultralytics</code> 与 <code>opencv-python</code> 后运行 yolo-pose-bridge.py；不装也能用内置像素分析或示例数据。</div>
   </section>
 
   <section>
@@ -215,7 +227,9 @@ footer a{color:var(--accent);font-weight:700}
       <thead><tr><th>文件</th><th>用途</th><th>类型</th></tr></thead>
       <tbody>
         <tr><td><a href="index.html">index.html</a></td><td>本站导航台（入口）</td><td>导航页</td></tr>
-        <tr><td><a href="coach-workbench.html">coach-workbench.html</a></td><td>专项教练工作台（全部交互功能）</td><td>交互式应用</td></tr>
+        <tr><td><a href="coach-workbench.html">coach-workbench.html</a></td><td>专项教练工作台（全部交互功能 + 可配置规则层）</td><td>交互式应用</td></tr>
+        <tr><td><a href="data-collector.html">data-collector.html</a></td><td>离线多人训练数据采集器（导出采集包）</td><td>交互式应用</td></tr>
+        <tr><td><a href="data-schema.html">data-schema.html</a></td><td>数据字典、采集 SOP 与泛化验收清单</td><td>规范文档</td></tr>
         <tr><td><a href="level-assessment.html">level-assessment.html</a></td><td>青少儿水平评估</td><td>交互式评估</td></tr>
         <tr><td><a href="coach-guide.html">coach-guide.html</a></td><td>教练速成指导书 13 章</td><td>静态文档</td></tr>
         <tr><td><a href="coach-manual-v2.html">coach-manual-v2.html</a></td><td>7-16 岁速查手册</td><td>静态文档</td></tr>

@@ -97,6 +97,12 @@ input[type=text],input[type=number],input[type=date],input[type=password],select
 input:focus,select:focus,textarea:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(63,81,181,.11)}
 textarea{resize:vertical;min-height:70px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.76rem;line-height:1.55}
 .row{display:flex;gap:10px;flex-wrap:wrap}
+.tile{display:block;text-decoration:none;color:inherit;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;transition:.18s}
+.tile:hover{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-1px)}
+.tile b{display:block;font-size:.86rem;font-weight:800;margin-bottom:4px;color:var(--text)}
+.tile span{display:block;font-size:.76rem;color:var(--text-2);line-height:1.55}
+.tile em{display:block;font-style:normal;font-size:.72rem;font-weight:700;color:var(--accent);margin-top:8px}
+.hint{font-size:.72rem;color:var(--text-3);font-weight:500}
 .row>*{flex:1;min-width:130px}
 .chkline{display:flex;gap:8px;align-items:flex-start}
 .chkline input{margin-top:3px;flex-shrink:0;width:15px;height:15px;accent-color:var(--accent)}
@@ -221,13 +227,16 @@ footer{max-width:1280px;margin:22px auto;padding:16px 18px 30px;color:var(--text
 <span id="video" class="hashmark"></span>
 <span id="data" class="hashmark"></span>
 <span id="diag" class="hashmark"></span>
+<span id="cfg" class="hashmark"></span>
 <span id="profile" class="hashmark"></span>
   <section class="view on" id="view-today"></section>
+  <section class="view" id="view-level"></section>
   <section class="view" id="view-lib"></section>
   <section class="view" id="view-log"></section>
   <section class="view" id="view-video"></section>
   <section class="view" id="view-data"></section>
   <section class="view" id="view-diag"></section>
+  <section class="view" id="view-cfg"></section>
   <section class="view" id="view-profile"></section>
 </main>
 
@@ -249,7 +258,7 @@ footer{max-width:1280px;margin:22px auto;padding:16px 18px 30px;color:var(--text
 const STORE_KEY = "bwb.v1";
 
 /* 五大体能素质 */
-const QUAL = [
+const DEF_QUAL = [
   {id:"power",     n:"力量 / 爆发力", c:"var(--purple)"},
   {id:"speed",     n:"速度 / 灵敏",   c:"var(--blue)"},
   {id:"endurance", n:"专项耐力",     c:"var(--red)"},
@@ -258,7 +267,7 @@ const QUAL = [
 ];
 
 /* ---------- 七大技术体系：技术要点 / 常见错误 / 配套素质 / 伤病风险 / 视频指标 ---------- */
-const TECH = [
+const DEF_TECH = [
 {
   id:"serve", n:"发球", sub:"正手发高远球 · 反手发小球", icon:"serve",
   goal:"把每一分发球的落点误差控制在 30cm 内，且不因发接发环节失分。",
@@ -453,7 +462,7 @@ const TECH = [
 
 /* ---------- 体能动作库 ---------- */
 /* q: power / speed / endurance / mobility / stability */
-const EX = [
+const DEF_EX = [
 /* 力量 / 爆发力 */
 {id:"goblet",q:"power",n:"高脚杯深蹲",area:"下肢 · 蹬伸",rx:{s:"4组",r:"6-8次",l:"70-80%1RM",rest:"120s"},i:8,how:"双脚略宽于肩，双手抱一个哑铃/壶铃在胸前。下蹲到大腿接近水平，膝盖跟着脚尖方向，起身时脚踩地发力。" ,cue:"膝盖始终对着第二脚趾，别往里扣。",why:"羽毛球每一次蹬地起跳、每一次后退制动都靠下肢蹬伸力量。"},
 {id:"bulgarian",q:"power",n:"保加利亚分腿蹲",area:"下肢 · 单腿力量",rx:{s:"3组",r:"每侧8次",l:"自重→24kg",rest:"90s"},i:7,how:"把后脚背搭在凳子上，前脚向前迈一大步。下蹲到前腿大腿接近水平，然后用前脚脚跟发力站起来。",cue:"身体微微前倾，让臀部为主导发力。",why:"所有网前弓步与落地都是单腿承重，单腿力量直接决定能不能「刹车」。"},
@@ -504,7 +513,7 @@ const EX = [
 ];
 
 /* 各技术→各项素质的配套动作 */
-const TECH_EX = {
+const DEF_TECH_EX = {
   serve:     {power:["calfraise","kbswing"],      speed:["react"],                    endurance:["multi20","circuit"],   mobility:["tspine","shoulderdis"], stability:["er90","wristcare","deadbug"]},
   clear:     {power:["pushpress","kbswing","hipthrust"], speed:["sprint","react"],    endurance:["multi20","cooper"],    mobility:["sleeper","tspine","hip9090"],            stability:["er90","ywt","pallof"]},
   smash:     {power:["pushpress","kbswing","nordic","calfraise"], speed:["agility510","latbox"], endurance:["multi20"], mobility:["ankledf","hip9090","sleeper"],       stability:["singledrop","sidelying","scappush","sideplank"]},
@@ -515,7 +524,7 @@ const TECH_EX = {
 };
 
 /* ---------- 伤病预防 / 康复库 ---------- */
-const PREHAB = [
+const DEF_PREHAB = [
 {id:"shoulder",n:"肩（羽毛球肩 / 肩袖）",risk:"击球练习量大的第 2-4 周最常出现",ex:[
   {n:"90度侧卧外旋",d:"3组×15次/侧"},{n:"Y-T-W 肩胛控制",d:"2组×12次"},
   {n:"睡眠者拉伸",d:"2组× 40s/侧"},{n:"毛巾拉伸肩后侧",d:"2组×30s/侧"}],
@@ -552,7 +561,7 @@ const PREHAB = [
 
 /* ---------- <｜hy_place▁holder▁no▁813｜>能测评项目 & 等级基准 ---------- */
 /* sex adj: 女 = 基准 × f */
-const TESTS = [
+const DEF_TESTS = [
 {id:"cmj", n:"纵跳摸高（CMJ）", q:"power", unit:"cm", better:"up", bench:[25,34,42,50], f:.82, how:"原地下蹲后纵跳，测量起跳高度。", desc:"下肢爆发力"},
 {id:"bj",  n:"立定跳远",       q:"power", unit:"cm", better:"up", bench:[170,205,235,260], f:.85, how:"双脚开立后原地跳远，测量距离。", desc:"水平方向爆发力"},
 {id:"sq",  n:"后蹲 1RM/体重",  q:"power", unit:"倍", better:"up", bench:[0.8,1.2,1.6,2.0], f:.8, how:"深蹲最大重量 ÷ 体重（无1RM时用5RM估算）。", desc:"最大力量"},
@@ -572,7 +581,7 @@ const TESTS = [
 ];
 
 /* ---------- 等级 ---------- */
-const LEVELS = [
+const DEF_LEVELS = [
   {id:1,n:"L1 入门",  min:0,  col:"var(--text-3)", desc:"能连贯对打，技术稳定性待建立"},
   {id:2,n:"L2 进阶",  min:58, col:"var(--blue)",   desc:"技术基本定型，比赛有战术雏形"},
   {id:3,n:"L3 竞技",  min:73, col:"var(--green)",  desc:"技术与体能可支撑高强度对抗"},
@@ -585,7 +594,7 @@ const LEVELS = [
    经典 0-7 级俗称：羽外高人 / 羽焉不详 / 羽过拔毛 / 佳羽有约 /
    羽不自禁 / 春风化羽 / 羽翼丰满 / 呼风唤羽；新版另作 1-9 级简化划分。
    本问卷按「能力维度 + 短板封顶 + 实战成绩校正」自评，不等同官方认证。 */
-const CY_LEVELS = [
+const DEF_CY_LEVELS = [
  {lv:0,n:"羽外高人", tag:"未入门", img:"不打球，或只在户外打和平球", desc:"球网几乎是多余设施，以活动身体为主。", next:"先建立室内场地意识与正确握拍"},
  {lv:1,n:"羽焉不详", tag:"野球入门", img:"刚进球馆，能把球打高打远", desc:"多为苍蝇拍式握拍，室内场地成为首选，还谈不上发力和落点。", next:"正手握拍、发球与最基本的高远球挥拍"},
  {lv:2,n:"羽过拔毛", tag:"基础期", img:"8-12 节基础培训后的水平", desc:"基本正反手握拍但转换不顺畅；正手后场能挥拍但发力/击球点有误；反手后场基本不会；网前只会轻放，搓球勾对角用不上。", next:"纠正发力链、建立全场六点步法与反手基础"},
@@ -595,7 +604,7 @@ const CY_LEVELS = [
  {lv:6,n:"羽翼丰满", tag:"俱乐部高手", img:"球群霸主 / 民间对抗主力", desc:"步法自然无盲点；手指发力成为控球关键；拉吊杀一致性好、落点有效控制；反手底线拉底线、劈吊与反手杀；网前全套熟练；快速平抽挡、重杀劈杀点杀依站位选择；防守可反抽；单打能主动控制、双打抢网控后场。", next:"比赛阅读、专项体能与稳定性冗余"},
  {lv:7,n:"呼风唤羽", tag:"业余上限", img:"地区一流 / 准专业", desc:"可参加当地最高级别联赛；手腕与手指运用娴熟；单双混至少一项非常娴熟；体能、意识俱佳，几乎无明显缺陷。需有正式比赛成绩佐证。", next:"专项化训练与竞赛周期管理"}
 ];
-const CY_COMP = [
+const DEF_CY_COMP = [
  "纯娱乐 / 健身，从未参加正式比赛",
  "只打俱乐部内部小循环或朋友局",
  "参加过市级 / 区级业余赛，未进前列",
@@ -603,7 +612,7 @@ const CY_COMP = [
  "市级业余赛前二 / 省级业余赛取得名次",
  "省队、一级运动员或全国性赛事取得名次"
 ];
-const CY_QS = [
+const DEF_CY_QS = [
  {k:"grip",n:"握拍与发球",w:.08,opts:[
   "苍蝇拍式握拍，发球常不过网或过高",
   "会基本正反手握拍但转换不顺畅；发高远 / 反手小球质量不高",
@@ -677,7 +686,7 @@ const CY_QS = [
 ];
 
 /* ---------- 周期性训练阶段模板 ---------- */
-const PHASES = [
+const DEF_PHASES = [
   {id:"gpp", n:"一般准备期 GPP", w:4, int:"60-75%", focus:["基础力量","有氧底子","技术定型","关节稳定性"],
    week:[
      {d:1,t:"技术+下肢力量",tech:["clear","footwork"],cond:["goblet","rdl","rdl","calfraise"],load:.75},
@@ -721,7 +730,7 @@ const PHASES = [
 ];
 
 /* ---------- 问卷量表 ---------- */
-const DAILY_Q = [
+const DEF_DAILY_Q = [
   {k:"sleep",   n:"睡眠时长",       type:"num",  unit:"h",   def:7.5, min:2, max:12, step:.5},
   {k:"sleepq",  n:"睡眠质量",       type:"sel",  opt:[[1,"很差"],[2,"差"],[3,"一般"],[4,"好"],[5,"很好"]], def:3},
   {k:"energy",  n:"主观精力",       type:"sel",  opt:[[1,"枯竭"],[2,"疲惫"],[3,"一般"],[4,"充沛"],[5,"满格"]], def:3},
@@ -731,7 +740,7 @@ const DAILY_Q = [
   {k:"painsite",n:"疼痛部位",       type:"txt",  def:""}
 ];
 
-const WEEKLY_Q = [
+const DEF_WEEKLY_Q = [
   {k:"techconf",n:"本周技术发挥信心", type:"sel", opt:[[1,"很没底"],[2,"不稳"],[3,"一般"],[4,"稳"],[5,"很稳"]], def:3},
   {k:"stamina", n:"多拍相持体力",     type:"sel", opt:[[1,"后半崩"],[2,"跟不上"],[3,"一般"],[4,"稳"],[5,"全场在线"]], def:3},
   {k:"motiv",   n:"训练动机",         type:"sel", opt:[[1,"抗拒"],[2,"勉强"],[3,"一般"],[4,"主动"],[5,"极度投入"]], def:4},
@@ -750,7 +759,8 @@ const ICONS = {
   profile:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
   check:'<path d="M20 6L9 17l-5-5"/>',
   warn:'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/>',
-  up:'<path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/>'
+  up:'<path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.6 1.65 1.65 0 0010 3.09V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>'
 };
 function icon(n,sz){return '<svg viewBox="0 0 24 24" width="'+(sz||16)+'" height="'+(sz||16)+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+ICONS[n]+'</svg>';}
 
@@ -778,11 +788,14 @@ function techById(id){return TECH.find(t=>t.id===id);}
 let DB = null;
 function defaultDB(){
   return {
-    v:1,
+    v:2,
     profile:{name:"", sex:"m", age:22, height:175, weight:68, hand:"R", years:3,
-             mode:"pro", freq:4, startDate:todayISO(), targetLevel:3, note:""},
-    skills:{serve:55,clear:58,smash:50,drop:48,net:52,defense:50,footwork:55},
-    logs:[], mind:[], weekly:[], wear:[], tests:[], vids:[], custom:[], levels:[], done:{}
+             mode:"pro", freq:4, startDate:todayISO(), targetLevel:3, currentCY:null, note:""},
+    /* 空基线：没有定级 / 教练评分 / 视频评估时不再伪造 50 分 */
+    skills:{}, skillSources:{},
+    cfg:null,
+    logs:[], mind:[], weekly:[], wear:[], tests:[], vids:[], custom:[], levels:[],
+    done:{}, sources:[]
   };
 }
 function load(){
@@ -790,9 +803,16 @@ function load(){
     const raw=localStorage.getItem(STORE_KEY);
     DB = raw?Object.assign(defaultDB(),JSON.parse(raw)):defaultDB();
   }catch(e){ DB=defaultDB(); }
-  if(!DB.skills)DB.skills=defaultDB().skills;
-  ["logs","mind","weekly","wear","tests","vids","custom","levels"].forEach(k=>{if(!Array.isArray(DB[k]))DB[k]=[];});
+  if(!DB.skills||typeof DB.skills!=="object")DB.skills={};
+  if(!DB.skillSources||typeof DB.skillSources!=="object")DB.skillSources={};
+  ["logs","mind","weekly","wear","tests","vids","custom","levels","sources"].forEach(k=>{
+    if(!Array.isArray(DB[k]))DB[k]=[];
+  });
   if(!DB.done)DB.done={};
+  if(!DB.cfg||typeof DB.cfg!=="object")DB.cfg=cfgDefault();
+  /* 旧版本数据升级：补齐新增配置键 */
+  Object.keys(DEF_CFG).forEach(k=>{ if(DB.cfg[k]===undefined)DB.cfg[k]=clone(DEF_CFG[k]); });
+  applyCfg();
   return DB;
 }
 function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify(DB));}catch(e){toast("保存失败：本地存储空间不足");}}
@@ -802,11 +822,11 @@ function logLoad(l){return (l.dur||0)*(l.rpe||0);}
 function loadOn(date){return DB.logs.filter(l=>l.date===date).reduce((s,l)=>s+logLoad(l),0);}
 function loadWin(endDate,days){let s=0;for(let i=0;i<days;i++)s+=loadOn(addDays(endDate,-i));return s;}
 function daysWithLoad(endDate,days){let c=0;for(let i=0;i<days;i++)if(loadOn(addDays(endDate,-i))>0)c++;return c;}
-function acuteLoad(d){return loadWin(d,7)/7;}
-function chronicLoad(d){const c=daysWithLoad(d,28);return c>=4?(loadWin(d,28)/28):(loadWin(d,28)/28);}
+function acuteLoad(d){return loadWin(d,PARAMS.acuteDays)/PARAMS.acuteDays;}
+function chronicLoad(d){return loadWin(d,PARAMS.chronicDays)/PARAMS.chronicDays;}
 function acwr(d){
   const a=acuteLoad(d),c=chronicLoad(d);
-  if(c<=0) return a>0?1.2:0;
+  if(c<=0) return a>0?PARAMS.acwrNoBase:0;
   return round(a/c,2);
 }
 function monotony(d){const ws=[];for(let i=0;i<7;i++)ws.push(loadOn(addDays(d,-i)));const m=avg(ws),s=sd(ws);return s>0?round(m/s,2):0;}
@@ -825,23 +845,28 @@ function readiness(d){
   const parts=[]; let lost=0;
   const add=(k,v)=>{v=Math.max(0,v);parts.push({k:k,v:Math.round(v)});lost+=v;};
   if(c){
-    if(c.sleep!=null) add("睡眠不足",Math.abs(8-c.sleep)*7);
-    add("睡眠质量",(3-(c.sleepq||3))*5);
-    add("精力偏低",(3-(c.energy||3))*5);
-    add("情绪",(3-(c.mood||3))*3);
-    add("肌肉酸痛",((c.sore||1)-1)*6);
+    if(c.sleep!=null) add("睡眠不足",Math.abs(PARAMS.sleepTarget-c.sleep)*PARAMS.sleepPenalty);
+    add("睡眠质量",(PARAMS.qBase-(c.sleepq||PARAMS.qBase))*PARAMS.sleepqPenalty);
+    add("精力偏低",(PARAMS.qBase-(c.energy||PARAMS.qBase))*PARAMS.energyPenalty);
+    add("情绪",(PARAMS.qBase-(c.mood||PARAMS.qBase))*PARAMS.moodPenalty);
+    add("肌肉酸痛",((c.sore||1)-1)*PARAMS.sorePenalty);
     const p=c.pain||1;
-    if(p>=3) add("关节疼痛",p===3?10:(p===4?20:28));
-  }else add("缺少当日问卷",6);
+    if(p>=PARAMS.painThreshold) add("关节疼痛",
+      p===3?PARAMS.pain3:(p===4?PARAMS.pain4:PARAMS.pain5));
+  }else add("缺少当日问卷",PARAMS.noCheckinPenalty);
   if(w){
     const bH=wearBase("hrv"), bR=wearBase("rhr");
-    if(bH&&w.hrv){const dv=(w.hrv-bH)/bH; if(dv<-0.25)add("HRV 显著下降",18); else if(dv<-0.12)add("HRV 下降",9);}
-    if(bR&&w.rhr&&w.rhr-bR>8) add("静息心率升高",10);
-    if(w.sleepH&&w.sleepH<6.5) add("睡眠时间不足",(6.5-w.sleepH)*6);
+    if(bH&&w.hrv){const dv=(w.hrv-bH)/bH;
+      if(dv<PARAMS.hrvMajor)add("HRV 显著下降",PARAMS.hrvPenaltyMajor);
+      else if(dv<PARAMS.hrvMinor)add("HRV 下降",PARAMS.hrvPenaltyMinor);}
+    if(bR&&w.rhr&&w.rhr-bR>PARAMS.rhrRise) add("静息心率升高",PARAMS.rhrPenalty);
+    if(w.sleepH&&w.sleepH<PARAMS.wearSleepMin)
+      add("睡眠时间不足",(PARAMS.wearSleepMin-w.sleepH)*PARAMS.wearSleepPenalty);
   }
   const y=loadOn(addDays(d,-1)), ch=chronicLoad(d);
-  if(ch>0&&y>ch*1.6) add("昨日负荷过大",8);
-  return {score:Math.round(clamp(100-lost,0,100)),parts:parts,src:(c?"问卷":"")+(c&&w?" + ":"")+(w?"穿戴":"")};
+  if(ch>0&&y>ch*PARAMS.yLoadRatio) add("昨日负荷过大",PARAMS.yLoadPenalty);
+  return {score:Math.round(clamp(100-lost,0,100)),parts:parts,
+    src:(c?"问卷":"")+(c&&w?" + ":"")+(w?"穿戴":"")};
 }
 function readinessSeries(d,n){const out=[];for(let i=n-1;i>=0;i--){const dd=addDays(d,-i);out.push({date:dd,score:readiness(dd).score});}return out;}
 
@@ -851,110 +876,138 @@ function latestVid(techId){
   return vs[0]||null;
 }
 function techScore(techId){
-  const base=DB.skills[techId]==null?50:DB.skills[techId];
+  const base=DB.skills[techId];
   const v=latestVid(techId);
-  if(!v) return {score:base,src:"自评 / 教练评分",vid:null};
+  if(!v){
+    if(base==null) return {score:null,src:"未评估",vid:null};
+    return {score:base,src:(DB.skillSources[techId]||"自评 / 教练评分"),vid:null};
+  }
+  if(base==null) return {score:Math.round(clamp(v.score,0,100)),src:"视频评估",vid:v};
   const ageW=Math.max(0,diffDays(todayISO(),v.date))/7;
-  const w=1/(1+ageW/10);
+  const w=1/(1+ageW/(PARAMS.vidDecayWeeks||10));
   return {score:Math.round(clamp(base*(1-w)+v.score*w,0,100)),src:"视频评估 + 基线",vid:v};
 }
 function techDomain(){
   const per=TECH.map(t=>{const s=techScore(t.id);return {id:t.id,n:t.n,score:s.score,src:s.src};});
-  return {per:per,score:Math.round(avg(per.map(p=>p.score)))};
+  const vals=per.filter(p=>p.score!=null).map(p=>p.score);
+  return {per:per,score:vals.length?Math.round(avg(vals)):null,
+    assessed:vals.length,coverage:vals.length+"/"+per.length};
 }
 
 /* ---------- 体能评分（测评 → 等级线插值） ---------- */
-const PTS=[40,58,73,86];
+const PTS=[40,58,73,86];  /* 等级锚点：可由 cfg.tests 的 bench 覆盖 */
 function testScore(t,val){
   let v=parseFloat(val);
   if(isNaN(v))return null;
   const sexF = DB.profile.sex==="f" ? (t.f||1) : 1;
   const b = t.bench.map(x=>x*sexF);
+  const pts = Array.isArray(t.pts)&&t.pts.length===4?t.pts:PTS;
   let s;
   if(t.better==="up"){
-    if(v<=b[0]) s=PTS[0]-(b[0]-v)/((b[1]-b[0])||1)*18;
-    else if(v>=b[3]) s=PTS[3]+(v-b[3])/((b[3]-b[2])||1)*8;
-    else{for(let i=0;i<3;i++){if(v<=b[i+1]){s=PTS[i]+(v-b[i])/((b[i+1]-b[i])||1)*(PTS[i+1]-PTS[i]);break;}}}
+    if(v<=b[0]) s=pts[0]-(b[0]-v)/((b[1]-b[0])||1)*18;
+    else if(v>=b[3]) s=pts[3]+(v-b[3])/((b[3]-b[2])||1)*8;
+    else{for(let i=0;i<3;i++){if(v<=b[i+1]){s=pts[i]+(v-b[i])/((b[i+1]-b[i])||1)*(pts[i+1]-pts[i]);break;}}}
   }else{
-    if(v>=b[0]) s=PTS[0]-(v-b[0])/((b[0]-b[1])||1)*18;
-    else if(v<=b[3]) s=PTS[3]+(b[3]-v)/((b[2]-b[3])||1)*8;
-    else{for(let i=0;i<3;i++){if(v>=b[i+1]){s=PTS[i]+(b[i]-v)/((b[i]-b[i+1])||1)*(PTS[i+1]-PTS[i]);break;}}}
+    if(v>=b[0]) s=pts[0]-(v-b[0])/((b[0]-b[1])||1)*18;
+    else if(v<=b[3]) s=pts[3]+(b[3]-v)/((b[2]-b[3])||1)*8;
+    else{for(let i=0;i<3;i++){if(v>=b[i+1]){s=pts[i]+(b[i]-v)/((b[i]-b[i+1])||1)*(pts[i+1]-pts[i]);break;}}}
   }
-  return clamp(Math.round(s),5,100);
+  return clamp(Math.round(s),PARAMS.scoreFloor,PARAMS.scoreCap);
 }
 function physicalDomain(){
   const lastTest=DB.tests.slice().sort((a,b)=>a.date<b.date?1:-1)[0]||null;
   const res=lastTest?lastTest.res:{};
   const bucket={}; QUAL.forEach(q=>bucket[q.id]=[]);
+  const W={power:PARAMS.wPower,speed:PARAMS.wSpeed,endurance:PARAMS.wEndurance,
+           mobility:PARAMS.wMobility,stability:PARAMS.wStability};
   TESTS.forEach(t=>{
     const v=res[t.id];
     if(v==null||v==="")return;
     const s=testScore(t,v);
-    if(s!=null) bucket[t.q].push({id:t.id,n:t.n,unit:t.unit,val:parseFloat(v),score:s});
+    if(s!=null && bucket[t.q]) bucket[t.q].push({id:t.id,n:t.n,unit:t.unit,val:parseFloat(v),score:s});
   });
-  const w={power:.25,speed:.25,endurance:.2,mobility:.15,stability:.15};
   let num=0,den=0; const missing=[];
   QUAL.forEach(q=>{
     const arr=bucket[q.id];
     if(!arr.length){missing.push(q.n);return;}
     const qs=Math.round(avg(arr.map(a=>a.score)));
-    bucket[q.id].score=qs; num+=qs*w[q.id]; den+=w[q.id];
+    bucket[q.id].score=qs;
+    const w=W[q.id]==null?1:W[q.id];
+    num+=qs*w; den+=w;
   });
-  const detail=QUAL.map(q=>({id:q.id,n:q.n,c:q.c,score:bucket[q.id].score==null?null:bucket[q.id].score,items:bucket[q.id]}));
-  return {score:den?Math.round(num/den):null,detail:detail,missing:missing,date:lastTest?lastTest.date:null};
+  const detail=QUAL.map(q=>({id:q.id,n:q.n,c:q.c,
+    score:bucket[q.id].score==null?null:bucket[q.id].score,items:bucket[q.id]}));
+  return {score:den?Math.round(num/den):null,detail:detail,missing:missing,
+    date:lastTest?lastTest.date:null,coverage:(QUAL.length-missing.length)+"/"+QUAL.length};
 }
 
 /* ---------- 恢复评分 ---------- */
 function recoveryDomain(){
-  const rs=readinessSeries(todayISO(),14).filter(r=>r.score!=null);
+  const rs=readinessSeries(todayISO(),PARAMS.recovWindow).filter(r=>r.score!=null);
   if(!rs.length) return {score:null,parts:[],days:0};
   const l7=rs.slice(-7);
-  const base = avg(l7.map(r=>r.score))*.6 + avg(rs.map(r=>r.score))*.4;
+  const base = avg(l7.map(r=>r.score))*PARAMS.recovRecentW
+             + avg(rs.map(r=>r.score))*PARAMS.recovAllW;
   let sc=base; const parts=[];
   const a=acwr(todayISO());
-  if(a>1.5){sc-=16;parts.push({k:"ACWR 过高 "+a,v:-16});}
-  else if(a>1.3){sc-=8;parts.push({k:"ACWR 偏高 "+a,v:-8});}
-  else if(a>0&&a<0.6){sc-=8;parts.push({k:"负荷过低 "+a,v:-8});}
-  const low=l7.filter(r=>r.score<60).length;
-  if(low>=4){sc-=10;parts.push({k:"近 7 天有 "+low+" 天准备度 <60",v:-10});}
+  if(a>PARAMS.acwrHigh){sc-=PARAMS.acwrHighPen;parts.push({k:"ACWR 过高 "+a,v:-PARAMS.acwrHighPen});}
+  else if(a>PARAMS.acwrMid){sc-=PARAMS.acwrMidPen;parts.push({k:"ACWR 偏高 "+a,v:-PARAMS.acwrMidPen});}
+  else if(a>0&&a<PARAMS.acwrLow){sc-=PARAMS.acwrLowPen;parts.push({k:"负荷过低 "+a,v:-PARAMS.acwrLowPen});}
+  const low=l7.filter(r=>r.score<PARAMS.readyLowLine).length;
+  if(low>=PARAMS.readyLowDays){sc-=PARAMS.readyLowPen;
+    parts.push({k:"近 7 天有 "+low+" 天准备度 <"+PARAMS.readyLowLine,v:-PARAMS.readyLowPen});}
   return {score:Math.round(clamp(sc,0,100)),parts:parts,days:rs.length,raw:Math.round(base),acwr:a};
 }
 
 /* ---------- 瓶颈归因 ---------- */
-function weakTechnique(){return techDomain().per.slice().sort((a,b)=>a.score-b.score)[0];}
+function weakTechnique(){const v=techDomain().per.filter(p=>p.score!=null);
+  return v.length?v.slice().sort((a,b)=>a.score-b.score)[0]:null;}
 function weakestQuality(detail){const v=detail.filter(d=>d.score!=null);return v.length?v.slice().sort((a,b)=>a.score-b.score)[0]:null;}
 function bottleneck(){
-  const T=techDomain(),P=physicalDomain(),R=recoveryDomain();
-  const target=(LEVELS.find(l=>l.id===DB.profile.targetLevel)||LEVELS[2]).min;
-  const tScore=T.score,pScore=(P.score==null?55:P.score),rScore=(R.score==null?70:R.score);
-  const deficits=[
-    {k:"tech", n:"技术短板", score:tScore, gap:target-tScore, w:1},
-    {k:"phys", n:"体能弱项", score:pScore, gap:target-pScore, w:1},
-    {k:"recov",n:"恢复不足", score:rScore, gap:target-rScore, w:1.15}
-  ].sort((a,b)=>(b.gap*b.w)-(a.gap*a.w));
-  const top=deficits[0], detail={type:top.k};
+  const T=techDomain(),Ph=physicalDomain(),R=recoveryDomain();
+  const target=(LEVELS.find(l=>l.id===DB.profile.targetLevel)||LEVELS[2]||LEVELS[0]).min;
+  const all=[
+    {k:"tech", n:"技术短板", score:T.score,  gap:T.score==null?null:target-T.score,  w:PARAMS.wTech},
+    {k:"phys", n:"体能弱项", score:Ph.score, gap:Ph.score==null?null:target-Ph.score, w:PARAMS.wPhys},
+    {k:"recov",n:"恢复不足", score:R.score,  gap:R.score==null?null:target-R.score,  w:PARAMS.wRecov}
+  ];
+  const known=all.filter(d=>d.gap!=null).sort((a,b)=>(b.gap*b.w)-(a.gap*a.w));
+  const missing=all.filter(d=>d.gap==null);
+  const status=!known.length?"empty":(missing.length?"partial":"ok");
+  const deficits=known.concat(missing.map(d=>Object.assign({},d,{gap:null})));
+  const top=known.length?known[0]:{k:"data",n:"数据不足",score:null,gap:0,w:1};
+  const runnerUp=deficits[1]||deficits[0];
+  const detail={type:top.k};
   if(top.k==="recov"){
     const rs=readinessSeries(todayISO(),7).filter(r=>r.score!=null);
     const recent=DB.mind.slice(-7);
     detail.drivers=R.parts.slice();
     if(rs.length) detail.mean7=Math.round(avg(rs.map(r=>r.score)));
-    if(rs.length>2){const j=sd(rs.map(r=>r.score)); if(j>10)detail.drivers.push({k:"准备度波动偏大 SD "+Math.round(j),v:0});}
-    detail.sleepAvg=round(avg(recent.map(m=>m.sleep||7.5)),1);
+    if(rs.length>2){const j=sd(rs.map(r=>r.score));
+      if(j>10)detail.drivers.push({k:"准备度波动偏大 SD "+Math.round(j),v:0});}
+    detail.sleepAvg=round(avg(recent.map(m=>m.sleep||PARAMS.sleepTarget)),1);
     detail.painMax=Math.max(0,...recent.map(m=>m.pain||1));
     if(!detail.drivers.length) detail.drivers=[{k:"缺少问卷 / 穿戴数据，无法进一步定位",v:0}];
   }else if(top.k==="tech"){
     const wt=weakTechnique(); const t=techById(wt.id); const v=latestVid(wt.id);
-    detail.tech=wt; detail.vid=v;
+    detail.tech=wt; detail.vid=v; detail.techObj=t;
     detail.worstMetric=(v&&v.metrics&&v.metrics.length)?v.metrics.slice().sort((a,b)=>a.score-b.score)[0]:null;
-    detail.drills=t.errors.slice(0,2);
-  }else{
-    const wq=weakestQuality(P.detail); detail.quality=wq;
+    detail.drills=t?t.errors.slice(0,2):[["尚未建立动作要点","请在规则配置中补齐该技术"]];
+  }else if(top.k==="phys"){
+    const wq=weakestQuality(Ph.detail); detail.quality=wq;
     detail.worstTests=(wq&&wq.items.length)?wq.items.slice().sort((a,b)=>a.score-b.score).slice(0,2):null;
-    detail.missing=P.missing;
+    detail.missing=Ph.missing;
+  }else{
+    detail.missing=missing.map(m=>m.n);
+    detail.drivers=[];
   }
-  return {target:target,T:{score:tScore,detail:T},P:{score:pScore,detail:P},R:{score:rScore,detail:R},
-    domains:deficits,primary:top,runnerUp:deficits[1],detail:detail,
-    composite:Math.round(avg([tScore,pScore,rScore]))};
+  const vals=[T.score,Ph.score,R.score].filter(v=>v!=null);
+  return {status:status,missing:missing.map(m=>m.n),target:target,
+    T:{score:T.score,detail:T,src:T.coverage},P:{score:Ph.score,detail:Ph,src:Ph.coverage},
+    R:{score:R.score,detail:R,src:R.days+" 天"},
+    domains:deficits,primary:top,runnerUp:runnerUp,detail:detail,
+    composite:vals.length?Math.round(avg(vals)):null,
+    coverage:{tech:T.coverage,phys:Ph.coverage,recov:R.days+" 天"}};
 }
 
 /* ---------- 中羽等级：问卷 → 等级 ---------- */
@@ -962,43 +1015,58 @@ function cyFromAnswers(ans){
   const dims={},parts=[];
   CY_QS.forEach(q=>{
     const oi=clamp(ans[q.k]==null?0:parseInt(ans[q.k])||0,0,5);
-    const d=Math.round((oi+1)*7/6);          // 6 档答案映射到 1-7 级刻度
+    const d=Math.round((oi+1)*PARAMS.cyScale/PARAMS.cySteps);
     dims[q.k]=d; parts.push({k:q.k,n:q.n,v:d,w:q.w});
   });
   let num=0,den=0;parts.forEach(p=>{num+=p.v*p.w;den+=p.w;});
   const raw=num/den;
   let level=Math.round(raw);
   const applied=[];
-  // 中羽分级的本质是「短板定级」：单项明显缺口会压住整体等级
-  const caps=[
-    {t:dims.power<=2,c:2,why:"发力方式尚未建立（内外旋 / 爆发力不足）"},
-    {t:dims.back<=3,c:3,why:"正手后场不能稳定到位"},
-    {t:dims.backhand<=2,c:3,why:"反手后场基本不会（俗称反手为 0）"},
-    {t:dims.foot<=3,c:4,why:"移动 / 启动不足，实战表现低于动作表现"},
-    {t:dims.def<=2,c:4,why:"防守质量有限，难以进入高强度对抗"},
-    {t:dims.match<=3,c:5,why:"实战稳定性不足，动作尚未转化为比赛能力"}
-  ];
-  caps.forEach(r=>{if(r.t&&level>r.c){level=r.c;applied.push(r.why);}});
-  const ci=clamp(ans.comp==null?0:parseInt(ans.comp)||0,0,5);
-  const compBonus=[0,0,0,1,1,2][ci];
-  level+=compBonus;
-  if(ci<=1&&level>6)level=6;   // 无正式比赛经历不评 7 级
-  level=clamp(Math.round(level),0,7);
-  return {level:level,dims:dims,parts:parts,raw:round(raw,2),applied:applied,compBonus:compBonus,compIdx:ci,ans:ans};
+  /* 短板封顶规则来自 DB.cfg.caps，可自由增删、修改维度与阈值 */
+  CAPS.forEach(r=>{
+    const dv=dims[r.dim]; if(dv==null)return;
+    const hit=r.op==="<="?dv<=r.v:(r.op==="<"?dv<r.v:(r.op===">="?dv>=r.v:dv>r.v));
+    if(hit&&level>r.cap){level=r.cap;applied.push(r.why);}
+  });
+  const ci=clamp(ans.comp==null?0:parseInt(ans.comp)||0,0,CY_COMP.length-1);
+  const bonus=numList(PARAMS.compBonus,[0,0,0,1,1,2])[ci]||0;
+  level+=bonus;
+  if(ci<=1&&level>PARAMS.noCompMax)level=PARAMS.noCompMax;
+  level=clamp(Math.round(level),0,PARAMS.cyScale);
+  return {level:level,dims:dims,parts:parts,raw:round(raw,2),applied:applied,
+    compBonus:bonus,compIdx:ci,ans:ans};
 }
-function cyToInternal(lv){return lv<=2?1:(lv<=4?2:(lv<=6?3:4));}
+function cyToInternal(lv){
+  const pairs=String(PARAMS.cyMap||"").split(",").map(x=>x.split(":").map(Number));
+  for(const p of pairs){ if(p.length===2&&!isNaN(p[0])&&lv<=p[0])return p[1]; }
+  const last=pairs.filter(p=>p.length===2&&!isNaN(p[1])).pop();
+  return last?last[1]:LEVELS.length;
+}
+function dimExpr(expr,dims){
+  const s=String(expr||"").trim();
+  let m=s.match(/^(min|max|avg)\((.+)\)$/);
+  if(m){
+    const vals=m[2].split(",").map(k=>+dims[k.trim()]||0);
+    if(!vals.length)return 0;
+    if(m[1]==="min")return Math.min.apply(null,vals);
+    if(m[1]==="max")return Math.max.apply(null,vals);
+    return avg(vals);
+  }
+  return +dims[s]||0;
+}
 function applyLevelResult(r){
-  const d=r.dims, sc=x=>Math.round(clamp(18+x*11,0,100));
-  DB.skills={
-    serve:sc(d.grip), clear:sc(d.back),
-    smash:sc(Math.min(d.back,d.power,d.attack)),
-    drop:sc(Math.min(d.back,d.net)), net:sc(d.net),
-    defense:sc(d.def), footwork:sc(d.foot)
-  };
+  const sc=x=>Math.round(clamp(PARAMS.skillBase+x*PARAMS.skillPerLv,0,100));
+  const skills={},src="等级定级问卷 "+todayISO();
+  Object.keys(SKILLMAP).forEach(tid=>{ skills[tid]=sc(dimExpr(SKILLMAP[tid],r.dims)); });
+  /* 自定义技术库中没有映射的技术，按全维度均值给基线，避免出现「未评估」空洞 */
+  const mean=avg(r.parts.map(p=>p.v));
+  TECH.forEach(t=>{ if(skills[t.id]==null)skills[t.id]=sc(mean); });
+  DB.skills=skills;
+  Object.keys(skills).forEach(k=>DB.skillSources[k]=src);
   const it=cyToInternal(r.level);
   DB.profile.currentCY=r.level;
-  DB.profile.targetLevel=clamp(it+1,1,4);   // 目标定在下一档，驱动瓶颈诊断
-  DB.levels.push({id:uid(),date:todayISO(),level:r.level,dims:d,raw:r.raw,ans:r.ans});
+  DB.profile.targetLevel=clamp(it+PARAMS.targetBoost,1,LEVELS.length);
+  DB.levels.push({id:uid(),date:todayISO(),level:r.level,dims:r.dims,raw:r.raw,ans:r.ans});
   save();
   return it;
 }
@@ -1009,60 +1077,92 @@ function warnings(){
   const out=[], today=todayISO();
   const recent=DB.mind.slice(-7).filter(m=>diffDays(today,m.date)<=7);
   const painMax=Math.max(0,...recent.map(m=>m.pain||1));
-  const painSites=[...new Set(recent.filter(m=>(m.pain||1)>=3).map(m=>(m.painsite||"").trim()).filter(Boolean))];
+  const painSites=[...new Set(recent.filter(m=>(m.pain||1)>=PARAMS.painMid)
+    .map(m=>(m.painsite||"").trim()).filter(Boolean))];
   const a=acwr(today), chron=chronicLoad(today);
   if(chron>0){
-    if(a>1.5) out.push({lv:"high",t:"急性负荷过高（ACWR "+a+"）",d:"近 7 天相对过去 4 周负荷比超过 1.5，是软组织损伤的高风险区间。",act:"未来 5-7 天总负荷下调 20-30%，删除跳跃与冲刺内容，保留技术与活动度。"});
-    else if(a>1.3) out.push({lv:"mid",t:"负荷爬升偏快（ACWR "+a+"）",d:"已进入警戒区，若继续上行 1-2 周将进入高风险区。",act:"本周不新增高强度内容，插入 1 天完全休息。"});
-    else if(a<0.6) out.push({lv:"low",t:"负荷过低（ACWR "+a+"）",d:"刺激不足以维持适应，回到对抗环境容易受伤。",act:"按每周 +10% 的节奏逐步恢复训练量。"});
+    if(a>PARAMS.acwrHigh) out.push({lv:"high",t:"急性负荷过高（ACWR "+a+"）",
+      d:"近 "+PARAMS.acuteDays+" 天相对过去 "+PARAMS.chronicDays+" 天负荷比超过 "+PARAMS.acwrHigh+"，是软组织损伤的高风险区间。",
+      act:"未来 5-7 天总负荷下调 20-30%，删除跳跃与冲刺内容，保留技术与活动度。"});
+    else if(a>PARAMS.acwrMid) out.push({lv:"mid",t:"负荷爬升偏快（ACWR "+a+"）",
+      d:"已进入警戒区（阈值 "+PARAMS.acwrMid+"），若继续上行 1-2 周将进入高风险区。",
+      act:"本周不新增高强度内容，插入 1 天完全休息。"});
+    else if(a<PARAMS.acwrLow) out.push({lv:"low",t:"负荷过低（ACWR "+a+"）",
+      d:"低于 "+PARAMS.acwrLow+"，刺激不足以维持适应，回到对抗环境容易受伤。",
+      act:"按每周 +10% 的节奏逐步恢复训练量。"});
   }
-  if(painMax>=4) out.push({lv:"high",t:"静息 / 夜间疼痛信号",d:"出现 4 级以上疼痛，通常提示存在需要处理的组织问题。",act:"停止引发疼痛的动作，48 小时内无改善请就医评估。"});
-  else if(painMax===3) out.push({lv:"mid",t:"运动中疼痛（3 级）"+(painSites.length?" · 部位："+painSites.join(" / "):""),d:"运动中疼痛会改变动作模式，形成二次代偿。",act:"把该部位负荷降到运动中不痛的水平，并在训练前后做对应预康复。"});
+  if(painMax>=PARAMS.painHigh) out.push({lv:"high",t:"静息 / 夜间疼痛信号",
+    d:"出现 "+PARAMS.painHigh+" 级以上疼痛，通常提示存在需要处理的组织问题。",
+    act:"停止引发疼痛的动作，48 小时内无改善请就医评估。"});
+  else if(painMax===PARAMS.painMid) out.push({lv:"mid",
+    t:"运动中疼痛（"+PARAMS.painMid+" 级）"+(painSites.length?" · 部位："+painSites.join(" / "):""),
+    d:"运动中疼痛会改变动作模式，形成二次代偿。",
+    act:"把该部位负荷降到运动中不痛的水平，并在训练前后做对应预康复。"});
   const rs=readinessSeries(today,7).filter(r=>r.score!=null);
-  if(rs.filter(r=>r.score<55).length>=3) out.push({lv:"high",t:"准备度持续偏低",d:"近 7 天有 3 天以上准备度低于 55，恢复系统已经跟不上。",act:"本周改为减量周：总量降 30%，睡眠补足 8 小时以上。"});
-  const sleepAvg=avg(recent.map(m=>m.sleep||7.5));
-  if(recent.length>=3&&sleepAvg<6.5) out.push({lv:"mid",t:"睡眠不足（近一周平均 "+round(sleepAvg,1)+" 小时）",d:"睡眠是反应速度、技术固化与组织修复的共同前提。",act:"固定熄灯时间，训练总量先降到与睡眠匹配的水平。"});
+  if(rs.filter(r=>r.score<PARAMS.readyWarnLine).length>=PARAMS.readyWarnDays)
+    out.push({lv:"high",t:"准备度持续偏低",
+      d:"近 7 天有 "+PARAMS.readyWarnDays+" 天以上准备度低于 "+PARAMS.readyWarnLine+"，恢复系统已经跟不上。",
+      act:"本周改为减量周：总量降 30%，睡眠补足 "+PARAMS.sleepTarget+" 小时以上。"});
+  const sleepAvg=avg(recent.map(m=>m.sleep||PARAMS.sleepTarget));
+  if(recent.length>=3&&sleepAvg<PARAMS.sleepWarnAvg)
+    out.push({lv:"mid",t:"睡眠不足（近一周平均 "+round(sleepAvg,1)+" 小时）",
+      d:"低于 "+PARAMS.sleepWarnAvg+" 小时；睡眠是反应速度、技术固化与组织修复的共同前提。",
+      act:"固定熄灯时间，训练总量先降到与睡眠匹配的水平。"});
   const bH=wearBase("hrv"), lastW=DB.wear.slice(-1)[0];
-  if(bH&&lastW&&lastW.hrv&&(lastW.hrv-bH)/bH<-0.2) out.push({lv:"mid",t:"HRV 明显低于个人基线",d:"相对基线下降超过 20%，副交感恢复不足。",act:"当日改为低强度技术或完全休息，避免高强度间歇。"});
-  const P=physicalDomain(), stab=P.detail.find(d=>d.id==="stability");
-  const sv=latestVid("smash");
+  if(bH&&lastW&&lastW.hrv&&(lastW.hrv-bH)/bH<PARAMS.hrvWarn)
+    out.push({lv:"mid",t:"HRV 明显低于个人基线",
+      d:"相对基线下降超过 "+Math.round(-PARAMS.hrvWarn*100)+"%，副交感恢复不足。",
+      act:"当日改为低强度技术或完全休息，避免高强度间歇。"});
+  const Ph=physicalDomain(), stab=Ph.detail.find(d=>d.id==="stability");
+  const sv=(TECH.find(t=>t.id==="smash")||TECH[0])?latestVid("smash"):null;
   if(sv&&sv.metrics&&sv.metrics.length){
     const get=k=>sv.metrics.find(m=>m.k===k);
     const kv=get("kneeValgus"), land=get("landing");
-    if(kv&&kv.score<60) out.push({lv:"mid",t:"落地 / 制动时膝内扣明显",d:"视频评估中膝-踝横向偏移得分 "+kv.score+"，长期把压力集中在髌股关节。",act:"训练前做落地缓冲 + 侧卧蚌式，技术课减少连续跳杀量。"});
-    if(land&&land.score<60) out.push({lv:"mid",t:"落地稳定性不足",d:"跳杀后落地控制评分偏低，膝与跟腱承受额外冲击。",act:"加入静音落地与单腿平衡练习，每节课跳杀不超过 30 次。"});
+    if(kv&&kv.score<60) out.push({lv:"mid",t:"落地 / 制动时膝内扣明显",
+      d:"视频评估中膝-踝横向偏移得分 "+kv.score+"，长期把压力集中在髌股关节。",
+      act:"训练前做落地缓冲 + 侧卧蚌式，技术课减少连续跳杀量。"});
+    if(land&&land.score<60) out.push({lv:"mid",t:"落地稳定性不足",
+      d:"跳杀后落地控制评分偏低，膝与跟腱承受额外冲击。",
+      act:"加入静音落地与单腿平衡练习，每节课跳杀不超过 30 次。"});
   }
-  if(stab&&stab.score!=null&&stab.score<62) out.push({lv:"mid",t:"关节稳定性储备不足",d:"稳定性项得分 "+stab.score+"，低于安全阈值，疲劳后变向时风险放大。",act:"每天 8 分钟稳定性质检：单腿平衡 + 星形偏移 + 侧平板。"});
+  if(stab&&stab.score!=null&&stab.score<62) out.push({lv:"mid",t:"关节稳定性储备不足",
+    d:"稳定性项得分 "+stab.score+"，低于安全阈值，疲劳后变向时风险放大。",
+    act:"每天 8 分钟稳定性质检：单腿平衡 + 星形偏移 + 侧平板。"});
   return out.sort((x,y)=>({high:0,mid:1,low:2}[x.lv])-({high:0,mid:1,low:2}[y.lv]));
 }
 
 /* ---------- 周期化 ---------- */
 function currentPhase(d){
   const start=DB.profile.startDate||todayISO();
-  const total=PHASES.reduce((s,p)=>s+p.w,0);
+  const total=PHASES.reduce((s,p)=>s+(p.w||1),0);
   let day=diffDays(d,start); if(day<0)day=0;
-  const pos=day%(total*7);
+  const pos=total>0?day%(total*7):0;
   let acc=0;
   for(const p of PHASES){
-    if(pos<acc+p.w*7) return {phase:p,weekInPhase:Math.floor((pos-acc)/7)+1,phaseTotal:p.w};
-    acc+=p.w*7;
+    if(pos<acc+(p.w||1)*7) return {phase:p,weekInPhase:Math.floor((pos-acc)/7)+1,phaseTotal:p.w||1};
+    acc+=(p.w||1)*7;
   }
-  return {phase:PHASES[0],weekInPhase:1,phaseTotal:PHASES[0].w};
+  return {phase:PHASES[0],weekInPhase:1,phaseTotal:PHASES[0].w||1};
 }
 function phasePlan(d){
   const c=currentPhase(d), wd=weekday(d);
-  const day=c.phase.week.find(x=>x.d===wd)||c.phase.week[0];
+  const week=Array.isArray(c.phase.week)&&c.phase.week.length?c.phase.week:[{d:wd,t:"训练日",tech:[],cond:[],load:1}];
+  const day=week.find(x=>x.d===wd)||week[wd%week.length]||week[0];
   return {cur:c,day:day};
 }
 function todayAdjust(){
   const r=readiness(todayISO()), a=acwr(todayISO());
   let mul=1; const notes=[];
   if(r.score!=null){
-    if(r.score<50){mul*=.6;notes.push("准备度 "+r.score+"：今日降为低强度（计划负荷 ×0.6）");}
-    else if(r.score<65){mul*=.8;notes.push("准备度 "+r.score+"：今日强度下调（×0.8）");}
-    else if(r.score>85){mul*=1.05;notes.push("准备度 "+r.score+"：状态良好，可适度加量");}
+    if(r.score<PARAMS.readyCutLow){mul*=PARAMS.mulLow;
+      notes.push("准备度 "+r.score+"：今日降为低强度（计划负荷 ×"+PARAMS.mulLow+"）");}
+    else if(r.score<PARAMS.readyCutMid){mul*=PARAMS.mulMid;
+      notes.push("准备度 "+r.score+"：今日强度下调（×"+PARAMS.mulMid+"）");}
+    else if(r.score>PARAMS.readyBoost){mul*=PARAMS.mulBoost;
+      notes.push("准备度 "+r.score+"：状态良好，可适度加量");}
   }else notes.push("今日还没有准备度数据，先做一次打卡再确认强度");
-  if(a>1.5){mul*=.75;notes.push("ACWR "+a+" 过高：整体负荷再下调 25%");}
+  if(a>PARAMS.acwrCutLine){mul*=PARAMS.mulAcwr;
+    notes.push("ACWR "+a+" 过高：整体负荷再下调 "+Math.round((1-PARAMS.mulAcwr)*100)+"%");}
   return {mul:round(mul,2),notes:notes,readiness:r.score,parts:r.parts};
 }
 function relScore(p,techIds){
@@ -1074,11 +1174,11 @@ function relScore(p,techIds){
 function todayItems(){
   const d=todayISO(), pp=phasePlan(d), adj=todayAdjust(), bn=bottleneck();
   const items=[];
-  pp.day.tech.forEach(tid=>{
+  (pp.day.tech||[]).forEach(tid=>{
     const t=techById(tid); if(!t)return;
-    const focus = bn.detail.type==="tech" && bn.detail.tech.id===tid;
+    const focus = bn.detail.type==="tech" && bn.detail.tech && bn.detail.tech.id===tid;
     items.push({grp:"技术",k:"tech-"+tid,t:t.n,sub:t.sub,
-      d:focus?"今日瓶颈项：放慢节奏，逐条对照动作要领自查":"常规维持，追求落点稳定",
+      d:focus?TEXTS.techFocus:TEXTS.techNormal,
       amt:focus?"12 min + 20 球":"8 min / 约 15 球",
       tags:["技术"].concat(focus?["瓶颈项"]:[]),cue:t.simple[0],focus:focus,tid:tid});
   });
@@ -1088,62 +1188,73 @@ function todayItems(){
       amt:e.rx.s+" × "+e.rx.r+" · 负荷 "+e.rx.l+" · 组间歇 "+e.rx.rest,
       cue:e.cue,tags:[qualityName(e.q)].concat(focus?["瓶颈项"]:[]),focus:focus});
   });
-  if(bn.detail.type==="tech"){
-    const t=techById(bn.detail.tech.id);
-    const dr=bn.detail.drills[0];
+  if(bn.detail.type==="tech" && bn.detail.techObj){
+    const t=bn.detail.techObj, dr=bn.detail.drills[0];
     items.push({grp:"瓶颈突破",k:"bn-tech",t:t.n+" 专项纠正（10 min）",
       d:dr?("典型问题："+dr[0]+"　｜　纠正方法："+dr[1]):t.simple[0],
       amt:"10 min",tags:["瓶颈","技术"],focus:true});
   }else if(bn.detail.type==="phys"){
-    const q=bn.detail.quality?bn.detail.quality.id:"power";
+    const q=bn.detail.quality?bn.detail.quality.id:(QUAL[0]&&QUAL[0].id)||"power";
     const cands=EX.filter(e=>e.q===q).slice(0,2);
     items.push({grp:"瓶颈突破",k:"bn-phys",t:qualityName(q)+" 专项补给（10 min）",
       d:cands.map(e=>e.n+"："+e.rx.s+" × "+e.rx.r).join("　｜　"),
       amt:"10 min",tags:["瓶颈","体能"],focus:true});
+  }else if(bn.detail.type==="recov"){
+    items.push({grp:"瓶颈突破",k:"bn-rec",t:TEXTS.recovTitle,
+      d:TEXTS.recovDesc,amt:"20 min",tags:["瓶颈","恢复"],focus:true});
   }else{
-    items.push({grp:"瓶颈突破",k:"bn-rec",t:"恢复干预（20 min）",
-      d:"腹式呼吸 5 min + 泡沫轴放松 8 min + 温水浴 5 min；今晚睡眠目标 8 小时",
-      amt:"20 min",tags:["瓶颈","恢复"],focus:true});
+    items.push({grp:"瓶颈突破",k:"bn-data",t:TEXTS.dataGapTitle,
+      d:TEXTS.dataGapDesc+"　当前缺口："+(bn.missing||[]).join(" / "),
+      amt:"10 min",tags:["数据"],focus:true});
   }
   const bnpain=DB.mind.slice(-7).map(m=>(m.painsite||"")).join(" ");
   let pick=PREHAB.find(p=>bnpain&&(bnpain.indexOf(p.n.slice(0,1))>=0||bnpain.indexOf(p.n.slice(2,4))>=0));
-  if(!pick) pick=PREHAB.slice().sort((x,y)=>relScore(y,pp.day.tech)-relScore(x,pp.day.tech))[0];
-  items.push({grp:"预康复",k:"prehab-"+pick.id,t:pick.n+" 预防套件",
-    d:pick.ex.map(e=>e.n+"（"+e.d+"）").join("　｜　"),amt:"8 min",tags:["伤病预防"],warn:pick.warn});
-  items.push({grp:"打卡",k:"checkin",t:"训练后自评打卡",d:"睡眠 / 酸痛 / 疼痛 / 主观强度，30 秒完成",amt:"30 秒",tags:["数据"]});
+  if(!pick) pick=PREHAB.slice().sort((x,y)=>relScore(y,pp.day.tech||[])-relScore(x,pp.day.tech||[]))[0];
+  if(pick) items.push({grp:"预康复",k:"prehab-"+pick.id,t:pick.n+" 预防套件",
+    d:pick.ex.map(e=>e.n+"（"+e.d+"）").join("　｜　"),amt:TEXTS.prehabAmt,
+    tags:["伤病预防"],warn:pick.warn});
+  items.push({grp:"打卡",k:"checkin",t:"训练后自评打卡",
+    d:"睡眠 / 酸痛 / 疼痛 / 主观强度，30 秒完成",amt:TEXTS.checkinAmt,tags:["数据"]});
   return {items:items,adj:adj,pp:pp,bn:bn};
 }
 
 /* ---------- 4 周突破计划 ---------- */
 function breakthrough(bn){
   const weeks=[];
-  const baseWeekly=(DB.profile.freq||4)*55;           // 预估每周训练分钟
+  const baseWeekly=(DB.profile.freq||4)*PARAMS.minutesPerSession;
   const type=bn.primary.k;
-  const tid=(bn.detail.type==="tech"&&bn.detail.tech)?bn.detail.tech.id:weakTechnique().id;
-  const T=techById(tid)||TECH[0];
+  const tid=(bn.detail.type==="tech"&&bn.detail.tech)?bn.detail.tech.id:
+    (weakTechnique()?weakTechnique().id:(TECH[0]?TECH[0].id:""));
+  const T=techById(tid)||TECH[0]||{n:"自定义技术",qual:[],simple:[""]};
+  const muls={
+    tech:numList(PARAMS.weekMulTech,[1,1.1,1.2,.7]),
+    phys:numList(PARAMS.weekMulPhys,[1,1.1,1.2,.7]),
+    recov:numList(PARAMS.weekMulRecov,[.7,.85,1,.65])
+  };
   for(let i=1;i<=4;i++){
-    let mul=[1,1.1,1.2,.7][i-1];
-    if(type==="recov") mul=[.7,.85,1,.65][i-1];
+    let mul=(muls[type]||muls.tech)[i-1]!=null?(muls[type]||muls.tech)[i-1]:1;
     let focus="", sessions=[];
     if(type==="tech"){
-      focus=T.n+" 动作重塑 ｜ "+T.qual.map(qualityName).join(" / ")+" 配套积累";
+      const q0=(T.qual&&T.qual[0])||(QUAL[0]&&QUAL[0].id)||"power";
+      const map=TECH_EX[tid]||{};
+      focus=T.n+" 动作重塑 ｜ "+(T.qual||[]).map(qualityName).join(" / ")+" 配套积累";
       sessions=[
         {n:"技术重建",c:T.n+" 慢速分解 20 min + 中速连贯 15 min + 定点多球 15 min",l:7},
-        {n:"配套体能",c:TECH_EX[tid][T.qual[0]].map(id=>{const e=exById(id);return e?e.n:"";}).filter(Boolean).join(" + "),l:7},
+        {n:"配套体能",c:(map[q0]||[]).map(id=>{const e=exById(id);return e?e.n:"";}).filter(Boolean).join(" + ")||"请在技术配套动作中配置该素质的动作",l:7},
         {n:"专项迁移",c:"影子步法 + 限定线路的模拟对抗",l:6},
         {n:"恢复",c:"活动度 + 呼吸放松 + 睡眠补足",l:2}
       ];
     }else if(type==="phys"){
-      const q=bn.detail.quality?bn.detail.quality.id:"power";
+      const q=bn.detail.quality?bn.detail.quality.id:(QUAL[0]&&QUAL[0].id)||"power";
       focus=qualityName(q)+" 定向强化 ｜ 技术维持（量降 20%、保持质量）";
       const qex=EX.filter(e=>e.q===q);
       sessions=[
-        {n:qualityName(q)+" 主课",c:qex.slice(0,3).map(e=>e.n+" "+e.rx.s+" × "+e.rx.r).join(" + "),l:8},
+        {n:qualityName(q)+" 主课",c:qex.length?qex.slice(0,3).map(e=>e.n+" "+e.rx.s+" × "+e.rx.r).join(" + "):"请在体能动作库中配置该素质的动作",l:8},
         {n:"技术维持",c:T.n+" 低疲劳练习 25 min，只求动作质量",l:5},
         {n:"专项转移",c:"多球 20:10 间歇 或 场地往返 15 趟",l:7},
         {n:"恢复",c:"活动度 + 预康复套件",l:2}
       ];
-    }else{
+    }else if(type==="recov"){
       focus="恢复系统重建 ｜ 睡眠、营养与负荷节奏优先（技术仅做维持）";
       sessions=[
         {n:"低强度技术",c:T.n+" 半速练习 25 min + 固定线路",l:3},
@@ -1151,9 +1262,18 @@ function breakthrough(bn){
         {n:"活动度 / 呼吸",c:"髋 + 胸椎 + 肩后链，配合膈式呼吸",l:2},
         {n:"完全休息",c:"不安排任何训练",l:0}
       ];
+    }else{
+      focus="数据积累期 ｜ 先完成定级、训练日志与打卡，再生成个性化计划";
+      sessions=[
+        {n:"等级定级",c:"完成一次等级问卷，建立技术基线",l:0},
+        {n:"训练记录",c:"每次训练后记录时长与 RPE",l:0},
+        {n:"每日打卡",c:"睡眠 / 酸痛 / 疼痛 / 精力，30 秒完成",l:0},
+        {n:"体能测评",c:"按测评基准录入一次完整测评",l:0}
+      ];
     }
     weeks.push({w:i,mul:mul,loadTarget:Math.round(baseWeekly*mul),focus:focus,sessions:sessions,
-      note:i===4?"第 4 周为吸收周（deload）：用回落换来前三周适应的显现。":"每次训练后记录 RPE，周末复查准备度是否回到 70 以上。"});
+      note:i===PARAMS.deloadWeek?"第 "+PARAMS.deloadWeek+" 周为吸收周（deload）：用回落换来前三周适应的显现。"
+        :"每次训练后记录 RPE，周末复查准备度是否回到 "+PARAMS.readyBoost+" 附近。"});
   }
   return weeks;
 }
@@ -1161,7 +1281,7 @@ function breakthrough(bn){
 
 /* ==================== 三、界面与交互 ==================== */
 const TABS=[{id:"today",n:"今日",i:"today"},{id:"level",n:"等级定级",i:"check"},{id:"lib",n:"内容库",i:"lib"},{id:"log",n:"训练记录",i:"log"},
-  {id:"video",n:"视频评估",i:"video"},{id:"data",n:"数据接入",i:"data"},{id:"diag",n:"瓶颈诊断",i:"diag"},{id:"profile",n:"档案",i:"profile"}];
+  {id:"video",n:"视频评估",i:"video"},{id:"data",n:"数据接入",i:"data"},{id:"diag",n:"瓶颈诊断",i:"diag"},{id:"cfg",n:"规则配置",i:"gear"},{id:"profile",n:"档案",i:"profile"}];
 let VIEW="today", LIBTAB="tech", LIBTECH="clear", LEVEL_LAST=null;
 let VIDSTATE={tech:"clear",frames:null,meta:null,videoURL:null,result:null,engine:"pixel"};
 
@@ -1234,7 +1354,7 @@ function lvBar(sc){
 /* ---------- 顶栏 ---------- */
 function renderTop(){
   const d=todayISO(), r=readiness(d), a=acwr(d), bn=bottleneck(), pp=phasePlan(d);
-  const lv=levelOf(bn.composite);
+  const lv=bn.composite==null?{n:'待评估',col:'#8b97ad'}:levelOf(bn.composite);
   const cls=v=>v==null?"":(v>=75?"ok":(v>=60?"warn":"dang"));
   el("topState").innerHTML=
     '<span class="pill '+(r.score==null?"":cls(r.score))+'"><i class="dot"></i>准备度 '+(r.score==null?"—":r.score)+'</span>'+
@@ -1493,7 +1613,7 @@ function viewLog(){
 }
 
 /* ---------- 视图 4：视频评估 ---------- */
-const METRICS={
+const DEF_METRICS={
   shoulderAbd:{n:"肩关节最大外展角",u:"°",ideal:[155,178],tol:[25,20]},
   elbowFlex:{n:"击球瞬间肘伸展角",u:"°",ideal:[160,178],tol:[25,15]},
   contactHeight:{n:"击球点高度比",u:"×身高",ideal:[1.02,1.35],tol:[.25,.2]},
@@ -1510,11 +1630,11 @@ const METRICS={
   landing:{n:"落地稳定性",u:"分",ideal:[75,100],tol:[25,20]},
   cadence:{n:"步频",u:"步/s",ideal:[3.5,5.5],tol:[1.2,2]}
 };
-const FB={
+const DEF_FB={
   shoulderAbd:["架拍时持拍臂抬得不够，长期靠肩膀硬甩，肩袖负荷偏高","抬起持拍肘至不低于肩：靠墙架拍定型 60s × 3 组"],
   elbowFlex:["击球瞬间肘没有充分伸展，力量链路中断，球速上不去","在最高点触球：定点多球只允许在最高点击球"],
-  contactHeight:["击球点偏低，导致出球平、被动","先慢后快地建立高举动力定型：后方无敌而导致起点偏低时先用高球喂"],
-  trunkRot:["躯干旋转不足 / 过度，落到腰的输出不足","先把旋转范本练到位：餐药物球旋转抛，从髋带动而非甩腰"],
+  contactHeight:["击球点偏低，导致出球平、被动","先慢后快地建立高举动力定型：击球点偏低时，先用定点高球喂球，强制在最高点触球"],
+  trunkRot:["躯干旋转不足 / 过度，力量没有从髋传递到拍","先把旋转范本练到位：用药球旋转抛，从髋带动而非甩腰"],
   hipShoulder:["髋肩分离不足（X 因子小），旋转力没有完全储备","做「下肢先转」的分解练习：脚先转再上手"],
   jumpHeight:["跳杀时腾空高度不足，击球点偏低","每周 2 次垂直弹性训练：跳箱 + 提踵离心"],
   kneeFlex:["落地 / 弓步缓冲不足或过深，压力集中在膝与跟腱","做静音落地与大 Step 制动练习，目标膝屈 100-120°"],
@@ -1522,12 +1642,12 @@ const FB={
   wristsnap:["末段发力不足，缺少「鞭打」感","慢速拖腕挥拍建立程序后再逐档提速"],
   followThrough:["随挥不足，力量没有完全释放且易急停受伤","把随挥做完整：收向身体另一侧下方"],
   tempo:["挥拍节奏波动大，说明动作程序不稳定","用口令「1-2-3」固定节奏，先慢速一致后提速"],
-  centroid:["重心移动控制不足，导致下一拍启动慢","回中的第一步主动蹬地，步法保持雪橇式平移"],
+  centroid:["重心移动控制不足，导致下一拍启动慢","回中的第一步主动蹬地，步法保持低重心平移"],
   recovery:["复位时间偏长，连贯性差","每一拍结束后逼迫自己 4 步内回到中心"],
   landing:["落地稳定性不足，容易给膝和踝带额外的侧向负荷","单腿平衡 + 静音落地，跳杀量控制在 30 次以内"],
   cadence:["步频偏低，步数偏多","练习绳梯与小垫步，把每一步的触地时间压下来"]
 };
-const PIXW={
+const DEF_PIXW={
   serve:{continuity:.3,burst:.15,rhythm:.25,travel:.15,symmetry:.15},
   clear:{continuity:.25,burst:.3,rhythm:.2,travel:.1,symmetry:.15},
   smash:{continuity:.2,burst:.4,rhythm:.15,travel:.1,symmetry:.15},
@@ -1536,12 +1656,12 @@ const PIXW={
   defense:{continuity:.2,burst:.2,rhythm:.25,travel:.2,symmetry:.15},
   footwork:{continuity:.25,burst:.15,rhythm:.3,travel:.2,symmetry:.1}
 };
-const PIXFB={
+const DEF_PIXFB={
   continuity:["视频显示动作链条连贯性不足，存在明显停顿","先慢速做完整链条，再逐步提速，重点是中间不停顿"],
-  burst:["爆发性不足，加速阶段偏平","加入此举前的预处理：先慢后快，并增加下肢弹跳与药球训练"],
-  rhythm:["节奏波动较大，会直接影响多拍中的落点稳定性","用固定口令或怪声控制节拍，第一优先级是节拍一致"],
+  burst:["爆发性不足，加速阶段偏平","加入击球前的预摆与蹬转：先慢后快，并增加下肢弹跳与药球训练"],
+  rhythm:["节奏波动较大，会直接影响多拍中的落点稳定性","用固定口令或节拍器控制节拍，第一优先级是节拍一致"],
   travel:["重心移动范围控制不佳，下一拍启动会变慢","回中第一步主动蹬地，避免惯性冲出"],
-  symmetry:["左右侧动作差异明显，存在单侧代偿","做单侧对照练习，弱侧多做一组的 1.5 倍"],
+  symmetry:["左右侧动作差异明显，存在单侧代偿","做单侧对照练习，弱侧额外加练 1 组"],
   cadence:["动作频率偏低，回合中没有持续给对手压力","先用节拍器固定频率，再逐步提高到接近比赛的节奏"]
 };
 function scoreRange(v,ideal,tol){
@@ -1816,7 +1936,36 @@ function analyzeYolo(json,techId){
 /* ---------- 视图 5：数据接入 ---------- */
 function viewData(){
   const recent=DB.wear.slice().sort((a,b)=>a.date<b.date?1:-1).slice(0,10);
-  let html='<div class="pageTitle"><h2>数据接入</h2><p>穿戴设备 · 文件备份 · 手动补录</p></div>';
+  const q=dataQuality();
+  let html='<div class="pageTitle"><h2>数据接入</h2><p>穿戴设备 · 采集包 · 文件备份 · 数据质量</p></div>';
+  html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>配套数据采集</h3>'+
+    '<span class="hint">离线使用，导出后一键合并</span></div><div class="card-b">'+
+    '<div class="grid g3">'+
+    '<a class="tile" href="data-collector.html"><b>打开数据采集器</b><span>手机 / 电脑都能用：打卡、训练日志、周期问卷、穿戴 CSV、体能测评、视频记录，导出采集包。</span><em>独立离线工具 →</em></a>'+
+    '<a class="tile" href="data-schema.html"><b>数据规范与采集方案</b><span>字段字典、单位、采集频率、质量控制、多人命名与同步流程。</span><em>查看 SOP →</em></a>'+
+    '<a class="tile" href="coach-workbench.html#cfg"><b>同步规则配置包</b><span>把题目、测评项、技术库导出给采集器，保证两端字段一致。</span><em>进入 #cfg →</em></a>'+
+    '</div></div></div>';
+  html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>导入采集包（JSON）</h3>'+
+    '<span class="hint">按日期 / ID 去重，不覆盖手工数据</span></div><div class="card-b">'+
+    '<div class="note">采集器导出的 <b>bwb.collect</b> 包可整体导入；也支持工作台导出的完整备份 JSON。'+
+    '已在「数据质量」中显示每次导入的来源与条数。</div>'+
+    '<div class="row" style="margin-top:8px"><button class="btn pri" data-act="pickcollect">选择采集包</button>'+
+    '<input type="file" id="collectFile" accept=".json" data-act="collectfile" style="display:none">'+
+    '<button class="btn" data-act="dltemplate">下载 CSV 模板</button>'+
+    '<button class="btn" data-act="dlpack">导出空白采集包</button></div>'+
+    '<div id="collectOut" style="margin-top:8px"></div></div></div>';
+  html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>数据质量报告</h3>'+
+    '<span class="hint">近 '+q.window+' 天 · 完成度 '+q.score+'%</span></div><div class="card-b">'+
+    '<div class="grid g4 keep2" style="margin-bottom:10px">'+
+    [["训练日志",q.logs],["每日打卡",q.mind],["穿戴数据",q.wear],["体能测评",q.tests]].map(x=>
+      '<div class="card"><div class="card-b"><div class="metric" style="border:0;background:transparent;padding:0">'+
+      '<div class="k">'+x[0]+'</div><div class="v">'+x[1]+'<u> 条</u></div></div></div></div>').join("")+'</div>'+
+    (q.issues.length?q.issues.map(i=>'<div class="note '+(i.lv==="high"?"dang":"warn")+'">'+esc(i.t)+'</div>').join("")
+      :'<div class="note ok">未发现缺失、重复或超范围数据。</div>')+
+    (q.sources.length?'<div class="note">已导入来源：'+q.sources.map(esc).join(" / ")+'</div>':"")+
+    (q.demo?'<div class="note warn">含 '+q.demo+' 条演示数据（带 [演示] 标记）。'+
+      '<button class="btn sm dang" style="margin-left:8px" data-act="cleardemo">清除演示数据</button></div>':"")+
+    '</div></div>';
   html+='<div class="grid g2">'+
    '<div class="card"><div class="card-h"><h3>穿戴设备数据（CSV）</h3></div><div class="card-b">'+
    '<div class="note">支持列名（不区分大小写）：date/日期、resting_hr/静息心率、hrv、sleep_hours/睡眠、steps/步数、load/负荷。缺日期的行会被跳过。</div>'+
@@ -1841,8 +1990,10 @@ function viewData(){
   html+='<div class="card" style="margin-top:14px"><div class="card-h"><h3>备份与迁移</h3></div><div class="card-b">'+
     '<div class="row"><button class="btn" data-act="export">导出全部数据（JSON）</button>'+
     '<button class="btn" data-act="import">从 JSON 恢复</button>'+
-    '<input type="file" id="dbFile" accept=".json" data-act="dbfile" style="display:none"></div>'+
-    '<div class="note">所有数据只保存在这台设备的浏览器 localStorage 中，不上传服务器；换电脑请用上面的导出 / 导入迁移。</div></div></div>';
+    '<input type="file" id="dbFile" accept=".json" data-act="dbfile" style="display:none">'+
+    '<button class="btn" data-act="seed">生成演示数据</button></div>'+
+    '<div class="note">所有数据只保存在这台设备的浏览器 localStorage 中，不上传服务器；换电脑请用上面的导出 / 导入迁移。'+
+    '演示数据仅供体验，带标记且可单独清除。</div></div></div>';
   return html;
 }
 function parseCSV(txt){
@@ -1870,70 +2021,89 @@ function parseCSV(txt){
 
 /* ---------- 视图 6：瓶颈诊断 ---------- */
 function viewDiag(){
-  const bn=bottleneck(), ws=warnings(), P=physicalDomain();
-  const pcs=[{k:"技术",v:bn.T.score,w:"瓶颈"+(bn.primary.k==="tech"?"（主要）":"")},
-             {k:"体能",v:bn.P.score,w:bn.primary.k==="phys"?"瓶颈（主要）":""},
-             {k:"恢复",v:bn.R.score,w:bn.primary.k==="recov"?"瓶颈（主要）":""}];
+  const bn=bottleneck(), ws=warnings(), Ph=physicalDomain();
+  const fmt=v=>v==null?"—":v;
+  const clsOf=(v,t)=>v==null?"":(v>=t?"g":(v>=t-10?"a":"r"));
+  const pcs=[{k:"技术",v:bn.T.score,src:bn.T.src,w:bn.primary.k==="tech"?"（主要）":""},
+             {k:"体能",v:bn.P.score,src:bn.P.src,w:bn.primary.k==="phys"?"（主要）":""},
+             {k:"恢复",v:bn.R.score,src:bn.R.src,w:bn.primary.k==="recov"?"（主要）":""}];
   let html='<div class="pageTitle"><h2>瓶颈诊断与突破计划</h2><p>自动判断限制因素是技术短板、体能弱项还是恢复不足</p></div>';
+  if(bn.status!=="ok"){
+    html+='<div class="note dang" style="margin-bottom:14px"><b>数据不足，暂不给出确定性结论。</b><br>'+
+      '缺口：'+esc((bn.missing||[]).join(" / ")||"全部三项")+'。当前结论只基于已录入的部分数据；'+
+      '补齐后系统会自动重算，不会用默认分数代替你的真实状态。'+
+      '<div class="row" style="margin-top:8px"><button class="btn sm" data-act="nav" data-v="level">补等级定级</button>'+
+      '<button class="btn sm" data-act="nav" data-v="log">补训练记录</button>'+
+      '<button class="btn sm" data-act="nav" data-v="data">去数据接入</button></div></div>';
+  }
   html+='<div class="grid g4 keep2" style="margin-bottom:14px">'+
     pcs.map(p=>'<div class="card"><div class="card-b"><div class="metric" style="border:0;background:transparent;padding:0">'+
-      '<div class="k">'+p.k+'</div><div class="v">'+p.v+'<u>/100</u></div>'+
-      '<div class="bar '+(p.v>=bn.target?"g":(p.v>=bn.target-10?"a":"r"))+'"><i style="width:'+p.v+'%"></i></div>'+
-      '<div class="s">目标线 '+bn.target+'（'+levelOf(bn.target).n+'）'+(p.w?'　<span class="tag r">'+p.w+'</span>':"")+'</div>'+
+      '<div class="k">'+p.k+'</div><div class="v">'+fmt(p.v)+'<u>/100</u></div>'+
+      '<div class="bar '+clsOf(p.v,bn.target)+'"><i style="width:'+(p.v==null?0:p.v)+'%"></i></div>'+
+      '<div class="s">目标线 '+bn.target+'（'+levelOf(bn.target).n+'）　覆盖 '+esc(p.src||"—")+
+      (p.w?'　<span class="tag r">瓶颈'+p.w+'</span>':"")+'</div>'+
       '</div></div></div>').join("")+
     '<div class="card"><div class="card-b"><div class="metric" style="border:0;background:transparent;padding:0">'+
-      '<div class="k">综合评定</div><div class="v" style="color:'+levelOf(bn.composite).col+'">'+bn.composite+'</div>'+
-      '<div class="s">'+levelOf(bn.composite).n+' · '+levelOf(bn.composite).desc+'</div></div></div></div></div>';
+      '<div class="k">综合评定</div><div class="v" style="color:'+
+      (bn.composite==null?"var(--text-3)":levelOf(bn.composite).col)+'">'+fmt(bn.composite)+'</div>'+
+      '<div class="s">'+(bn.composite==null?"尚无足够数据":levelOf(bn.composite).n+' · '+levelOf(bn.composite).desc)+
+      '</div></div></div></div></div>';
 
   html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>限制因素判定</h3>'+
-    '<span class="hint">对比次要限制：'+esc(bn.runnerUp.n)+'（差 '+Math.abs(bn.runnerUp.gap>=0?Math.round(bn.runnerUp.gap):0)+' 分）</span></div><div class="card-b">'+
-    '<div class="note dang"><b>当前主要限制因素：'+esc(bn.primary.n)+'</b>　当前 '+bn.primary.score+' 分，距目标 '+Math.round(bn.primary.gap)+' 分</div>';
-  const dt=bn.detail;
-  if(dt.type==="tech"){
-    const t=techById(dt.tech.id);
-    html+='<div class="grid g2"><div><div style="font-weight:700;margin-bottom:6px">最弱单项：'+esc(t.n)+'</div>'+
-      '<div style="font-size:.82rem;color:var(--text-2)">'+esc(t.goal)+'</div>'+
-      (dt.worstMetric?'<div class="note warn" style="margin-top:8px">视频中最弱的环节：<b>'+esc(dt.worstMetric.n)+'</b>（'+dt.worstMetric.score+' 分）<br>'+esc(dt.worstMetric.fb)+'</div>'
-        :'<div class="note" style="margin-top:8px">还没有视频评估数据。补一段 '+esc(t.n)+' 的视频，可以把瓶颈定位到具体角度。</div>')+
-      '<div style="font-weight:700;margin-top:10px">纠正处方</div><ul class="plain">'+
-        dt.drills.map(d=>'<li>'+esc(d[0])+'　→　'+esc(d[1])+'</li>').join("")+'</ul></div>'+
-      '<div><div style="font-weight:700;margin-bottom:6px">七项技术当前水平</div>'+
-      '<table><tbody>'+bn.T.detail.per.map(p=>'<tr><td>'+esc(p.n)+'</td><td class="tnum">'+p.score+'</td>'+
-        '<td style="width:45%"><div class="bar '+(p.score>=73?"g":(p.score>=58?"a":"r"))+'"><i style="width:'+p.score+'%"></i></div></td>'+
-        '<td>'+(p.id===dt.tech.id?'<span class="tag r">瓶颈</span>':"")+'</td></tr>').join("")+'</tbody></table></div></div>';
-  }else if(dt.type==="phys"){
-    html+='<div class="grid g2"><div><div style="font-weight:700;margin-bottom:6px">最弱素质：'+esc(dt.quality?dt.quality.n:"—")+'</div>'+
-      (dt.worstTests?'<table><tbody>'+dt.worstTests.map(x=>'<tr><td>'+esc(x.n)+'</td><td class="tnum">'+x.val+x.unit+'</td>'+
-        '<td><span class="tag '+(x.score>=73?"g":(x.score>=58?"y":"r"))+'">'+x.score+'</span></td></tr>').join("")+'</tbody></table>'
-        :'<div class="note">该项还没有测评数据，先去做一次体能测评。</div>')+
-      (dt.missing&&dt.missing.length?'<div class="note warn">未测评素质：'+dt.missing.map(esc).join(" / ")+'</div>':"")+
-      '<div style="font-weight:700;margin-top:10px">定向补给动作</div><ul class="plain">'+
-        (EX.filter(e=>e.q===(dt.quality?dt.quality.id:"power")).slice(0,4)).map(e=>'<li><b>'+esc(e.n)+'</b>　'+esc(e.rx.s+" × "+e.rx.r+"　"+e.rx.l)+'</li>').join("")+'</ul></div>'+
-      '<div>'+chartRadar(P.detail.map(d=>({k:d.n,v:d.score})))+'</div></div>';
+    '<span class="hint">'+(bn.status==="ok"?'对比次要限制：'+esc(bn.runnerUp.n):'状态：'+bn.status)+'</span></div><div class="card-b">';
+  if(bn.status==="empty"){
+    html+='<div class="note warn">还没有可比较的三个领域得分。请按顺序完成：① 等级定级（建立技术基线）② 一次训练日志（负荷）③ 每日打卡（恢复）④ 体能测评（体能）。'+
+      '每一项录入后，下面的判定、4 周计划与今日清单都会随之改变。</div>';
   }else{
-    html+='<div class="grid g2"><div><div style="font-weight:700;margin-bottom:6px">恢复侧驱动因素</div>'+
-      '<ul class="plain">'+(dt.drivers.length?dt.drivers.map(d=>'<li>'+esc(d.k)+(d.v?'（'+d.v+'）':"")+'</li>').join(""):'<li>无</li>')+'</ul>'+
-      '<div class="note">近一周平均准备度 '+(dt.mean7||"—")+'　平均睡眠 '+dt.sleepAvg+' 小时　最高疼痛等级 '+dt.painMax+'</div></div>'+
-      '<div><div style="font-weight:700;margin-bottom:6px">恢复干预清单</div><ul class="plain">'+
-      '<li>睡眠：固定作息，目标 8 小时（当前 '+dt.sleepAvg+'h）</li>'+
-      '<li>负荷：本周总量下调 20-30%，删除跳跃与冲刺内容</li>'+
-      '<li>营养：训练后 30 分钟内补足碳水 + 蛋白质</li>'+
-      '<li>主动恢复：每天 15 分钟低强度有氧 + 呼吸练习</li>'+
-      '<li>疼痛部位：对应部位预康复每天 8 分钟</li></ul></div></div>';
+    html+='<div class="note dang"><b>当前主要限制因素：'+esc(bn.primary.n)+'</b>　当前 '+fmt(bn.primary.score)+
+      ' 分，距目标 '+(bn.primary.gap==null?"—":Math.round(bn.primary.gap))+' 分</div>';
+    const dt=bn.detail;
+    if(dt.type==="tech"){
+      const t=dt.techObj||techById(dt.tech.id)||{n:dt.tech.n,goal:"",simple:[""],errors:[]};
+      html+='<div class="grid g2"><div><div style="font-weight:700;margin-bottom:6px">最弱单项：'+esc(t.n)+'</div>'+
+        '<div style="font-size:.82rem;color:var(--text-2)">'+esc(t.goal)+'</div>'+
+        (dt.worstMetric?'<div class="note warn" style="margin-top:8px">视频中最弱的环节：<b>'+esc(dt.worstMetric.n)+'</b>（'+dt.worstMetric.score+' 分）<br>'+esc(dt.worstMetric.fb)+'</div>'
+          :'<div class="note" style="margin-top:8px">还没有视频评估数据。补一段 '+esc(t.n)+' 的视频，可以把瓶颈定位到具体角度。</div>')+
+        '<div style="font-weight:700;margin-top:10px">纠正处方</div><ul class="plain">'+
+        (dt.drills||[]).map(d=>'<li>'+esc(d[0])+'　→　'+esc(d[1])+'</li>').join("")+'</ul></div>'+
+        '<div><div style="font-weight:700;margin-bottom:6px">各项技术当前水平</div>'+
+        '<table><tbody>'+bn.T.detail.per.map(p=>'<tr><td>'+esc(p.n)+'</td><td class="tnum">'+fmt(p.score)+'</td>'+
+          '<td style="width:45%"><div class="bar '+clsOf(p.score,73)+'"><i style="width:'+(p.score||0)+'%"></i></div></td>'+
+          '<td>'+(p.id===dt.tech.id?'<span class="tag r">瓶颈</span>':"")+'</td></tr>').join("")+'</tbody></table></div></div>';
+    }else if(dt.type==="phys"){
+      html+='<div class="grid g2"><div><div style="font-weight:700;margin-bottom:6px">最弱素质：'+esc(dt.quality?dt.quality.n:"—")+'</div>'+
+        (dt.worstTests?'<table><tbody>'+dt.worstTests.map(x=>'<tr><td>'+esc(x.n)+'</td><td class="tnum">'+x.val+x.unit+'</td>'+
+          '<td><span class="tag '+(x.score>=73?"g":(x.score>=58?"y":"r"))+'">'+x.score+'</span></td></tr>').join("")+'</tbody></table>'
+          :'<div class="note">该项还没有测评数据，先去做一次体能测评。</div>')+
+        (dt.missing&&dt.missing.length?'<div class="note warn">未测评素质：'+dt.missing.map(esc).join(" / ")+'</div>':"")+
+        '<div style="font-weight:700;margin-top:10px">定向补给动作</div><ul class="plain">'+
+        (EX.filter(e=>e.q===(dt.quality?dt.quality.id:(QUAL[0]&&QUAL[0].id))).slice(0,4)).map(e=>'<li><b>'+esc(e.n)+'</b>　'+esc(e.rx.s+" × "+e.rx.r+"　"+e.rx.l)+'</li>').join("")+'</ul></div>'+
+        '<div>'+chartRadar(Ph.detail.map(d=>({k:d.n,v:d.score})))+'</div></div>';
+    }else{
+      html+='<div class="grid g2"><div><div style="font-weight:700;margin-bottom:6px">恢复侧驱动因素</div>'+
+        '<ul class="plain">'+(dt.drivers.length?dt.drivers.map(d=>'<li>'+esc(d.k)+(d.v?'（'+d.v+'）':"")+'</li>').join(""):'<li>无</li>')+'</ul>'+
+        '<div class="note">近一周平均准备度 '+(dt.mean7||"—")+'　平均睡眠 '+dt.sleepAvg+' 小时　最高疼痛等级 '+dt.painMax+'</div></div>'+
+        '<div><div style="font-weight:700;margin-bottom:6px">恢复干预清单</div><ul class="plain">'+
+        '<li>睡眠：固定作息，目标 '+PARAMS.sleepTarget+' 小时（当前 '+dt.sleepAvg+'h）</li>'+
+        '<li>负荷：本周总量下调 20-30%，删除跳跃与冲刺内容</li>'+
+        '<li>营养：训练后 30 分钟内补足碳水 + 蛋白质</li>'+
+        '<li>主动恢复：每天 15 分钟低强度有氧 + 呼吸练习</li>'+
+        '<li>疼痛部位：对应部位预康复每天 '+esc(TEXTS.prehabAmt)+'</li></ul></div></div>';
+    }
   }
   html+='</div></div>';
 
-  html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>伤病风险预警</h3><span class="hint">'+ws.length+' 条</span></div><div class="card-b">'+
+  html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>伤病风险预警</h3><span class="hint">'+ws.length+' 条 · 阈值可在规则配置调整</span></div><div class="card-b">'+
     (ws.length?ws.map(w=>'<div class="note '+(w.lv==="high"?"dang":(w.lv==="mid"?"warn":"ok"))+'"><b>'+esc(w.t)+'</b><br>'+esc(w.d)+'<br><span style="color:var(--accent)">处置：'+esc(w.act)+'</span></div>').join("")
       :'<div class="note ok">目前没有触发预警规则，继续保持。</div>')+'</div></div>';
 
   const weeks=breakthrough(bn);
-  html+='<div class="card"><div class="card-h"><h3>4 周突破计划</h3><span class="hint">自动滚动：每周重新计算一次</span></div><div class="card-b">'+
+  html+='<div class="card"><div class="card-h"><h3>4 周突破计划</h3><span class="hint">全部系数可在「规则配置」修改</span></div><div class="card-b">'+
     weeks.map(w=>'<details class="acc" '+(w.w===1?"open":"")+'><summary>第 '+w.w+' 周　负荷目标 '+w.loadTarget+' 分钟当量'+
-      (w.mul<1?'　<span class="tag y">减量 '+Math.round(w.mul*100)+'%</span>':(w.mul>1?'　<span class="tag g">+'+Math.round((w.mul-1)*100)+'%</span>':""))+'</summary>'+
+      (w.mul<1?'　<span class="tag y">减量 '+Math.round((1-w.mul)*100)+'%</span>':(w.mul>1?'　<span class="tag g">+'+Math.round((w.mul-1)*100)+'%</span>':""))+'</summary>'+
       '<div class="acc-b"><div style="margin-bottom:8px">'+esc(w.focus)+'</div>'+
       '<table><thead><tr><th>课次</th><th>内容</th><th>RPE</th></tr></thead><tbody>'+
-      w.sessions.map(s=>'<tr><td>'+esc(s.n)+'</td><td>'+esc(s.c)+'</td><td class="tnum">'+s.l+'</td></tr>').join("")+'</tbody></table>'+
+      w.sessions.map(x=>'<tr><td>'+esc(x.n)+'</td><td>'+esc(x.c)+'</td><td class="tnum">'+x.l+'</td></tr>').join("")+'</tbody></table>'+
       '<div style="font-size:.76rem;color:var(--text-3);margin-top:6px">'+esc(w.note)+'</div></div></details>').join("")+
     '</div></div>';
   return html;
@@ -1977,35 +2147,47 @@ function viewProfile(){
 
 /* ---------- 示例数据 ---------- */
 function seedDemo(){
-  const d=todayISO();
+  const d=todayISO(), tag="[演示]";
   for(let i=35;i>=0;i--){
     const day=addDays(d,-i), wd=weekday(day);
     const isSession=[1,2,4,5,6].indexOf(wd)>=0 && Math.random()>.18;
     if(isSession){
       const rpe=5+Math.round(Math.random()*3)+(i<10?1:0);
       DB.logs.push({id:uid(),date:day,dur:60+Math.round(Math.random()*30),rpe:Math.min(10,rpe),
-        type:["tech","cond","match","recovery"][Math.floor(Math.random()*4)],note:["手感一般","后场到位率高","多拍仍能顶住","第三拍偏慢"][Math.floor(Math.random()*4)]});
+        type:["tech","cond","match","recovery"][Math.floor(Math.random()*4)],
+        note:tag+["手感一般","后场到位率高","多拍仍能顶住","第三拍偏慢"][Math.floor(Math.random()*4)],demo:true});
     }
     DB.mind.push({id:uid(),date:day,sleep:round(6+Math.random()*2.5,1),sleepq:2+Math.floor(Math.random()*4),
       energy:2+Math.floor(Math.random()*4),mood:3+Math.floor(Math.random()*3),sore:1+Math.floor(Math.random()*3),
-      pain:(Math.random()>.86?3:1),painsite:(Math.random()>.9?"右膝":"")});
+      pain:(Math.random()>.86?3:1),painsite:(Math.random()>.9?"右膝":""),demo:true});
     DB.wear.push({date:day,rhr:Math.round(50+Math.random()*8),hrv:Math.round(58+Math.random()*26),
-      sleepH:round(6+Math.random()*2.4,1),steps:Math.round(6000+Math.random()*7000),load:isSession?Math.round(400+Math.random()*300):Math.round(80+Math.random()*120)});
+      sleepH:round(6+Math.random()*2.4,1),steps:Math.round(6000+Math.random()*7000),
+      load:isSession?Math.round(400+Math.random()*300):Math.round(80+Math.random()*120),demo:true});
   }
-  DB.tests.push({id:uid(),date:addDays(d,-3),res:{cmj:36,bj:205,sq:1.15,pu:6,s10:1.95,ag:5.35,six:24,yy:900,multi:70,
+  DB.tests.push({id:uid(),date:addDays(d,-3),demo:true,res:{cmj:36,bj:205,sq:1.15,pu:6,s10:1.95,ag:5.35,six:24,yy:900,multi:70,
     sleeperROM:52,slr:70,wt:8,sebt:82,lsi:22,sp:50,djump:66}});
-  DB.skills={serve:62,clear:66,smash:54,drop:52,net:58,defense:55,footwork:60};
-  save();toast("已生成 5 周示例数据");
+  const mean=58;
+  TECH.forEach(t=>{DB.skills[t.id]=mean;DB.skillSources[t.id]=tag+"演示基线";});
+  save();toast("已生成 5 周演示数据（带 [演示] 标记，可一键清除）");
+}
+function clearDemo(){
+  ["logs","mind","wear","tests","vids","levels","weekly"].forEach(k=>{
+    DB[k]=DB[k].filter(x=>!x.demo);
+  });
+  Object.keys(DB.skills).forEach(k=>{
+    if(String(DB.skillSources[k]||"").indexOf("演示")>=0){delete DB.skills[k];delete DB.skillSources[k];}
+  });
+  save();toast("演示数据已清除，真实数据保留");
 }
 
 /* ---------- 渲染调度 ---------- */
 function render(){
-  ["today","level","lib","log","video","data","diag","profile"].forEach(v=>{
+  ["today","level","lib","log","video","data","diag","cfg","profile"].forEach(v=>{
     const sec=el("view-"+v);
     sec.classList.toggle("on",VIEW===v);
     if(VIEW===v){
       let html="";
-      try{ html = {today:viewToday,level:viewLevel,lib:viewLib,log:viewLog,video:viewVideo,data:viewData,diag:viewDiag,profile:viewProfile}[v](); }
+      try{ html = {today:viewToday,level:viewLevel,lib:viewLib,log:viewLog,video:viewVideo,data:viewData,diag:viewDiag,cfg:viewCfg,profile:viewProfile}[v](); }
       catch(e){ html='<div class="note dang">渲染出错：'+esc(e.message)+'</div>'; }
       sec.innerHTML=html;
     }else sec.innerHTML="";
@@ -2087,6 +2269,27 @@ document.addEventListener("click",function(e){
     case "export": exportDB(); break;
     case "import": el("dbFile").click(); break;
     case "seed": seedDemo(); render(); break;
+    case "cleardemo": clearDemo(); render(); break;
+    case "pickcollect": el("collectFile").click(); break;
+    case "dltemplate": downloadCSVTemplate(); break;
+    case "dlpack": downloadEmptyPack(); break;
+    case "cfgexport": exportCfg(); break;
+    case "pickcfg": el("cfgFile").click(); break;
+    case "cfgreset":{
+      if(confirm("恢复出厂配置？自定义的技术、动作、题目与阈值都会丢失（训练数据保留）。")){
+        DB.cfg=cfgDefault();applyCfg();save();render();toast("已恢复出厂配置");}
+      break;
+    }
+    case "cfgsave": cfgSaveJson(); break;
+    case "cfgadd": cfgAddRow(); break;
+    case "cfgkeydefault":{
+      if(confirm("把「"+CFG_KEYS[CFG_KEY]+"」恢复为默认值？")){
+        cfgSet(CFG_KEY,clone(DEF_CFG[CFG_KEY]));render();toast("该项已恢复默认");}
+      break;
+    }
+    case "abrun": abCompare(); break;
+    case "abreset": AB_STATE.A=Object.assign({},AB_DEFAULT.A);
+      AB_STATE.B=Object.assign({},AB_DEFAULT.B);AB_STATE.result=null;render();break;
     case "reset":{
       if(confirm("将清空本机保存的全部训练数据（无法撤销），确认继续？")){
         localStorage.removeItem(STORE_KEY);load();render();toast("已清空");
@@ -2137,6 +2340,22 @@ document.addEventListener("change",function(e){
     const fr=new FileReader(); fr.onload=()=>{el("csvText").value=fr.result;}; fr.readAsText(t.files[0]);
   }
   if(t.dataset&&t.dataset.act==="dbfile"&&t.files&&t.files[0]) onDBFile(t.files[0]);
+  if(t.dataset&&t.dataset.act==="collectfile"&&t.files&&t.files[0]) onCollectFile(t.files[0]);
+  if(t.dataset&&t.dataset.act==="cfgfile"&&t.files&&t.files[0]) onCfgFile(t.files[0]);
+  if(t.id==="cfgKey"){ CFG_KEY=t.value; renderKeepScroll(); }
+  if(t.dataset&&t.dataset.p){
+    const k=t.dataset.p, isText=t.dataset.ptype==="text";
+    const v=isText?t.value:(parseFloat(t.value));
+    if(!isText&&isNaN(v)){toast("请输入数字");return;}
+    if(!DB.cfg)DB.cfg=cfgDefault();
+    DB.cfg.params=DB.cfg.params||{};DB.cfg.params[k]=v;
+    applyCfg();save();
+    const box=el("cfgPreviewBox");if(box)box.innerHTML=cfgPreviewHTML();
+    toast("参数 "+k+" 已更新，输出已重算");
+  }
+  if(t.dataset&&t.dataset.ab&&t.dataset.k){
+    AB_STATE[t.dataset.ab][t.dataset.k]=parseFloat(t.value);
+  }
   if(t.id==="vidTech"){VIDSTATE.tech=t.value;}
   if(t.dataset&&t.dataset.sk){ DB.skills[t.dataset.sk]=parseInt(t.value); const s=el("sk-"+t.dataset.sk); if(s)s.textContent=t.value; save(); }
 });
@@ -2257,10 +2476,552 @@ function onDBFile(file){
     try{
       const d=JSON.parse(fr.result);
       if(!d||typeof d!=="object")throw new Error("文件格式不正确");
-      DB=Object.assign(defaultDB(),d); save(); render(); toast("数据已从备份恢复");
+      DB=Object.assign(defaultDB(),d);
+      if(!DB.cfg||typeof DB.cfg!=="object")DB.cfg=cfgDefault();
+      Object.keys(DEF_CFG).forEach(k=>{if(DB.cfg[k]===undefined)DB.cfg[k]=clone(DEF_CFG[k]);});
+      applyCfg(); save(); render(); toast("数据已从备份恢复");
     }catch(e){toast("恢复失败："+e.message);}
   };
   fr.readAsText(file);
+}
+
+
+/* ==================== 二·B、泛化配置层 ====================
+   所有内容库、算法阈值、文案模板都从 DB.cfg 读取；DB.cfg 可在「规则配置」页编辑、
+   导入导出。改动配置立即改变今日清单、定级、诊断与计划，而不是写死的演示内容。   */
+
+const DEF_SKILLMAP = {
+  serve:"grip", clear:"back", smash:"min(back,power,attack)",
+  drop:"min(back,net)", net:"net", defense:"def", footwork:"foot"
+};
+const DEF_CAPS = [
+  {dim:"power",   op:"<=", v:2, cap:2, why:"发力方式尚未建立（内外旋 / 爆发力不足）"},
+  {dim:"back",    op:"<=", v:3, cap:3, why:"正手后场不能稳定到位"},
+  {dim:"backhand",op:"<=", v:2, cap:3, why:"反手后场基本不会（俗称反手为 0）"},
+  {dim:"foot",    op:"<=", v:3, cap:4, why:"移动 / 启动不足，实战表现低于动作表现"},
+  {dim:"def",     op:"<=", v:2, cap:4, why:"防守质量有限，难以进入高强度对抗"},
+  {dim:"match",   op:"<=", v:3, cap:5, why:"实战稳定性不足，动作尚未转化为比赛能力"}
+];
+const DEF_TEXTS = {
+  recovTitle:"恢复干预（20 min）",
+  recovDesc:"腹式呼吸 5 min + 泡沫轴放松 8 min + 温水浴 5 min；今晚睡眠目标 8 小时",
+  dataGapTitle:"先补齐数据（10 min）",
+  dataGapDesc:"完成等级定级 + 一次训练日志 + 一次打卡，系统才会给出属于你的瓶颈与负荷。",
+  techFocus:"今日瓶颈项：放慢节奏，逐条对照动作要领自查",
+  techNormal:"常规维持，追求落点稳定",
+  prehabAmt:"8 min", checkinAmt:"30 秒"
+};
+const DEF_PARAMS = {
+  /* 负荷 */
+  acuteDays:7, chronicDays:28, acwrNoBase:1.2, minutesPerSession:55,
+  /* 准备度扣分 */
+  sleepTarget:8, sleepPenalty:7, qBase:3, sleepqPenalty:5, energyPenalty:5,
+  moodPenalty:3, sorePenalty:6, painThreshold:3, pain3:10, pain4:20, pain5:28,
+  noCheckinPenalty:6, hrvMajor:-0.25, hrvMinor:-0.12, hrvPenaltyMajor:18,
+  hrvPenaltyMinor:9, rhrRise:8, rhrPenalty:10, wearSleepMin:6.5,
+  wearSleepPenalty:6, yLoadRatio:1.6, yLoadPenalty:8,
+  /* 体能素质权重 */
+  wPower:.25, wSpeed:.25, wEndurance:.2, wMobility:.15, wStability:.15,
+  scoreFloor:5, scoreCap:100,
+  /* 恢复域 */
+  recovWindow:14, recovRecentW:.6, recovAllW:.4,
+  acwrHigh:1.5, acwrMid:1.3, acwrLow:.6, acwrHighPen:16, acwrMidPen:8, acwrLowPen:8,
+  readyLowLine:60, readyLowDays:4, readyLowPen:10,
+  /* 今日强度调整 */
+  readyCutLow:50, readyCutMid:65, readyBoost:85, mulLow:.6, mulMid:.8,
+  mulBoost:1.05, acwrCutLine:1.5, mulAcwr:.75,
+  /* 瓶颈归因权重 */
+  wTech:1, wPhys:1, wRecov:1.15,
+  /* 突破计划 */
+  weekMulTech:"1,1.1,1.2,.7", weekMulPhys:"1,1.1,1.2,.7",
+  weekMulRecov:".7,.85,1,.65", deloadWeek:4,
+  /* 定级 */
+  cyScale:7, cySteps:6, compBonus:"0,0,0,1,1,2", noCompMax:6,
+  skillBase:18, skillPerLv:11, cyMap:"2:1,4:2,6:3,7:4", targetBoost:1,
+  /* 视频融合 */
+  vidDecayWeeks:10,
+  /* 预警 */
+  painHigh:4, painMid:3, readyWarnLine:55, readyWarnDays:3,
+  sleepWarnAvg:6.5, hrvWarn:-0.2
+};
+const PARAM_META = [
+  {g:"负荷与周期", items:[
+    ["minutesPerSession","每次训练基准分钟","用于换算周负荷目标与突破计划",20,180,5],
+    ["acuteDays","急性负荷窗口(天)","急性:慢性负荷比的分子窗口",3,14,1],
+    ["chronicDays","慢性负荷窗口(天)","分母窗口",14,56,1],
+    ["acwrNoBase","无基线时 ACWR","没有 4 周历史负荷时的保守估计",.5,2,.1],
+    ["vidDecayWeeks","视频评分衰减(周)","时间越久，视频评估对技术分的权重越低",2,52,1]
+  ]},
+  {g:"准备度计算", items:[
+    ["sleepTarget","目标睡眠(h)","偏离目标每晚扣分",5,10,.5],
+    ["sleepPenalty","睡眠偏离扣分/h","睡眠每偏离 1 小时的扣分",0,20,1],
+    ["qBase","问卷中位档","睡眠/精力/情绪/酸痛的中性档位",1,6,1],
+    ["sleepqPenalty","睡眠质量扣分/档","",0,15,1],
+    ["energyPenalty","精力扣分/档","",0,15,1],
+    ["moodPenalty","情绪扣分/档","",0,15,1],
+    ["sorePenalty","酸痛扣分/档","",0,15,1],
+    ["painThreshold","疼痛起扣等级","达到该等级开始扣分",1,5,1],
+    ["pain3","3 级疼痛扣分","",0,40,1], ["pain4","4 级疼痛扣分","",0,40,1],
+    ["pain5","5 级疼痛扣分","",0,50,1],
+    ["noCheckinPenalty","缺问卷扣分","只有穿戴数据、没有问卷时",0,20,1],
+    ["hrvMajor","HRV 重度下降线","相对个人基线的比例",-.6,0,.01],
+    ["hrvMinor","HRV 轻度下降线","",-.4,0,.01],
+    ["hrvPenaltyMajor","HRV 重度扣分","",0,40,1],
+    ["hrvPenaltyMinor","HRV 轻度扣分","",0,30,1],
+    ["rhrRise","静息心率升高阈值(bpm)","",0,30,1],
+    ["rhrPenalty","静息心率扣分","",0,30,1],
+    ["wearSleepMin","穿戴睡眠下限(h)","",3,9,.5],
+    ["wearSleepPenalty","穿戴睡眠扣分/h","",0,15,1],
+    ["yLoadRatio","昨日负荷过大倍数","相对慢性日均负荷",1,4,.1],
+    ["yLoadPenalty","昨日负荷扣分","",0,30,1]
+  ]},
+  {g:"体能域权重", items:[
+    ["wPower","力量/爆发力",".25 表示占 25%",0,1,.05],
+    ["wSpeed","速度/灵敏","",0,1,.05],
+    ["wEndurance","专项耐力","",0,1,.05],
+    ["wMobility","柔韧/活动度","",0,1,.05],
+    ["wStability","关节稳定性","",0,1,.05],
+    ["scoreFloor","测评分下限","",0,40,1], ["scoreCap","测评分上限","",60,100,1]
+  ]},
+  {g:"恢复域与预警", items:[
+    ["recovWindow","恢复观察窗(天)","",3,42,1],
+    ["recovRecentW","近 7 天权重","",0,1,.05], ["recovAllW","全窗口权重","",0,1,.05],
+    ["acwrHigh","ACWR 高风险线","",1,2.5,.05], ["acwrMid","ACWR 警戒线","",.8,2,.05],
+    ["acwrLow","ACWR 负荷不足线","",.1,1,.05],
+    ["acwrHighPen","高风险扣分","",0,40,1], ["acwrMidPen","警戒扣分","",0,30,1],
+    ["acwrLowPen","负荷不足扣分","",0,30,1],
+    ["readyLowLine","准备度低迷线","",30,80,1], ["readyLowDays","低迷天数阈值","",1,7,1],
+    ["readyLowPen","低迷扣分","",0,30,1],
+    ["painHigh","疼痛高危等级","",2,5,1], ["painMid","疼痛中危等级","",1,5,1],
+    ["readyWarnLine","预警准备度线","",30,80,1], ["readyWarnDays","预警天数","",1,7,1],
+    ["sleepWarnAvg","周均睡眠预警线(h)","",3,9,.5],
+    ["hrvWarn","HRV 预警下降线","",-.6,0,.01]
+  ]},
+  {g:"今日强度调整", items:[
+    ["readyCutLow","大幅降载线","准备度低于此值",20,80,1],
+    ["readyCutMid","轻度降载线","",30,90,1],
+    ["readyBoost","可加量线","",60,100,1],
+    ["mulLow","大幅降载系数","",.2,1,.05], ["mulMid","轻度降载系数","",.2,1,.05],
+    ["mulBoost","加量系数","",1,1.5,.05],
+    ["acwrCutLine","ACWR 额外降载线","",1,2.5,.05], ["mulAcwr","ACWR 降载系数","",.2,1,.05]
+  ]},
+  {g:"瓶颈归因", items:[
+    ["wTech","技术短板权重","差距 × 权重决定主限制因素",0,3,.05],
+    ["wPhys","体能弱项权重","",0,3,.05],
+    ["wRecov","恢复不足权重","",0,3,.05]
+  ]},
+  {g:"周期与突破计划", items:[
+    ["weekMulTech","技术型 4 周系数","逗号分隔 4 个数","","","text"],
+    ["weekMulPhys","体能型 4 周系数","逗号分隔 4 个数","","","text"],
+    ["weekMulRecov","恢复型 4 周系数","逗号分隔 4 个数","","","text"],
+    ["deloadWeek","减量周序号","1-4",1,4,1]
+  ]},
+  {g:"等级定级", items:[
+    ["cyScale","等级刻度上限","中羽 0-7 级则填 7",1,12,1],
+    ["cySteps","问卷每档映射跨度","6 档答案映射到等级刻度",1,12,1],
+    ["compBonus","比赛成绩加分表","逗号分隔，长度=成绩选项数","","","text"],
+    ["noCompMax","无比赛经历封顶","",0,12,1],
+    ["skillBase","技术基线起点分","定级写入各技术分 = 起点 + 等级 × 系数",0,60,1],
+    ["skillPerLv","每级技术分增量","",0,20,1],
+    ["cyMap","外部等级→内部等级","格式 2:1,4:2,6:3,7:4","","","text"],
+    ["targetBoost","目标等级提升档","",0,3,1]
+  ]}
+];
+const CFG_KEYS = {
+  qual:"体能素质", tech:"技术库", ex:"体能动作库", techEx:"技术配套动作",
+  prehab:"预康复处方", tests:"体能测评基准", phases:"周期训练模板",
+  levels:"内部等级刻度", cyLevels:"外部等级表", cyComp:"比赛成绩选项",
+  cyQs:"定级问卷", dailyQ:"每日打卡问卷", weeklyQ:"周期问卷",
+  metrics:"姿态指标阈值", fb:"姿态纠正反馈", pixW:"像素分析权重",
+  pixFb:"像素分析反馈", params:"算法参数", caps:"等级短板封顶规则",
+  skillMap:"定级→技术映射", texts:"文案模板"
+};
+const DEF_CFG = {
+  v:2, meta:{name:"默认配置包", updated:"", note:""},
+  qual:DEF_QUAL, tech:DEF_TECH, ex:DEF_EX, techEx:DEF_TECH_EX,
+  prehab:DEF_PREHAB, tests:DEF_TESTS, phases:DEF_PHASES, levels:DEF_LEVELS,
+  cyLevels:DEF_CY_LEVELS, cyComp:DEF_CY_COMP, cyQs:DEF_CY_QS,
+  dailyQ:DEF_DAILY_Q, weeklyQ:DEF_WEEKLY_Q,
+  metrics:DEF_METRICS, fb:DEF_FB, pixW:DEF_PIXW, pixFb:DEF_PIXFB,
+  params:DEF_PARAMS, caps:DEF_CAPS, skillMap:DEF_SKILLMAP, texts:DEF_TEXTS
+};
+let QUAL, TECH, EX, TECH_EX, PREHAB, TESTS, LEVELS, CY_LEVELS, CY_COMP, CY_QS,
+    PHASES, DAILY_Q, WEEKLY_Q, METRICS, FB, PIXW, PIXFB, PARAMS, CAPS, SKILLMAP, TEXTS;
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function cfgDefault(){ return clone(DEF_CFG); }
+function numList(v, fallback){
+  const a = String(v==null?"":v).split(",").map(x=>parseFloat(x.trim())).filter(x=>!isNaN(x));
+  return a.length?a:fallback;
+}
+function applyCfg(){
+  if(!DB.cfg||typeof DB.cfg!=="object")DB.cfg=cfgDefault();
+  const c = DB.cfg;
+  QUAL      = Array.isArray(c.qual)&&c.qual.length?c.qual:DEF_QUAL;
+  TECH      = Array.isArray(c.tech)&&c.tech.length?c.tech:DEF_TECH;
+  EX        = Array.isArray(c.ex)&&c.ex.length?c.ex:DEF_EX;
+  TECH_EX   = (c.techEx&&Object.keys(c.techEx).length)?c.techEx:DEF_TECH_EX;
+  PREHAB    = Array.isArray(c.prehab)&&c.prehab.length?c.prehab:DEF_PREHAB;
+  TESTS     = Array.isArray(c.tests)&&c.tests.length?c.tests:DEF_TESTS;
+  PHASES    = Array.isArray(c.phases)&&c.phases.length?c.phases:DEF_PHASES;
+  LEVELS    = Array.isArray(c.levels)&&c.levels.length?c.levels:DEF_LEVELS;
+  CY_LEVELS = Array.isArray(c.cyLevels)&&c.cyLevels.length?c.cyLevels:DEF_CY_LEVELS;
+  CY_COMP   = Array.isArray(c.cyComp)&&c.cyComp.length?c.cyComp:DEF_CY_COMP;
+  CY_QS     = Array.isArray(c.cyQs)&&c.cyQs.length?c.cyQs:DEF_CY_QS;
+  DAILY_Q   = Array.isArray(c.dailyQ)&&c.dailyQ.length?c.dailyQ:DEF_DAILY_Q;
+  WEEKLY_Q  = Array.isArray(c.weeklyQ)&&c.weeklyQ.length?c.weeklyQ:DEF_WEEKLY_Q;
+  METRICS   = (c.metrics&&Object.keys(c.metrics).length)?c.metrics:DEF_METRICS;
+  FB        = (c.fb&&Object.keys(c.fb).length)?c.fb:DEF_FB;
+  PIXW      = (c.pixW&&Object.keys(c.pixW).length)?c.pixW:DEF_PIXW;
+  PIXFB     = (c.pixFb&&Object.keys(c.pixFb).length)?c.pixFb:DEF_PIXFB;
+  CAPS      = Array.isArray(c.caps)?c.caps:DEF_CAPS;
+  SKILLMAP  = (c.skillMap&&Object.keys(c.skillMap).length)?c.skillMap:DEF_SKILLMAP;
+  TEXTS     = Object.assign({},DEF_TEXTS,c.texts||{});
+  PARAMS    = Object.assign({},DEF_PARAMS,c.params||{});
+  return DB.cfg;
+}
+function cfgSet(key, val){
+  if(!DB.cfg) DB.cfg=cfgDefault();
+  DB.cfg[key]=val; DB.cfg.meta=DB.cfg.meta||{};
+  DB.cfg.meta.updated=todayISO();
+  applyCfg(); save();
+}
+
+
+/* ---------- 数据质量 ---------- */
+function dataQuality(){
+  const d=todayISO(), win=28, from=addDays(d,-win+1);
+  const within=x=>x.date&&x.date>=from&&x.date<=d;
+  const logs=DB.logs.filter(within), mind=DB.mind.filter(within),
+        wear=DB.wear.filter(within), tests=DB.tests.filter(within);
+  const issues=[];
+  const days=[]; for(let i=win-1;i>=0;i--)days.push(addDays(d,-i));
+  const gapLogs=days.filter(x=>!DB.logs.some(l=>l.date===x)).length;
+  const gapMind=days.filter(x=>!DB.mind.some(m=>m.date===x)).length;
+  if(!logs.length)issues.push({lv:"high",t:"近 28 天没有训练日志：负荷、ACWR 与周期计划无法计算。"});
+  else if(gapLogs>win*.5)issues.push({lv:"mid",t:"训练日志覆盖不足："+gapLogs+" 天没有记录（可能是休息日，如实记录休息更利于判断）。"});
+  if(!mind.length)issues.push({lv:"high",t:"没有每日打卡：准备度与恢复域处于「未评估」状态。"});
+  else if(gapMind>7)issues.push({lv:"mid",t:"每日打卡缺口 "+gapMind+" 天，恢复评分置信度下降。"});
+  if(!wear.length)issues.push({lv:"mid",t:"没有穿戴数据：HRV / 静息心率相关的预警不会触发。"});
+  if(!tests.length)issues.push({lv:"mid",t:"没有体能测评：体能域处于「未评估」状态，瓶颈判定会跳过体能。"});
+  if(!DB.levels.length)issues.push({lv:"high",t:"尚未完成等级定级：技术基线为空，今日强度与目标等级只能使用默认值。"});
+  const bad=DB.logs.filter(l=>(l.rpe!=null&&(+l.rpe<1||+l.rpe>10))||(+l.dur<0||+l.dur>600)).length
+    +DB.mind.filter(m=>+m.sleep>14||+m.sleep<0||+m.pain>5).length;
+  if(bad)issues.push({lv:"high",t:"发现 "+bad+" 条超出合理范围的数据（RPE 1-10、疼痛 1-5、睡眠 0-14h），请核对。"});
+  ["mind","wear","tests"].forEach(k=>{
+    const seen={},dup=[];
+    DB[k].forEach(x=>{if(seen[x.date])dup.push(x.date);seen[x.date]=1;});
+    if(dup.length)issues.push({lv:"mid",t:k+" 有 "+dup.length+" 个重复日期，后录入的会覆盖先前的。"});
+  });
+  const demo=["logs","mind","wear","tests","vids","levels"].reduce((n,k)=>n+DB[k].filter(x=>x.demo).length,0);
+  const have=[logs.length,mind.length,wear.length,tests.length,DB.levels.length].filter(Boolean).length;
+  return {window:win,logs:logs.length,mind:mind.length,wear:wear.length,tests:tests.length,
+    score:Math.round(have/5*100),issues:issues,demo:demo,
+    sources:DB.sources.map(x=>x.name+"("+x.count+")")};
+}
+function mergeCollectPack(d){
+  if(!d||typeof d!=="object")throw new Error("不是有效的 JSON 对象");
+  if(d.type==="bwb.collect.batch"&&Array.isArray(d.subjects)){
+    let n=0;
+    d.subjects.forEach(sub=>{
+      try{ n+=mergeCollectPack(Object.assign({},sub,{type:"bwb.collect",
+        subject:{name:sub.name||sub.id||"运动员"}})).count; }catch(e){}
+    });
+    return {count:n,isPack:true,name:"批量采集包（"+d.subjects.length+" 人）"};
+  }
+  const isPack=d.type==="bwb.collect";
+  const keys=["logs","mind","weekly","wear","tests","vids","levels","custom"];
+  let count=0;
+  keys.forEach(k=>{
+    const arr=Array.isArray(d[k])?d[k]:[];
+    arr.forEach(row=>{
+      if(!row||typeof row!=="object")return;
+      const r=Object.assign({},row);
+      if(!r.id)r.id=uid();
+      const dupIx=DB[k].findIndex(x=>x.id===r.id||((k==="mind"||k==="wear"||k==="tests")&&x.date===r.date));
+      if(dupIx>=0){ if(DB[k][dupIx].demo) return; DB[k][dupIx]=r; }
+      else DB[k].push(r);
+      count++;
+    });
+  });
+  if(d.skills&&typeof d.skills==="object"){
+    Object.keys(d.skills).forEach(k=>{
+      if(DB.skills[k]==null){DB.skills[k]=+d.skills[k]||0;DB.skillSources[k]="采集包 "+todayISO();count++;}
+    });
+  }
+  if(d.profile&&typeof d.profile==="object"){
+    ["name","sex","age","height","weight","hand","years","freq"].forEach(k=>{
+      if(d.profile[k]!=null&&d.profile[k]!=="")DB.profile[k]=d.profile[k];
+    });
+  }
+  DB.sources.push({id:uid(),date:todayISO(),name:(d.subject&&d.subject.name)||d.name||"采集包",
+    type:isPack?"bwb.collect":"备份",count:count});
+  save();
+  return {count:count,isPack:isPack,name:(d.subject&&d.subject.name)||d.name||"采集包"};
+}
+function onCollectFile(file){
+  const fr=new FileReader();
+  fr.onload=()=>{
+    const out=el("collectOut");
+    try{
+      const d=JSON.parse(fr.result);
+      if(d&&d.type==="bwb.config"){toast("这是配置包，请到「规则配置」页导入");return;}
+      const r=mergeCollectPack(d);
+      render();
+      const o=el("collectOut");
+      if(o)o.innerHTML='<div class="note ok">已合并 '+r.count+' 条记录（来源：'+esc(r.name)+'）。'+
+        '按 ID / 日期去重，演示数据不会被覆盖。</div>';
+    }catch(e){ if(out)out.innerHTML='<div class="note dang">导入失败：'+esc(e.message)+'</div>'; }
+  };
+  fr.readAsText(file);
+}
+function downloadFile(name,text,mime){
+  const blob=new Blob([text],{type:mime||"application/json;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+}
+function exportCfg(){
+  if(!DB.cfg)DB.cfg=cfgDefault();
+  DB.cfg.meta=Object.assign({},DB.cfg.meta,{updated:todayISO()});
+  downloadFile("bwb-config-"+todayISO()+".json",
+    JSON.stringify(Object.assign({},DB.cfg,{type:"bwb.config"}),null,2));
+  toast("配置包已导出，可导入数据采集器保持字段一致");
+}
+function onCfgFile(file){
+  const fr=new FileReader();
+  fr.onload=()=>{
+    try{
+      const d=JSON.parse(fr.result);
+      if(!d||typeof d!=="object")throw new Error("格式不正确");
+      const c=Object.assign({},d); delete c.type;
+      Object.keys(DEF_CFG).forEach(k=>{if(c[k]===undefined)c[k]=clone(DEF_CFG[k]);});
+      DB.cfg=c; applyCfg(); save(); render();
+      toast("配置包已应用，所有页面已按新规则重算");
+    }catch(e){toast("配置导入失败："+e.message);}
+  };
+  fr.readAsText(file);
+}
+function downloadCSVTemplate(){
+  const head="date,resting_hr,hrv,sleep_hours,steps,load\n";
+  const rows=[];
+  for(let i=6;i>=0;i--)rows.push([addDays(todayISO(),-i),55,70,7.5,8500,""].join(","));
+  downloadFile("bwb-wear-template.csv",head+rows.join("\n")+"\n","text/csv;charset=utf-8");
+  toast("穿戴 CSV 模板已下载");
+}
+function downloadEmptyPack(){
+  downloadFile("bwb-collect-template.json",JSON.stringify({
+    type:"bwb.collect",v:1,exportedAt:new Date().toISOString(),
+    subject:{name:"",id:""},cfgVersion:(DB.cfg&&DB.cfg.meta&&DB.cfg.meta.updated)||"",
+    logs:[],mind:[],weekly:[],wear:[],tests:[],vids:[],levels:[],skills:{}
+  },null,2));
+  toast("空白采集包已下载，可交给采集器作为模板");
+}
+
+/* ---------- A / B 灵敏度验证：自证「输入不同，输出不同」 ---------- */
+const AB_DEFAULT={
+  A:{skill:40,rpe:9,sleep:5.5,pain:4,target:4,freq:5},
+  B:{skill:82,rpe:3,sleep:8.5,pain:1,target:2,freq:3}
+};
+let AB_STATE={A:Object.assign({},AB_DEFAULT.A),B:Object.assign({},AB_DEFAULT.B),result:null};
+function simulateWith(inp){
+  const backup=DB;
+  try{
+    DB=clone(backup);
+    const d=todayISO();
+    DB.skills={};DB.skillSources={};
+    TECH.forEach(t=>{DB.skills[t.id]=+inp.skill;DB.skillSources[t.id]="A/B 仿真";});
+    DB.profile.targetLevel=+inp.target;
+    DB.profile.freq=+inp.freq;
+    DB.logs=[];DB.mind=[];DB.wear=[];
+    for(let i=27;i>=0;i--){
+      const day=addDays(d,-i);
+      if(i<21&&(+inp.rpe)>0)DB.logs.push({id:"sim"+i,date:day,dur:60,rpe:+inp.rpe,type:"tech"});
+      DB.mind.push({id:"sim"+i,date:day,sleep:+inp.sleep,sleepq:3,energy:3,mood:3,
+        sore:1,pain:+inp.pain,painsite:""});
+      DB.wear.push({date:day,rhr:55,hrv:70,sleepH:+inp.sleep,steps:8000});
+    }
+    const bn=bottleneck(),ti=todayItems(),r=readiness(d),ws=warnings(),wk=breakthrough(bn);
+    return {
+      ready:r.score==null?"—":r.score,
+      acwr:acwr(d),
+      tech:bn.T.score==null?"—":bn.T.score,
+      phys:bn.P.score==null?"—":bn.P.score,
+      recov:bn.R.score==null?"—":bn.R.score,
+      bn:bn.primary.n,
+      gap:bn.primary.gap==null?"—":Math.round(bn.primary.gap),
+      composite:bn.composite==null?"—":bn.composite,
+      first:ti.items.length?ti.items[0].t:"—",
+      items:ti.items.length,
+      focus:(ti.items.find(x=>x.focus)||{}).t||"—",
+      load:wk[0].loadTarget,
+      warns:ws.length,
+      status:bn.status
+    };
+  }finally{ DB=backup; }
+}
+function abCompare(){
+  const A=simulateWith(AB_STATE.A), B=simulateWith(AB_STATE.B);
+  const rows=[
+    ["准备度",A.ready,B.ready],["ACWR",A.acwr,B.acwr],
+    ["技术域得分",A.tech,B.tech],["体能域得分",A.phys,B.phys],["恢复域得分",A.recov,B.recov],
+    ["主要瓶颈",A.bn,B.bn],["瓶颈差距",A.gap,B.gap],["综合评定",A.composite,B.composite],
+    ["今日清单首项",A.first,B.first],["清单条数",A.items,B.items],
+    ["瓶颈专项条目",A.focus,B.focus],["首周负荷目标",A.load,B.load],["预警条数",A.warns,B.warns]
+  ];
+  let changed=0;
+  const body=rows.map(r=>{
+    const diff=String(r[1])!==String(r[2]); if(diff)changed++;
+    return '<tr><td>'+esc(r[0])+'</td><td class="tnum">'+esc(r[1])+'</td><td class="tnum">'+esc(r[2])+'</td>'+
+      '<td>'+(diff?'<span class="tag g">已变化</span>':'<span class="tag">相同</span>')+'</td></tr>';
+  }).join("");
+  AB_STATE.result='<div class="note '+(changed>=5?"ok":"warn")+'"><b>结论：'+changed+' / '+rows.length+
+    ' 项输出随输入改变。</b>　两组只改了技术基线、每日 RPE、睡眠、疼痛、目标档位与周频次，'+
+    '没有改动任何写死的结论；清单、瓶颈、负荷目标、预警均由数据重算得到。</div>'+
+    '<table><thead><tr><th>输出项</th><th>输入 A</th><th>输入 B</th><th>是否随输入变化</th></tr></thead><tbody>'+
+    body+'</tbody></table>'+
+    '<div class="note">如果想验证「规则」也能泛化：在上方修改任意参数或内容库，再回到这里重跑对比，结果会再次变化。</div>';
+  render();
+}
+function cfgPreviewHTML(){
+  try{
+    const bn=bottleneck(),ti=todayItems(),r=readiness(todayISO()),ws=warnings();
+    return '<dl class="kv">'+
+      '<dt>数据状态</dt><dd>'+(bn.status==="ok"?"完整":(bn.status==="partial"?"部分缺失":"未评估"))+'</dd>'+
+      '<dt>主要瓶颈</dt><dd>'+esc(bn.primary.n)+'（差距 '+(bn.primary.gap==null?"—":Math.round(bn.primary.gap))+'）</dd>'+
+      '<dt>今日准备度</dt><dd>'+(r.score==null?"未打卡":r.score)+'</dd>'+
+      '<dt>今日清单</dt><dd>'+ti.items.length+' 项，首项「'+esc(ti.items[0]?ti.items[0].t:"—")+'」</dd>'+
+      '<dt>预警条数</dt><dd>'+ws.length+'</dd>'+
+      '<dt>当前参数</dt><dd>降载线 '+PARAMS.readyCutLow+' · ACWR 高风险 '+PARAMS.acwrHigh+
+        ' · 恢复权重 '+PARAMS.wRecov+' · 周基准 '+PARAMS.minutesPerSession+' min</dd></dl>';
+  }catch(e){return '<div class="note dang">预览出错：'+esc(e.message)+'</div>';}
+}
+const CFG_HINT={
+  qual:"[{id,n,c}] 体能素质定义；id 会被 ex.q / tests.q / techEx 引用",
+  tech:"[{id,n,sub,goal,simple[],errors[[问题,纠正]],qual[],risk,...}] 技术库，可增删技术",
+  ex:"[{id,n,q,how,cue,rx:{s,r,l,rest}}] 体能动作库，q 必须属于 qual 的 id",
+  techEx:"{技术id:{素质id:[动作id,...]}} 每项技术配套的五类素质动作",
+  prehab:"[{id,n,warn,ex:[{n,d}]}] 部位预康复处方；疼痛部位关键字会用于匹配",
+  tests:"[{id,n,q,unit,better:'up'|'down',bench:[4个数],f}] 测评基准；bench 为 4 个等级锚点",
+  phases:"[{id,n,int,focus[],w,week:[{d,t,tech[],cond[],load}]}] 周期模板；d 为星期 0-6",
+  levels:"[{id,min,n,desc,col}] 内部目标等级刻度",
+  cyLevels:"[{lv,n,tag,desc,...}] 外部等级表（默认中羽在线 0-7 级俗称）",
+  cyComp:"比赛成绩选项字符串数组，顺序与 compBonus 对应",
+  cyQs:"[{k,n,w,opts:[6档]}] 定级问卷；k 会被 caps / skillMap 引用，可增删题目",
+  dailyQ:"[{k,n,type,opts}] 每日打卡问卷字段；type 支持 number/select/text",
+  weeklyQ:"[{k,n,type,opts}] 周期问卷字段",
+  metrics:"{指标key:{n,u,ideal:[min,max],tol:[下,上],only:[技术id]}} 姿态评估阈值",
+  fb:"{指标key:[问题描述,纠正建议]} 姿态评估反馈文案",
+  pixW:"{技术id:{指标:权重}} 内置像素分析各指标的权重",
+  pixFb:"{指标:[问题描述,纠正建议]} 内置像素分析反馈",
+  params:"算法参数对象；建议用上方参数表单逐项修改",
+  caps:"[{dim,op,v,cap,why}] 定级短板封顶；dim 对应 cyQs 的 k，op 支持 <= < >= >",
+  skillMap:"{技术id:维度表达式} 支持 grips / min(a,b) / max(a,b) / avg(a,b)",
+  texts:"界面文案模板，可直接改成自己队伍的说法"
+};
+let CFG_KEY="params";
+function cfgEditorHTML(){
+  const key=CFG_KEY, val=DB.cfg&&DB.cfg[key]!=null?DB.cfg[key]:clone(DEF_CFG[key]);
+  const opts=Object.keys(CFG_KEYS).map(k=>'<option value="'+k+'" '+(k===key?"selected":"")+'>'+esc(CFG_KEYS[k])+'（'+k+'）</option>').join("");
+  return '<div class="row"><div class="field"><label>选择要编辑的配置</label>'+
+    '<select id="cfgKey">'+opts+'</select></div>'+
+    '<div class="field" style="flex:2"><label>格式说明</label><div class="note" style="padding:7px 10px">'+esc(CFG_HINT[key]||"")+'</div></div></div>'+
+    '<textarea id="cfgJson" style="min-height:230px;font-family:ui-monospace,Consolas,monospace;font-size:.78rem;line-height:1.5">'+esc(JSON.stringify(val,null,2))+'</textarea>'+
+    '<div class="row" style="margin-top:8px"><button class="btn pri" data-act="cfgsave">保存并全站重算</button>'+
+    '<button class="btn" data-act="cfgadd">追加一条 / 一个键</button>'+
+    '<button class="btn" data-act="cfgkeydefault">该配置恢复默认</button></div>'+
+    '<div id="cfgEditOut" style="margin-top:8px"></div>';
+}
+function cfgAddRow(){
+  const key=CFG_KEY, cur=DB.cfg&&DB.cfg[key]!=null?clone(DB.cfg[key]):clone(DEF_CFG[key]);
+  const ta=el("cfgJson");
+  let out;
+  if(Array.isArray(cur)){
+    const base=cur.length?clone(cur[cur.length-1]):{id:"new_item",n:"新条目"};
+    const blank={};
+    Object.keys(base).forEach(k=>{
+      const v=base[k];
+      blank[k]=typeof v==="number"?0:(typeof v==="string"?(k==="id"?"new_"+uid().slice(-5):""):
+        (Array.isArray(v)?[]:(v&&typeof v==="object"?{}:"")));
+    });
+    if(blank.id==null)blank.id="new_"+uid().slice(-5);
+    out=cur.concat([blank]);
+  }else if(cur&&typeof cur==="object"){
+    out=Object.assign({},cur,{[ "new_"+uid().slice(-5) ]:(Object.values(cur)[0]?clone(Object.values(cur)[0]):"")});
+  }else{ toast("该配置不支持追加"); return; }
+  ta.value=JSON.stringify(out,null,2);
+  el("cfgEditOut").innerHTML='<div class="note ok">已追加模板条目，改好后点「保存并全站重算」。注意新 id 不要与已有项重复。</div>';
+}
+function cfgSaveJson(){
+  try{
+    const key=CFG_KEY, raw=el("cfgJson").value;
+    const val=JSON.parse(raw);
+    if(key==="params"&&(!val||typeof val!=="object"||Array.isArray(val)))throw new Error("params 必须是对象");
+    if((key==="tech"||key==="ex"||key==="tests"||key==="cyQs"||key==="dailyQ")&&!Array.isArray(val))
+      throw new Error("该配置必须是数组");
+    cfgSet(key,val);
+    render();
+    const o=el("cfgEditOut");
+    if(o)o.innerHTML='<div class="note ok">已保存 '+esc(CFG_KEYS[key])+'，今日清单 / 定级 / 诊断 / 视频评估已按新配置重算。</div>';
+  }catch(e){
+    const o=el("cfgEditOut");
+    if(o)o.innerHTML='<div class="note dang">保存失败：'+esc(e.message)+'　（请检查 JSON 语法与必填字段）</div>';
+  }
+}
+function cfgParamHTML(){
+  return PARAM_META.map((g,gi)=>'<details class="acc" '+(gi===0?"open":"")+'><summary>'+esc(g.g)+
+    '　<span class="hint">'+g.items.length+' 项</span></summary><div class="acc-b"><div class="grid g3">'+
+    g.items.map(it=>{
+      const k=it[0],lab=it[1],hint=it[2];
+      const isText=it[5]==="text";
+      const v=PARAMS[k];
+      return '<div class="field"><label>'+esc(lab)+'　<span style="color:var(--text-3);font-weight:400">'+esc(k)+'</span></label>'+
+        '<input '+(isText?'type="text"':'type="number" step="'+it[5]+'" min="'+it[3]+'" max="'+it[4]+'"')+
+        ' value="'+esc(v)+'" data-p="'+k+'" data-ptype="'+(isText?"text":"number")+'">'+
+        (hint?'<div style="font-size:.68rem;color:var(--text-3);margin-top:2px">'+esc(hint)+'</div>':"")+'</div>';
+    }).join("")+'</div></div></details>').join("");
+}
+function viewCfg(){
+  const q=dataQuality();
+  let html='<div class="pageTitle"><h2>规则配置与泛化验证</h2>'+
+    '<p>内容库、题目、阈值全部可编辑；改动会立刻改变清单、定级、诊断与计划</p>'+
+    '<div class="r"><button class="btn sm" data-act="cfgexport">导出配置包</button></div></div>';
+  html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>当前配置下的实时输出</h3>'+
+    '<span class="hint">改任意参数后即时刷新</span></div><div class="card-b" id="cfgPreviewBox">'+cfgPreviewHTML()+'</div></div>';
+  html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>算法参数</h3>'+
+    '<span class="hint">共 '+PARAM_META.reduce((n,g)=>n+g.items.length,0)+' 项，改完即时生效</span></div>'+
+    '<div class="card-b">'+cfgParamHTML()+'</div></div>';
+  html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>内容库 / 问卷 / 规则编辑</h3>'+
+    '<span class="hint">JSON 结构，保存后全站重算</span></div><div class="card-b">'+cfgEditorHTML()+'</div></div>';
+  html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>配置包管理</h3>'+
+    '<span class="hint">与数据采集器共用同一套字段</span></div><div class="card-b">'+
+    '<div class="row"><button class="btn pri" data-act="cfgexport">导出配置包（给采集器）</button>'+
+    '<button class="btn" data-act="pickcfg">导入配置包</button>'+
+    '<input type="file" id="cfgFile" accept=".json" data-act="cfgfile" style="display:none">'+
+    '<button class="btn" data-act="cfgreset">恢复出厂配置</button>'+
+    '<button class="btn" data-act="nav" data-v="data">去数据接入</button></div>'+
+    '<div class="note">配置包名称：'+esc((DB.cfg.meta||{}).name||"默认配置包")+'　最后更新：'+esc((DB.cfg.meta||{}).updated||"—")+
+    '　当前技术 '+TECH.length+' 项、动作 '+EX.length+' 个、测评 '+TESTS.length+' 项、定级题 '+CY_QS.length+' 题。'+
+    '导入采集器后，采集器会自动按这些字段生成表单。</div></div></div>';
+  html+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>A / B 灵敏度验证</h3>'+
+    '<span class="hint">证明不同输入会得到不同结果</span></div><div class="card-b">'+
+    '<div class="note">两组虚拟运动员只修改 6 个输入值，运行同一套算法，观察 13 项输出有多少发生变化。'+
+    '这里的仿真不会写入你的真实数据。</div>'+
+    '<div class="grid g2" style="margin-top:10px">'+
+    ["A","B"].map(g=>'<div><div style="font-weight:700;margin-bottom:6px">输入 '+g+'</div><div class="grid g2">'+
+      [["skill","技术基线分(0-100)"],["rpe","每日 RPE(1-10)"],["sleep","睡眠(h)"],
+       ["pain","疼痛(1-5)"],["target","目标档位(1-4)"],["freq","周训练频次"]].map(f=>
+        '<div class="field"><label>'+esc(f[1])+'</label><input type="number" step="0.5" value="'+AB_STATE[g][f[0]]+'" data-ab="'+g+'" data-k="'+f[0]+'"></div>').join("")+
+      '</div></div>').join("")+'</div>'+
+    '<div class="row" style="margin-top:10px"><button class="btn pri" data-act="abrun">运行 A / B 对比</button>'+
+    '<button class="btn" data-act="abreset">恢复示例输入</button></div>'+
+    '<div id="abOut" style="margin-top:10px">'+(AB_STATE.result||'<div class="note">点击「运行 A / B 对比」查看结果。</div>')+'</div>'+
+    '</div></div>';
+  html+='<div class="card"><div class="card-h"><h3>数据完整性</h3><span class="hint">完成度 '+q.score+'%</span></div>'+
+    '<div class="card-b">'+(q.issues.length?q.issues.map(i=>'<div class="note '+(i.lv==="high"?"dang":"warn")+'">'+esc(i.t)+'</div>').join("")
+      :'<div class="note ok">数据完整，所有领域均可评估。</div>')+
+    '<div class="note">当前技术基线：'+Object.keys(DB.skills).length+' / '+TECH.length+' 项已评估。'+
+    '没有评估的技术显示为「—」，不会用默认分数冒充。</div></div></div>';
+  return html;
 }
 
 /* ---------- 初始化 ---------- */

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据规范与采集方案 · AthleteIQ</title>
+<style>
+:root{
+  --bg:#f5f7fb; --surface:#ffffff; --surface-2:#f8fafc; --surface-3:#eef2f9;
+  --line:#e2e8f0; --line-2:#cbd5e1;
+  --text:#16203a; --text-2:#5b6780; --text-3:#8b97ad;
+  --accent:#3f51b5; --accent-soft:#eef1fb; --accent-2:#6572cd;
+  --blue:#2563eb; --teal:#0d9488; --green:#16a34a; --amber:#d97706; --red:#dc2626; --purple:#7c3aed;
+  --ok-bg:#e9f7ef; --warn-bg:#fdf4e3; --dang-bg:#fdecec; --mute-bg:#eef1f6;
+  --shadow:0 1px 2px rgba(16,32,64,.05),0 6px 18px rgba(16,32,64,.06);
+  --r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+input,select,textarea,button{font-family:inherit;font-size:inherit;color:inherit}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd8e6;border-radius:6px}
+
+/* ============ 顶栏 ============ */
+.topbar{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1280px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:1.02rem;letter-spacing:.2px}
+.brand .logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.brand small{display:block;font-size:.62rem;font-weight:500;color:var(--text-3);letter-spacing:1.2px;line-height:1}
+.topState{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:700;background:var(--mute-bg);color:var(--text-2);white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--green)}
+.pill.warn{background:var(--warn-bg);color:var(--amber)}
+.pill.dang{background:var(--dang-bg);color:var(--red)}
+.pill.info{background:var(--accent-soft);color:var(--accent)}
+.pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+.modesw{display:flex;background:var(--surface-3);border-radius:10px;padding:3px;gap:2px}
+.modesw button{border:0;background:transparent;padding:5px 13px;border-radius:8px;font-size:.76rem;font-weight:700;color:var(--text-2);cursor:pointer;transition:.18s}
+.modesw button.on{background:#fff;color:var(--accent);box-shadow:0 1px 3px rgba(16,32,64,.12)}
+
+/* ============ 导航 ============ */
+.tabbar{position:sticky;top:57px;z-index:55;background:var(--surface);border-bottom:1px solid var(--line)}
+.tabbar-in{max-width:1280px;margin:0 auto;padding:0 18px;display:flex;gap:2px;overflow-x:auto}
+.tabbar button{border:0;background:transparent;padding:11px 14px;font-size:.83rem;font-weight:600;color:var(--text-2);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:.15s}
+.tabbar button:hover{color:var(--text)}
+.tabbar button.on{color:var(--accent);border-bottom-color:var(--accent)}
+.tabbar button svg{width:15px;height:15px}
+
+/* ============ 布局 ============ */
+main{max-width:1280px;margin:0 auto;padding:18px}
+.view{display:none;animation:fade .25s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.gside{grid-template-columns:minmax(0,1fr) 340px}
+@media(max-width:1080px){.gside{grid-template-columns:1fr}}
+@media(max-width:860px){.g2,.g3,.g4{grid-template-columns:1fr}.g4.keep2,.g3.keep2{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.g4.keep2,.g3.keep2{grid-template-columns:1fr}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.card-h{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px;background:var(--surface-2)}
+.card-h h3{font-size:.92rem;font-weight:800;letter-spacing:.2px}
+.card-h .hint{font-size:.72rem;color:var(--text-3);font-weight:500}
+.card-h .r{margin-left:auto;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.card-b{padding:15px 16px}
+.card-b.tight{padding:10px 14px}
+.sep{height:1px;background:var(--line);margin:12px 0}
+
+.pageTitle{display:flex;align-items:flex-end;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.pageTitle h2{font-size:1.25rem;font-weight:800;letter-spacing:.3px}
+.pageTitle p{font-size:.8rem;color:var(--text-2)}
+.pageTitle .r{margin-left:auto}
+
+/* ============ 通用元素 ============ */
+.btn{border:1px solid var(--line-2);background:#fff;border-radius:9px;padding:7px 13px;font-size:.8rem;font-weight:700;cursor:pointer;color:var(--text);transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri:hover{background:var(--accent-2);color:#fff}
+.btn.sm{padding:4px 9px;font-size:.72rem;border-radius:7px}
+.btn.dang{color:var(--red);border-color:#f3c6c6}
+.btn.dang:hover{background:var(--dang-bg);border-color:var(--red);color:var(--red)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn svg{width:14px;height:14px}
+
+.field{margin-bottom:11px}
+.field label{display:block;font-size:.74rem;font-weight:700;color:var(--text-2);margin-bottom:4px}
+input[type=text],input[type=number],input[type=date],input[type=password],select,textarea{
+  width:100%;border:1px solid var(--line-2);border-radius:9px;padding:7px 10px;background:#fff;font-size:.83rem;transition:.15s}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(63,81,181,.11)}
+textarea{resize:vertical;min-height:70px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.76rem;line-height:1.55}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.tile{display:block;text-decoration:none;color:inherit;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;transition:.18s}
+.tile:hover{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-1px)}
+.tile b{display:block;font-size:.86rem;font-weight:800;margin-bottom:4px;color:var(--text)}
+.tile span{display:block;font-size:.76rem;color:var(--text-2);line-height:1.55}
+.tile em{display:block;font-style:normal;font-size:.72rem;font-weight:700;color:var(--accent);margin-top:8px}
+.hint{font-size:.72rem;color:var(--text-3);font-weight:500}
+.row>*{flex:1;min-width:130px}
+.chkline{display:flex;gap:8px;align-items:flex-start}
+.chkline input{margin-top:3px;flex-shrink:0;width:15px;height:15px;accent-color:var(--accent)}
+
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th{text-align:left;padding:8px 10px;background:var(--surface-2);color:var(--text-3);font-size:.7rem;letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:hover{background:var(--surface-2)}
+.tnum{font-variant-numeric:tabular-nums;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+.metric{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+.metric .k{font-size:.68rem;color:var(--text-3);font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.metric .v{font-size:1.5rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.25}
+.metric .v u{font-size:.7rem;font-weight:600;text-decoration:none;color:var(--text-3);margin-left:2px}
+.metric .s{font-size:.7rem;color:var(--text-2)}
+
+.bar{height:7px;background:var(--surface-3);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--accent);transition:width .4s}
+.bar.g i{background:var(--green)}.bar.a i{background:var(--amber)}.bar.r i{background:var(--red)}
+
+.tag{display:inline-block;padding:2px 7px;border-radius:6px;font-size:.68rem;font-weight:700;background:var(--mute-bg);color:var(--text-2);margin:1px 3px 1px 0}
+.tag.a{background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--ok-bg);color:var(--green)}
+.tag.y{background:var(--warn-bg);color:var(--amber)}
+.tag.r{background:var(--dang-bg);color:var(--red)}
+.tag.t{background:#e3f5f3;color:var(--teal)}
+
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:9px 12px;border-radius:0 9px 9px 0;font-size:.8rem;color:var(--text-2);margin:10px 0}
+.note.warn{border-color:var(--amber);background:var(--warn-bg)}
+.note.dang{border-color:var(--red);background:var(--dang-bg)}
+.note.ok{border-color:var(--green);background:var(--ok-bg)}
+
+/* 清单 */
+.check{padding:11px 13px;border:1px solid var(--line);border-radius:10px;margin-bottom:9px;background:#fff;display:flex;gap:11px;align-items:flex-start;transition:.15s}
+.check:hover{border-color:var(--line-2);background:var(--surface-2)}
+.check.done{background:var(--surface-2);border-color:#d9e3d9}
+.check.done .ct{text-decoration:line-through;color:var(--text-3)}
+.check input[type=checkbox]{width:17px;height:17px;margin-top:3px;flex-shrink:0;accent-color:var(--green);cursor:pointer}
+.check .cbody{flex:1;min-width:0}
+.check .ct{font-weight:700;font-size:.86rem}
+.check .cd{font-size:.76rem;color:var(--text-2);margin-top:2px}
+.check .cmeta{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;align-items:center}
+.check .cmeta .amt{font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:1px 7px;border-radius:5px}
+
+/* 手风琴 */
+details.acc{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:#fff;overflow:hidden}
+details.acc>summary{padding:11px 13px;cursor:pointer;font-weight:700;font-size:.85rem;list-style:none;display:flex;align-items:center;gap:8px}
+details.acc>summary::-webkit-details-marker{display:none}
+details.acc>summary::after{content:'';margin-left:auto;width:7px;height:7px;border-right:2px solid var(--text-3);border-bottom:2px solid var(--text-3);transform:rotate(45deg);transition:.2s}
+details.acc[open]>summary::after{transform:rotate(-135deg)}
+details.acc[open]>summary{border-bottom:1px solid var(--line);background:var(--surface-2)}
+.acc-b{padding:12px 14px;font-size:.82rem;color:var(--text-2)}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:.8rem}
+.kv dt{color:var(--text-3);font-weight:700;white-space:nowrap}
+.kv dd{color:var(--text)}
+
+ol.steps{margin:0;padding-left:1.15rem}
+ol.steps li{margin-bottom:5px;font-size:.82rem}
+ul.plain{margin:0;padding-left:1.05rem}
+ul.plain li{margin-bottom:4px;font-size:.82rem}
+
+.lvbar{display:inline-flex;align-items:center;gap:3px}
+.lvbar i{width:5px;height:13px;border-radius:2px;background:var(--surface-3)}
+.lvbar i.on{background:var(--accent)}
+
+.empty{text-align:center;padding:26px 14px;color:var(--text-3);font-size:.82rem}
+.empty svg{width:34px;height:34px;opacity:.35;display:block;margin:0 auto 8px}
+
+svg.chart{width:100%;height:auto;display:block;overflow:visible}
+.hashmark{position:absolute;width:0;height:0;overflow:hidden}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.72rem;color:var(--text-2);margin-top:6px}
+.legend i{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:4px}
+
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(80px);background:var(--text);color:#fff;padding:9px 18px;border-radius:10px;font-size:.82rem;font-weight:600;z-index:999;opacity:0;transition:.28s;box-shadow:0 10px 30px rgba(0,0,0,.22)}
+#toast.on{transform:translateX(-50%);opacity:1}
+
+.videoWrap{position:relative;background:#0f1420;border-radius:10px;overflow:hidden}
+.videoWrap video{width:100%;display:block;max-height:260px}
+.dropzone{border:2px dashed var(--line-2);border-radius:12px;padding:22px;text-align:center;cursor:pointer;transition:.15s;background:var(--surface-2)}
+.dropzone:hover{border-color:var(--accent);background:var(--accent-soft)}
+.dropzone svg{width:30px;height:30px;color:var(--text-3);margin-bottom:6px}
+
+.progressline{height:6px;background:var(--surface-3);border-radius:99px;overflow:hidden;margin-top:8px}
+.progressline i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--teal));transition:width .3s}
+
+footer{max-width:1280px;margin:22px auto;padding:16px 18px 30px;color:var(--text-3);font-size:.72rem;border-top:1px solid var(--line)}
+
+@media print{
+  .topbar,.tabbar,footer,.noprint{display:none!important}
+  body{background:#fff}
+  .card{break-inside:avoid;box-shadow:none}
+  main{padding:0;max-width:none}
+}
+
+/* 采集器 / 规范页专属（沿用工作台同一组变量） */
+.subsel{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.subsel select{max-width:190px}
+code{font-family:ui-monospace,Consolas,monospace;background:var(--surface-3);padding:1px 5px;border-radius:4px;font-size:.82em}
+ol.plain,ul.plain{padding-left:20px}
+ol.plain li,ul.plain li{margin:3px 0}
+@media(max-width:900px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .topbar-in{padding:8px 12px;gap:8px}
+  .tabbar-in{padding:0 12px}
+  main{padding:12px}
+  .topState{width:100%;margin-left:0}
+  .subsel{width:100%}
+  .pageTitle h2{font-size:1.1rem}
+  table{font-size:.78rem}
+}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-in">
+  <div class="brand"><span class="logo"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20l8-8M11 4l9 9M15 4h5v5"/><circle cx="6" cy="6" r="2.2"/></svg></span>
+  <span>数据规范与采集方案<small>ATHLETEIQ DATA SPEC &amp; SOP</small></span></div>
+  <div class="topState"><span class="pill ok">离线文档</span><span class="pill info">v1 · 与工作台 / 采集器字段一致</span></div>
+</div></header>
+<main>
+<div class="pageTitle"><h2>数据规范与采集方案</h2><p>让「输入不同 → 输出不同」真正成立的前提：字段一致、频率稳定、质量可核查</p>
+  <div class="r"><a class="btn sm" href="data-collector.html">打开采集器</a> <a class="btn sm" href="index.html">返回导航台</a></div></div>
+
+<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>为什么需要这份规范</h3></div><div class="card-b">
+  <p style="font-size:.86rem;color:var(--text-2);margin-bottom:10px">工作台的所有结论都由数据重算：技术基线来自等级问卷与视频评估，负荷来自训练日志，准备度来自每日打卡与穿戴数据，体能域来自测评，瓶颈来自三域与目标的差距。<b>没有数据就不会伪造分数</b>——对应领域显示「未评估」，诊断页会明确列出缺口。</p>
+  <div class="grid g3">
+    <div class="tile"><b>泛化的两类输入</b><span>① 真实采集的数据；② 可编辑的规则配置（技术库、题目、动作、阈值、权重）。两类都会改变清单、等级、诊断与计划。</span></div>
+    <div class="tile"><b>采集器的角色</b><span>只负责低摩擦、离线、多人地收集数据，不做评分。评分与决策统一留在工作台，避免两套口径。</span></div>
+    <div class="tile"><b>配置包的作用</b><span>工作台导出配置包 → 采集器导入，保证两端的题目、测评项、技术名完全对齐，合并时不会错位。</span></div>
+  </div>
+</div></div>
+
+<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>数据流</h3><span class="hint">采集 → 导出 → 合并 → 重算</span></div><div class="card-b">
+<svg viewBox="0 0 680 150" style="width:100%;height:auto;max-width:680px;display:block;margin:0 auto" role="img" aria-label="数据流示意图">
+  <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#8b97ad"/></marker></defs>
+  <g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Microsoft YaHei,sans-serif">
+    <rect x="8" y="40" width="140" height="70" rx="12" fill="#eef1fb" stroke="#c9d2f2"/>
+    <text x="78" y="68" text-anchor="middle" font-size="14" font-weight="700" fill="#3f51b5">数据采集器</text>
+    <text x="78" y="88" text-anchor="middle" font-size="11" fill="#5b6780">打卡 / 日志 / 测评</text>
+    <text x="78" y="102" text-anchor="middle" font-size="11" fill="#5b6780">穿戴 / 视频记录</text>
+    <line x1="150" y1="75" x2="182" y2="75" stroke="#8b97ad" stroke-width="2" marker-end="url(#ar)"/>
+    <rect x="186" y="40" width="140" height="70" rx="12" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text x="256" y="68" text-anchor="middle" font-size="14" font-weight="700" fill="#16203a">采集包 JSON</text>
+    <text x="256" y="88" text-anchor="middle" font-size="11" fill="#5b6780">bwb.collect / batch</text>
+    <text x="256" y="102" text-anchor="middle" font-size="11" fill="#5b6780">CSV 分包可选</text>
+    <line x1="328" y1="75" x2="360" y2="75" stroke="#8b97ad" stroke-width="2" marker-end="url(#ar)"/>
+    <rect x="364" y="40" width="140" height="70" rx="12" fill="#e9f7ef" stroke="#bfe5cf"/>
+    <text x="434" y="68" text-anchor="middle" font-size="14" font-weight="700" fill="#16a34a">工作台合并</text>
+    <text x="434" y="88" text-anchor="middle" font-size="11" fill="#5b6780">按 ID / 日期去重</text>
+    <text x="434" y="102" text-anchor="middle" font-size="11" fill="#5b6780">来源留痕 · 质量自检</text>
+    <line x1="506" y1="75" x2="538" y2="75" stroke="#8b97ad" stroke-width="2" marker-end="url(#ar)"/>
+    <rect x="542" y="40" width="130" height="70" rx="12" fill="#fdf4e3" stroke="#edd9ae"/>
+    <text x="607" y="68" text-anchor="middle" font-size="14" font-weight="700" fill="#d97706">全站重算</text>
+    <text x="607" y="88" text-anchor="middle" font-size="11" fill="#5b6780">清单 / 等级 / 瓶颈</text>
+    <text x="607" y="102" text-anchor="middle" font-size="11" fill="#5b6780">预警 / 4 周计划</text>
+    <text x="340" y="136" text-anchor="middle" font-size="11" fill="#8b97ad">配置包 bwb.config 反向同步字段定义，保证两端口径一致</text>
+  </g>
+</svg>
+</div></div>
+
+<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>采集频率 SOP</h3><span class="hint">按角色分工，不增加无谓负担</span></div><div class="card-b">
+<table><thead><tr><th>时机</th><th>谁来做</th><th>录入内容</th><th>影响的输出</th><th>建议耗时</th></tr></thead><tbody>
+<tr><td>首次使用</td><td>教练 / 本人</td><td>等级定级问卷（工作台）、档案基础信息</td><td>技术基线、目标等级、今日强度起点</td><td>2 分钟</td></tr>
+<tr><td>每次训练后</td><td>本人</td><td>训练日志：时长、RPE、类型、备注</td><td>急性/慢性负荷、ACWR、单调性、周期负荷目标</td><td>20 秒</td></tr>
+<tr><td>每天早晨 / 睡前</td><td>本人</td><td>每日打卡问卷（睡眠、精力、酸痛、疼痛、部位）</td><td>准备度、恢复域、伤病预警、今日降载系数</td><td>30 秒</td></tr>
+<tr><td>每天自动同步</td><td>穿戴设备</td><td>静息心率、HRV、睡眠时长、步数、设备负荷（CSV）</td><td>HRV 相对基线、静息心率预警、准备度补充</td><td>每周批量导一次</td></tr>
+<tr><td>每周一次</td><td>本人 / 教练</td><td>周期问卷（信心、相持体力、动机、场外压力）</td><td>长期趋势留痕，辅助复盘</td><td>1 分钟</td></tr>
+<tr><td>每期开始 / 每 4 周</td><td>教练</td><td>体能测评（按测评基准逐项）</td><td>体能域五维、最弱素质、体能型瓶颈与定向补给</td><td>20-30 分钟</td></tr>
+<tr><td>技术动作调整时</td><td>教练</td><td>训练视频 + YOLO 姿态 JSON</td><td>技术指标评分、最弱环节、技术域融合评分</td><td>按拍摄量</td></tr>
+<tr><td>规则变更时</td><td>教练</td><td>规则配置页：题目、动作、阈值、权重、周期模板</td><td>所有算法输出（可用 A/B 验证核对）</td><td>按需</td></tr>
+</tbody></table>
+</div></div>
+
+<div class="card" style="margin-bottom:14px"><div class="card-h"><h3 id="dict">字段字典</h3><span class="hint">与采集器 / 工作台的 JSON 键一一对应</span></div><div class="card-b">
+<details class="acc" open><summary>logs · 训练日志</summary><div class="acc-b"><table><thead><tr><th>字段</th><th>类型</th><th>单位 / 范围</th><th>必填</th><th>影响的算法</th></tr></thead><tbody>
+<tr><td>date</td><td>string YYYY-MM-DD</td><td>日期</td><td>是</td><td>所有按天聚合的负荷与去重键</td></tr>
+<tr><td>dur</td><td>number</td><td>分钟，0-600</td><td>是</td><td>负荷 AU = dur × rpe</td></tr>
+<tr><td>rpe</td><td>number</td><td>1-10（session-RPE）</td><td>是</td><td>负荷 AU、周期目标、突破计划</td></tr>
+<tr><td>type</td><td>string</td><td>tech / cond / match / recovery / rest</td><td>否</td><td>记录分类；rest 可显式标注休息日</td></tr>
+<tr><td>note</td><td>string</td><td>自由文本</td><td>否</td><td>复盘留痕；演示数据以 [演示] 标记</td></tr>
+<tr><td>id</td><td>string</td><td>唯一 ID</td><td>建议</td><td>跨设备合并去重的主键</td></tr>
+</tbody></table></div></details>
+<details class="acc"><summary>mind · 每日打卡</summary><div class="acc-b"><table><thead><tr><th>字段</th><th>类型</th><th>单位 / 范围</th><th>必填</th><th>影响的算法</th></tr></thead><tbody>
+<tr><td>date</td><td>string</td><td>YYYY-MM-DD</td><td>是</td><td>去重键；同日重录会覆盖</td></tr>
+<tr><td>sleep</td><td>number</td><td>小时，0-14</td><td>是</td><td>准备度睡眠偏离扣分、睡眠不足预警</td></tr>
+<tr><td>sleepq / energy / mood</td><td>number</td><td>1-5</td><td>是</td><td>准备度分档扣分（权重可在规则配置改）</td></tr>
+<tr><td>sore</td><td>number</td><td>1-5</td><td>是</td><td>准备度酸痛扣分</td></tr>
+<tr><td>pain</td><td>number</td><td>1-5</td><td>是</td><td>疼痛扣分、高危 / 中危预警</td></tr>
+<tr><td>painsite</td><td>string</td><td>部位名</td><td>否</td><td>匹配预康复处方、预警中的部位提示</td></tr>
+</tbody></table><div class="note">以上字段名来自 <code>cfg.dailyQ</code>。在规则配置里增删题目后，采集器导入配置包会自动生成同样的字段；工作台按同名键读取。</div></div></details>
+<details class="acc"><summary>wear · 穿戴设备</summary><div class="acc-b"><table><thead><tr><th>字段</th><th>CSV 列名（不区分大小写）</th><th>单位 / 范围</th><th>影响的算法</th></tr></thead><tbody>
+<tr><td>date</td><td>date / 日期</td><td>YYYY-MM-DD</td><td>去重键</td></tr>
+<tr><td>rhr</td><td>resting_hr / rhr / 静息心率</td><td>bpm</td><td>相对个人基线升高触发预警</td></tr>
+<tr><td>hrv</td><td>hrv / rmssd</td><td>ms</td><td>相对基线下降触发准备度扣分与预警</td></tr>
+<tr><td>sleepH</td><td>sleep_hours / sleep / 睡眠</td><td>小时</td><td>准备度睡眠扣分</td></tr>
+<tr><td>steps / load</td><td>steps / 步数、load / 负荷</td><td>步、任意设备单位</td><td>留痕，不参与核心评分</td></tr>
+</tbody></table><div class="note">个人基线取该字段所有历史值的中位数，因此至少需要 2 周数据才有意义；不足时 HRV 相关判断不触发，而不是拿默认值替代。</div></div></details>
+<details class="acc"><summary>tests · 体能测评</summary><div class="acc-b"><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td>date</td><td>string</td><td>测评日期；同日重录覆盖</td></tr>
+<tr><td>res</td><td>object</td><td><code>{测评id: 数值}</code>，id 来自 <code>cfg.tests</code></td></tr>
+<tr><td>bench</td><td>number[4]</td><td>配置包中的四级锚点，线性插值为 0-100 分；女性可乘 f 系数</td></tr>
+<tr><td>q</td><td>string</td><td>所属素质 id，用于汇总五维体能域</td></tr>
+</tbody></table><div class="note">留空的测评项不参与计算；未测素质会在诊断页列为「未测评素质」，体能域得分只由已测素质加权得到。</div></div></details>
+<details class="acc"><summary>weekly / vids / levels / skills / profile</summary><div class="acc-b"><table><thead><tr><th>表</th><th>关键字段</th><th>说明</th></tr></thead><tbody>
+<tr><td>weekly</td><td>week、各周问卷字段</td><td>字段来自 cfg.weeklyQ；按周去重</td></tr>
+<tr><td>vids</td><td>date、tech、engine、score、metrics、note</td><td>工作台视频评估写入；采集器只记录 file / pose 文件名</td></tr>
+<tr><td>levels</td><td>date、level、dims、ans</td><td>定级历史，含十维画像与原始答案</td></tr>
+<tr><td>skills</td><td>{技术id: 0-100}</td><td>技术基线；由定级映射、教练手调或采集包写入，未评估的技术留空</td></tr>
+<tr><td>profile</td><td>name、sex、age、height、weight、hand、years、freq、startDate、targetLevel</td><td>性别影响测评系数；freq 影响周负荷目标；startDate 决定周期分期</td></tr>
+</tbody></table></div></details>
+</div></div>
+
+<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>质量控制规则</h3></div><div class="card-b"><div class="grid g2">
+<div><div style="font-weight:700;margin-bottom:6px">合并策略</div><ul class="plain">
+<li>按 <code>id</code> 去重；无 id 时按 <code>date</code>（mind / wear / tests）或 <code>week</code> 去重</li>
+<li>同键重复时后导入的覆盖先前的，演示数据永不被采集包覆盖</li>
+<li>每次导入在 <code>sources</code> 留痕：来源名称、日期、条数</li>
+<li>批量包 <code>bwb.collect.batch</code> 会逐人递归合并</li></ul></div>
+<div><div style="font-weight:700;margin-bottom:6px">异常与缺失</div><ul class="plain">
+<li>合理范围：RPE 1-10、时长 0-600 min、疼痛 1-5、睡眠 0-14 h</li>
+<li>重复日期、超范围值会在「数据质量报告」列出</li>
+<li>缺失训练日志 / 打卡 / 测评时，对应领域显示「未评估」，不填占位分</li>
+<li>演示数据带 <code>demo:true</code> 与 [演示] 标记，可一键清除且不影响真实数据</li></ul></div>
+</div></div></div>
+
+<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>多人、命名与同步</h3></div><div class="card-b">
+<dl class="kv">
+<dt>档案划分</dt><dd>采集器为每位运动员建一个独立档案（各自独立的 logs / mind / wear / ...）。同一浏览器可切换多人，导出时选「当前运动员」或「全部运动员」。</dd>
+<dt>ID 规则</dt><dd>档案建立时生成稳定 id；采集包携带 subject.name + subject.id。重命名不会改变 id，合并仍按数据行的 id / 日期去重。</dd>
+<dt>文件命名</dt><dd><code>bwb-collect-姓名-日期.json</code>、<code>bwb-collect-all-日期.json</code>、<code>bwb-config-日期.json</code>；CSV 分包为 <code>bwb-类别-姓名-日期.csv</code>。</dd>
+<dt>同步流程</dt><dd>① 工作台「规则配置 → 导出配置包」→ ② 采集器「导出与同步 → 导入配置包」→ ③ 采集数据 → ④ 导出采集包 → ⑤ 工作台「数据接入 → 导入采集包」→ ⑥ 今日 / 诊断 / 等级页自动重算。</dd>
+<dt>离线与隐私</dt><dd>全部数据仅在本机浏览器 localStorage，不上传服务器；换设备用 JSON 导入导出迁移。视频本体不入库，只记录文件名与姿态 JSON 关联。</dd>
+</dl>
+</div></div>
+
+<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>泛化验收清单</h3><span class="hint">改完数据或配置后逐项核对</span></div><div class="card-b">
+<ol class="plain">
+<li><b>输入敏感性</b>：工作台「规则配置 → A / B 灵敏度验证」，两组不同输入应有至少 7 项输出发生变化（准备度、ACWR、三域得分、主要瓶颈、清单首项、负荷目标、预警数）。</li>
+<li><b>配置敏感性</b>：修改任一算法参数（如降载线、ACWR 高风险线、恢复权重），「实时输出」卡片应立即变化；修改技术库 / 问卷 / 测评基准后，内容库页、等级页、今日清单都应反映新条目。</li>
+<li><b>空数据诚实性</b>：清空数据后，诊断页应显示「数据不足，暂不给出确定性结论」并列出缺口，不得出现基于默认分数的结论。</li>
+<li><b>采集闭环</b>：采集器录入 A 与 B 两份不同数据 → 分别导入工作台 → 今日清单与瓶颈结论不同。</li>
+<li><b>去重与留痕</b>：同一采集包导入两次，记录数不增加；数据接入页能看到导入来源与条数。</li>
+</ol>
+<div class="note">如果某一步没有变化，说明该输出仍依赖写死的常量——应在「规则配置」里检查对应参数或内容库是否真正被引用。</div>
+</div></div>
+
+<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>模板下载</h3></div><div class="card-b">
+<div class="row"><button class="btn pri" data-dl="wear">穿戴 CSV 模板</button>
+<button class="btn" data-dl="pack">空白采集包 JSON</button>
+<button class="btn" data-dl="logs">训练日志 CSV 模板</button></div>
+<div id="dlOut" style="margin-top:8px"></div>
+<div class="note">也可以直接在采集器「穿戴数据 → 下载 CSV 模板」「导出与同步 → 下载空白采集包模板」获取，内容完全相同。</div>
+</div></div>
+
+<div class="grid g3">
+<a class="tile" href="data-collector.html"><b>数据采集器</b><span>离线、多人、动态字段，导出工作台可直接导入的采集包。</span><em>打开工具 →</em></a>
+<a class="tile" href="coach-workbench.html#cfg"><b>规则配置与 A/B 验证</b><span>编辑内容库与全部算法参数，直接验证泛化能力。</span><em>进入 #cfg →</em></a>
+<a class="tile" href="yolo-pose-bridge.py"><b>YOLO 姿态桥接脚本</b><span>本地把训练视频解算成 COCO-17 关键点 JSON。</span><em>查看源码 →</em></a>
+</div>
+</main>
+<footer>本规范与工作台、数据采集器同为离线单文件，无外部依赖。所有阈值均为通用运动科学参考值，不替代医疗诊断。</footer>
+<script>
+"use strict";
+function dl(name,text,mime){const b=new Blob([text],{type:mime||"text/plain;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);}
+function iso(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+document.addEventListener("click",function(e){
+  const b=e.target.closest("[data-dl]");if(!b)return;
+  const k=b.dataset.dl,now=new Date(),t=iso(now),out=document.getElementById("dlOut");
+  if(k==="wear"){
+    let csv="date,resting_hr,hrv,sleep_hours,steps,load\n";
+    for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);
+      csv+=[iso(d),55,70,7.5,8500,""].join(",")+"\n";}
+    dl("bwb-wear-template.csv",csv,"text/csv;charset=utf-8");
+  }else if(k==="logs"){
+    let csv="date,dur,rpe,type,note\n";
+    for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);
+      csv+=[iso(d),60,6,"tech",""].join(",")+"\n";}
+    dl("bwb-logs-template.csv",csv,"text/csv;charset=utf-8");
+  }else{
+    dl("bwb-collect-template.json",JSON.stringify({type:"bwb.collect",v:1,
+      exportedAt:now.toISOString(),subject:{name:"",id:""},logs:[],mind:[],weekly:[],
+      wear:[],tests:[],vids:[],levels:[],skills:{}},null,2),"application/json;charset=utf-8");
+  }
+  if(out)out.innerHTML='<div class="note ok">模板已下载（'+t+'）。字段定义见上方「字段字典」。</div>';
+});
+</script>
+</body>
+</html>

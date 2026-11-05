@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>训练数据采集器 · AthleteIQ</title>
+<style>
+:root{
+  --bg:#f5f7fb; --surface:#ffffff; --surface-2:#f8fafc; --surface-3:#eef2f9;
+  --line:#e2e8f0; --line-2:#cbd5e1;
+  --text:#16203a; --text-2:#5b6780; --text-3:#8b97ad;
+  --accent:#3f51b5; --accent-soft:#eef1fb; --accent-2:#6572cd;
+  --blue:#2563eb; --teal:#0d9488; --green:#16a34a; --amber:#d97706; --red:#dc2626; --purple:#7c3aed;
+  --ok-bg:#e9f7ef; --warn-bg:#fdf4e3; --dang-bg:#fdecec; --mute-bg:#eef1f6;
+  --shadow:0 1px 2px rgba(16,32,64,.05),0 6px 18px rgba(16,32,64,.06);
+  --r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+input,select,textarea,button{font-family:inherit;font-size:inherit;color:inherit}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd8e6;border-radius:6px}
+
+/* ============ 顶栏 ============ */
+.topbar{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1280px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:1.02rem;letter-spacing:.2px}
+.brand .logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.brand small{display:block;font-size:.62rem;font-weight:500;color:var(--text-3);letter-spacing:1.2px;line-height:1}
+.topState{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:700;background:var(--mute-bg);color:var(--text-2);white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--green)}
+.pill.warn{background:var(--warn-bg);color:var(--amber)}
+.pill.dang{background:var(--dang-bg);color:var(--red)}
+.pill.info{background:var(--accent-soft);color:var(--accent)}
+.pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+.modesw{display:flex;background:var(--surface-3);border-radius:10px;padding:3px;gap:2px}
+.modesw button{border:0;background:transparent;padding:5px 13px;border-radius:8px;font-size:.76rem;font-weight:700;color:var(--text-2);cursor:pointer;transition:.18s}
+.modesw button.on{background:#fff;color:var(--accent);box-shadow:0 1px 3px rgba(16,32,64,.12)}
+
+/* ============ 导航 ============ */
+.tabbar{position:sticky;top:57px;z-index:55;background:var(--surface);border-bottom:1px solid var(--line)}
+.tabbar-in{max-width:1280px;margin:0 auto;padding:0 18px;display:flex;gap:2px;overflow-x:auto}
+.tabbar button{border:0;background:transparent;padding:11px 14px;font-size:.83rem;font-weight:600;color:var(--text-2);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:.15s}
+.tabbar button:hover{color:var(--text)}
+.tabbar button.on{color:var(--accent);border-bottom-color:var(--accent)}
+.tabbar button svg{width:15px;height:15px}
+
+/* ============ 布局 ============ */
+main{max-width:1280px;margin:0 auto;padding:18px}
+.view{display:none;animation:fade .25s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.gside{grid-template-columns:minmax(0,1fr) 340px}
+@media(max-width:1080px){.gside{grid-template-columns:1fr}}
+@media(max-width:860px){.g2,.g3,.g4{grid-template-columns:1fr}.g4.keep2,.g3.keep2{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.g4.keep2,.g3.keep2{grid-template-columns:1fr}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.card-h{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px;background:var(--surface-2)}
+.card-h h3{font-size:.92rem;font-weight:800;letter-spacing:.2px}
+.card-h .hint{font-size:.72rem;color:var(--text-3);font-weight:500}
+.card-h .r{margin-left:auto;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.card-b{padding:15px 16px}
+.card-b.tight{padding:10px 14px}
+.sep{height:1px;background:var(--line);margin:12px 0}
+
+.pageTitle{display:flex;align-items:flex-end;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.pageTitle h2{font-size:1.25rem;font-weight:800;letter-spacing:.3px}
+.pageTitle p{font-size:.8rem;color:var(--text-2)}
+.pageTitle .r{margin-left:auto}
+
+/* ============ 通用元素 ============ */
+.btn{border:1px solid var(--line-2);background:#fff;border-radius:9px;padding:7px 13px;font-size:.8rem;font-weight:700;cursor:pointer;color:var(--text);transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri:hover{background:var(--accent-2);color:#fff}
+.btn.sm{padding:4px 9px;font-size:.72rem;border-radius:7px}
+.btn.dang{color:var(--red);border-color:#f3c6c6}
+.btn.dang:hover{background:var(--dang-bg);border-color:var(--red);color:var(--red)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn svg{width:14px;height:14px}
+
+.field{margin-bottom:11px}
+.field label{display:block;font-size:.74rem;font-weight:700;color:var(--text-2);margin-bottom:4px}
+input[type=text],input[type=number],input[type=date],input[type=password],select,textarea{
+  width:100%;border:1px solid var(--line-2);border-radius:9px;padding:7px 10px;background:#fff;font-size:.83rem;transition:.15s}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(63,81,181,.11)}
+textarea{resize:vertical;min-height:70px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.76rem;line-height:1.55}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.tile{display:block;text-decoration:none;color:inherit;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;transition:.18s}
+.tile:hover{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-1px)}
+.tile b{display:block;font-size:.86rem;font-weight:800;margin-bottom:4px;color:var(--text)}
+.tile span{display:block;font-size:.76rem;color:var(--text-2);line-height:1.55}
+.tile em{display:block;font-style:normal;font-size:.72rem;font-weight:700;color:var(--accent);margin-top:8px}
+.hint{font-size:.72rem;color:var(--text-3);font-weight:500}
+.row>*{flex:1;min-width:130px}
+.chkline{display:flex;gap:8px;align-items:flex-start}
+.chkline input{margin-top:3px;flex-shrink:0;width:15px;height:15px;accent-color:var(--accent)}
+
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th{text-align:left;padding:8px 10px;background:var(--surface-2);color:var(--text-3);font-size:.7rem;letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:hover{background:var(--surface-2)}
+.tnum{font-variant-numeric:tabular-nums;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+.metric{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+.metric .k{font-size:.68rem;color:var(--text-3);font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.metric .v{font-size:1.5rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.25}
+.metric .v u{font-size:.7rem;font-weight:600;text-decoration:none;color:var(--text-3);margin-left:2px}
+.metric .s{font-size:.7rem;color:var(--text-2)}
+
+.bar{height:7px;background:var(--surface-3);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--accent);transition:width .4s}
+.bar.g i{background:var(--green)}.bar.a i{background:var(--amber)}.bar.r i{background:var(--red)}
+
+.tag{display:inline-block;padding:2px 7px;border-radius:6px;font-size:.68rem;font-weight:700;background:var(--mute-bg);color:var(--text-2);margin:1px 3px 1px 0}
+.tag.a{background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--ok-bg);color:var(--green)}
+.tag.y{background:var(--warn-bg);color:var(--amber)}
+.tag.r{background:var(--dang-bg);color:var(--red)}
+.tag.t{background:#e3f5f3;color:var(--teal)}
+
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:9px 12px;border-radius:0 9px 9px 0;font-size:.8rem;color:var(--text-2);margin:10px 0}
+.note.warn{border-color:var(--amber);background:var(--warn-bg)}
+.note.dang{border-color:var(--red);background:var(--dang-bg)}
+.note.ok{border-color:var(--green);background:var(--ok-bg)}
+
+/* 清单 */
+.check{padding:11px 13px;border:1px solid var(--line);border-radius:10px;margin-bottom:9px;background:#fff;display:flex;gap:11px;align-items:flex-start;transition:.15s}
+.check:hover{border-color:var(--line-2);background:var(--surface-2)}
+.check.done{background:var(--surface-2);border-color:#d9e3d9}
+.check.done .ct{text-decoration:line-through;color:var(--text-3)}
+.check input[type=checkbox]{width:17px;height:17px;margin-top:3px;flex-shrink:0;accent-color:var(--green);cursor:pointer}
+.check .cbody{flex:1;min-width:0}
+.check .ct{font-weight:700;font-size:.86rem}
+.check .cd{font-size:.76rem;color:var(--text-2);margin-top:2px}
+.check .cmeta{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;align-items:center}
+.check .cmeta .amt{font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:1px 7px;border-radius:5px}
+
+/* 手风琴 */
+details.acc{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:#fff;overflow:hidden}
+details.acc>summary{padding:11px 13px;cursor:pointer;font-weight:700;font-size:.85rem;list-style:none;display:flex;align-items:center;gap:8px}
+details.acc>summary::-webkit-details-marker{display:none}
+details.acc>summary::after{content:'';margin-left:auto;width:7px;height:7px;border-right:2px solid var(--text-3);border-bottom:2px solid var(--text-3);transform:rotate(45deg);transition:.2s}
+details.acc[open]>summary::after{transform:rotate(-135deg)}
+details.acc[open]>summary{border-bottom:1px solid var(--line);background:var(--surface-2)}
+.acc-b{padding:12px 14px;font-size:.82rem;color:var(--text-2)}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:.8rem}
+.kv dt{color:var(--text-3);font-weight:700;white-space:nowrap}
+.kv dd{color:var(--text)}
+
+ol.steps{margin:0;padding-left:1.15rem}
+ol.steps li{margin-bottom:5px;font-size:.82rem}
+ul.plain{margin:0;padding-left:1.05rem}
+ul.plain li{margin-bottom:4px;font-size:.82rem}
+
+.lvbar{display:inline-flex;align-items:center;gap:3px}
+.lvbar i{width:5px;height:13px;border-radius:2px;background:var(--surface-3)}
+.lvbar i.on{background:var(--accent)}
+
+.empty{text-align:center;padding:26px 14px;color:var(--text-3);font-size:.82rem}
+.empty svg{width:34px;height:34px;opacity:.35;display:block;margin:0 auto 8px}
+
+svg.chart{width:100%;height:auto;display:block;overflow:visible}
+.hashmark{position:absolute;width:0;height:0;overflow:hidden}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.72rem;color:var(--text-2);margin-top:6px}
+.legend i{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:4px}
+
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(80px);background:var(--text);color:#fff;padding:9px 18px;border-radius:10px;font-size:.82rem;font-weight:600;z-index:999;opacity:0;transition:.28s;box-shadow:0 10px 30px rgba(0,0,0,.22)}
+#toast.on{transform:translateX(-50%);opacity:1}
+
+.videoWrap{position:relative;background:#0f1420;border-radius:10px;overflow:hidden}
+.videoWrap video{width:100%;display:block;max-height:260px}
+.dropzone{border:2px dashed var(--line-2);border-radius:12px;padding:22px;text-align:center;cursor:pointer;transition:.15s;background:var(--surface-2)}
+.dropzone:hover{border-color:var(--accent);background:var(--accent-soft)}
+.dropzone svg{width:30px;height:30px;color:var(--text-3);margin-bottom:6px}
+
+.progressline{height:6px;background:var(--surface-3);border-radius:99px;overflow:hidden;margin-top:8px}
+.progressline i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--teal));transition:width .3s}
+
+footer{max-width:1280px;margin:22px auto;padding:16px 18px 30px;color:var(--text-3);font-size:.72rem;border-top:1px solid var(--line)}
+
+@media print{
+  .topbar,.tabbar,footer,.noprint{display:none!important}
+  body{background:#fff}
+  .card{break-inside:avoid;box-shadow:none}
+  main{padding:0;max-width:none}
+}
+
+/* 采集器 / 规范页专属（沿用工作台同一组变量） */
+.subsel{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.subsel select{max-width:190px}
+code{font-family:ui-monospace,Consolas,monospace;background:var(--surface-3);padding:1px 5px;border-radius:4px;font-size:.82em}
+ol.plain,ul.plain{padding-left:20px}
+ol.plain li,ul.plain li{margin:3px 0}
+@media(max-width:900px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .topbar-in{padding:8px 12px;gap:8px}
+  .tabbar-in{padding:0 12px}
+  main{padding:12px}
+  .topState{width:100%;margin-left:0}
+  .subsel{width:100%}
+  .pageTitle h2{font-size:1.1rem}
+  table{font-size:.78rem}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <span class="logo"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20l8-8M11 4l9 9M15 4h5v5"/><circle cx="6" cy="6" r="2.2"/></svg></span>
+      <span>训练数据采集器<small>ATHLETEIQ DATA COLLECTOR</small></span>
+    </div>
+    <div class="topState" id="topState"></div>
+    <div class="subsel">
+      <select id="subjectSel" title="切换运动员"></select>
+      <button class="btn sm" data-act="newsubject">＋ 运动员</button>
+      <button class="btn sm" data-act="renamesubject">改名</button>
+      <button class="btn sm dang" data-act="delsubject">删除</button>
+    </div>
+  </div>
+</header>
+<nav class="tabbar"><div class="tabbar-in" id="tabbar"></div></nav>
+<main>
+<span id="quick" class="hashmark"></span><span id="weekly" class="hashmark"></span>
+<span id="tests" class="hashmark"></span><span id="wear" class="hashmark"></span>
+<span id="video" class="hashmark"></span><span id="records" class="hashmark"></span>
+<span id="sync" class="hashmark"></span>
+  <section class="view on" id="view-quick"></section>
+  <section class="view" id="view-weekly"></section>
+  <section class="view" id="view-tests"></section>
+  <section class="view" id="view-wear"></section>
+  <section class="view" id="view-video"></section>
+  <section class="view" id="view-records"></section>
+  <section class="view" id="view-sync"></section>
+</main>
+<footer>纯本地采集：所有内容保存在本机浏览器 localStorage，不上传任何服务器。导出采集包后到「专项教练工作台 → 数据接入 → 导入采集包」合并，工作台会按新数据重算清单、等级与诊断。</footer>
+<div id="toast"></div>
+<script>
+"use strict";
+/* ===== 默认字段来自工作台配置层；导入工作台配置包后自动同步 ===== */
+const KEY="bwb.collector.v1";
+const DEFAULT_CFG={"v":2,"meta":{"name":"内置默认配置","updated":""},"qual":[{"id":"power","n":"力量 / 爆发力","c":"var(--purple)"},{"id":"speed","n":"速度 / 灵敏","c":"var(--blue)"},{"id":"endurance","n":"专项耐力","c":"var(--red)"},{"id":"mobility","n":"柔韧 / 活动度","c":"var(--teal)"},{"id":"stability","n":"关节稳定性","c":"var(--green)"}],"tech":[{"id":"serve","n":"发球"},{"id":"clear","n":"高远球"},{"id":"smash","n":"杀球"},{"id":"drop","n":"吊球"},{"id":"net","n":"网前球"},{"id":"defense","n":"防守"},{"id":"footwork","n":"步法"}],"dailyQ":[{"k":"sleep","n":"睡眠时长","type":"num","unit":"h","def":7.5,"min":2,"max":12,"step":0.5},{"k":"sleepq","n":"睡眠质量","type":"sel","opt":[[1,"很差"],[2,"差"],[3,"一般"],[4,"好"],[5,"很好"]],"def":3},{"k":"energy","n":"主观精力","type":"sel","opt":[[1,"枯竭"],[2,"疲惫"],[3,"一般"],[4,"充沛"],[5,"满格"]],"def":3},{"k":"mood","n":"情绪状态","type":"sel","opt":[[1,"低落"],[2,"烦躁"],[3,"平稳"],[4,"愉快"],[5,"兴奋"]],"def":3},{"k":"sore","n":"肌肉酸痛","type":"sel","opt":[[1,"无痛"],[2,"轻微"],[3,"明显"],[4,"较重"],[5,"剧痛"]],"def":2},{"k":"pain","n":"关节/肌腱疼痛","type":"sel","opt":[[1,"无痛"],[2,"轻微"],[3,"运动中才痛"],[4,"静息也痛"],[5,"持续夜间痛"]],"def":1},{"k":"painsite","n":"疼痛部位","type":"txt","def":""}],"weeklyQ":[{"k":"techconf","n":"本周技术发挥信心","type":"sel","opt":[[1,"很没底"],[2,"不稳"],[3,"一般"],[4,"稳"],[5,"很稳"]],"def":3},{"k":"stamina","n":"多拍相持体力","type":"sel","opt":[[1,"后半崩"],[2,"跟不上"],[3,"一般"],[4,"稳"],[5,"全场在线"]],"def":3},{"k":"motiv","n":"训练动机","type":"sel","opt":[[1,"抗拒"],[2,"勉强"],[3,"一般"],[4,"主动"],[5,"极度投入"]],"def":4},{"k":"stress","n":"场外压力负荷","type":"sel","opt":[[1,"很低"],[2,"低"],[3,"中"],[4,"高"],[5,"很高"]],"def":2},{"k":"domParts","n":"最吃力的环节","type":"txt","def":""}],"tests":[{"id":"cmj","n":"纵跳摸高（CMJ）","q":"power","unit":"cm","bench":[25,34,42,50],"how":"原地下蹲后纵跳，测量起跳高度。"},{"id":"bj","n":"立定跳远","q":"power","unit":"cm","bench":[170,205,235,260],"how":"双脚开立后原地跳远，测量距离。"},{"id":"sq","n":"后蹲 1RM/体重","q":"power","unit":"倍","bench":[0.8,1.2,1.6,2],"how":"深蹲最大重量 ÷ 体重（无1RM时用5RM估算）。"},{"id":"pu","n":"引体向上","q":"power","unit":"次","bench":[1,6,12,18],"how":"标准引体，不计摆动借力。"},{"id":"s10","n":"10米冲刺","q":"speed","unit":"s","bench":[2.1,1.9,1.75,1.65],"how":"站立起跑到10米的计时。"},{"id":"ag","n":"5-10-5 灵敏跑","q":"speed","unit":"s","bench":[5.6,5.2,4.9,4.65],"how":"标准的 pro agility test 计时。"},{"id":"six","n":"六点步法×3轮","q":"speed","unit":"s","bench":[26,23,21,19.5],"how":"米字六点各一次为一轮，做3轮计时。"},{"id":"yy","n":"Yo-Yo IR1","q":"endurance","unit":"m","bench":[600,1000,1400,1900],"how":"标准渐增速度折返测试的总距离。"},{"id":"multi","n":"多球30拍质量","q":"endurance","unit":"评分","bench":[55,70,82,92],"how":"连续多球30拍，由教练按动作质量评分（0-100）。"},{"id":"sleeperROM","n":"肩内旋角度","q":"mobility","unit":"°","bench":[40,55,65,75],"how":"仰卧肩外展90°，量前臂能向内转动的最大角度。"},{"id":"slr","n":"主动直腿抬高","q":"mobility","unit":"°","bench":[60,72,82,90],"how":"仰卧单腿主动抬到极限，量角度。"},{"id":"wt","n":"踝背屈墙测","q":"mobility","unit":"cm","bench":[6,9,12,15],"how":"脚尖距墙多少距离时膝盖还能贴到墙且脚跟不离地。"},{"id":"sebt","n":"星形偏移总分比","q":"stability","unit":"%腿长","bench":[75,85,92,98],"how":"八个方向伸出距离/腿长取均值百分比。"},{"id":"lsi","n":"单腿闭眼平衡","q":"stability","unit":"s","bench":[10,25,40,60],"how":"单腿闭眼站立直到失衡的时间。"},{"id":"sp","n":"侧平板","q":"stability","unit":"s","bench":[30,55,80,110],"how":"标准侧平板支撑至髋塌陷的时间。"},{"id":"djump","n":"单腿落地质量","q":"stability","unit":"评分","bench":[50,70,84,95],"how":"单腿落下后静态2秒由教练评分（看膝是否内扣、有无晃动）。"}],"cyQs":[{"k":"grip","n":"握拍与发球"},{"k":"power","n":"发力与手腕"},{"k":"back","n":"正手后场"},{"k":"backhand","n":"反手后场"},{"k":"foot","n":"全场步法"},{"k":"net","n":"网前小球"},{"k":"def","n":"防守与平抽"},{"k":"attack","n":"进攻组织"},{"k":"tactics","n":"战术与双打意识"},{"k":"match","n":"实战稳定性"}],"cyComp":["纯娱乐 / 健身，从未参加正式比赛","只打俱乐部内部小循环或朋友局","参加过市级 / 区级业余赛，未进前列","市级业余赛前八，或高校普通校队主力","市级业余赛前二 / 省级业余赛取得名次","省队、一级运动员或全国性赛事取得名次"],"params":{}};
+const TABS=[{id:"quick",n:"快速录入"},{id:"weekly",n:"周期问卷"},{id:"tests",n:"体能测评"},
+  {id:"wear",n:"穿戴数据"},{id:"video",n:"视频记录"},{id:"records",n:"记录管理"},{id:"sync",n:"导出与同步"}];
+let VIEW="quick",ST=null,CFG=null,DAY="",LOGROWS=[],RECKEY="logs",CSVKIND="wear",DRAFT={};
+
+function todayISO(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function addDays(s,n){const p=String(s).split("-"),d=new Date(+p[0],+p[1]-1,+p[2]);d.setDate(d.getDate()+n);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function round(v,n){const p=Math.pow(10,n||0);return Math.round(v*p)/p;}
+function el(id){return document.getElementById(id);}
+function toast(m){const t=el("toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("on"),2200);}
+function dl(name,text,mime){const b=new Blob([text],{type:mime||"application/json;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);}
+
+function newSubject(name){return {id:uid(),name:name||"运动员",created:todayISO(),profile:{},
+  logs:[],mind:[],weekly:[],wear:[],tests:[],vids:[],levels:[],skills:{}};}
+function load(){
+  try{ST=JSON.parse(localStorage.getItem(KEY)||"null");}catch(e){ST=null;}
+  if(!ST||!Array.isArray(ST.subjects)||!ST.subjects.length)ST={active:0,subjects:[newSubject("运动员 1")],cfg:null};
+  if(!Number.isInteger(ST.active)||ST.active>=ST.subjects.length)ST.active=0;
+  ST.subjects.forEach(s=>{["logs","mind","weekly","wear","tests","vids","levels"].forEach(k=>{
+    if(!Array.isArray(s[k]))s[k]=[];});if(!s.skills||typeof s.skills!=="object")s.skills={};});
+  CFG=ST.cfg&&ST.cfg.dailyQ?ST.cfg:DEFAULT_CFG;
+  DAY=todayISO();
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){toast("保存失败：本地存储空间不足");}}
+function cur(){return ST.subjects[ST.active];}
+function clearDraft(prefix){Object.keys(DRAFT).forEach(k=>{if(k.indexOf(prefix)===0)delete DRAFT[k];});}
+
+/* ===== 动态表单：字段完全来自配置包 ===== */
+function formHTML(list,prefix,values){
+  return '<div class="grid g3">'+list.map(q=>{
+    const k=prefix+q.k;
+    const v=(values&&values[q.k]!=null)?values[q.k]:(DRAFT[k]!=null?DRAFT[k]:(q.def!=null?q.def:""));
+    const t=q.type==="sel"?"sel":(q.type==="num"?"num":"txt");
+    let inp;
+    if(t==="sel"){
+      const opts=(q.opt||q.opts||[]).map(o=>{
+        const val=Array.isArray(o)?o[0]:o,lab=Array.isArray(o)?o[1]:o;
+        return '<option value="'+esc(val)+'" '+(String(v)===String(val)?"selected":"")+'>'+esc(lab)+'</option>';
+      }).join("");
+      inp='<select data-f="'+esc(k)+'">'+opts+'</select>';
+    }else if(t==="num"){
+      inp='<input type="number" data-f="'+esc(k)+'" value="'+esc(v)+'"'+
+        (q.min!=null?' min="'+q.min+'"':"")+(q.max!=null?' max="'+q.max+'"':"")+
+        ' step="'+(q.step||"any")+'">';
+    }else inp='<input type="text" data-f="'+esc(k)+'" value="'+esc(v)+'">';
+    return '<div class="field"><label>'+esc(q.n)+(q.unit?'（'+esc(q.unit)+'）':"")+'</label>'+inp+'</div>';
+  }).join("")+'</div>';
+}
+function collectForm(list,prefix){
+  const o={};
+  list.forEach(q=>{
+    const n=document.querySelector('[data-f="'+prefix+q.k+'"]');
+    let v=n?n.value:(DRAFT[prefix+q.k]!=null?DRAFT[prefix+q.k]:q.def);
+    if(q.type==="num"){if(v!==""&&v!=null&&!isNaN(+v))o[q.k]=+v;}
+    else if(q.type==="sel"){o[q.k]=isNaN(+v)?v:+v;}
+    else o[q.k]=String(v==null?"":v);
+  });
+  return o;
+}
+function logRowsFromDate(d){return cur().logs.filter(x=>x.date===d).map(x=>({dur:x.dur,rpe:x.rpe,type:x.type,note:x.note}));}
+function syncLogRows(){
+  const rows=[];
+  document.querySelectorAll('[data-lr="dur"]').forEach(n=>{
+    const i=n.dataset.i;
+    const g=k=>{const x=document.querySelector('[data-lr="'+k+'"][data-i="'+i+'"]');return x?x.value:"";};
+    rows.push({dur:+g("dur")||0,rpe:+g("rpe")||0,type:g("type"),note:g("note")});
+  });
+  if(rows.length)LOGROWS=rows;
+}
+function logRowsHTML(){
+  if(!LOGROWS.length)LOGROWS=[{dur:60,rpe:6,type:"tech",note:""}];
+  return LOGROWS.map((r,i)=>'<tr>'+
+    '<td><input type="number" min="0" max="600" data-lr="dur" data-i="'+i+'" value="'+esc(r.dur)+'"></td>'+
+    '<td><input type="number" min="1" max="10" data-lr="rpe" data-i="'+i+'" value="'+esc(r.rpe)+'"></td>'+
+    '<td><select data-lr="type" data-i="'+i+'">'+
+      [["tech","技术"],["cond","体能"],["match","对抗"],["recovery","恢复"],["rest","休息"]].map(o=>
+        '<option value="'+o[0]+'" '+(r.type===o[0]?"selected":"")+'>'+o[1]+'</option>').join("")+'</select></td>'+
+    '<td><input type="text" data-lr="note" data-i="'+i+'" value="'+esc(r.note||"")+'" placeholder="选填"></td>'+
+    '<td><button class="btn sm dang" data-act="dellogrow" data-i="'+i+'">删</button></td></tr>').join("");
+}
+function pageTitle(t,p,right){return '<div class="pageTitle"><h2>'+t+'</h2><p>'+p+'</p>'+
+  (right?'<div class="r">'+right+'</div>':"")+'</div>';}
+
+/* ===== 视图 ===== */
+function viewQuick(){
+  const s=cur(),m=s.mind.find(x=>x.date===DAY)||{};
+  const rows=s.logs.filter(x=>x.date===DAY);
+  if(!LOGROWS.length)LOGROWS=logRowsFromDate(DAY);
+  let h=pageTitle("快速录入","一次训练 + 一次打卡，30 秒完成",
+    '<button class="btn sm" data-act="nav" data-v="sync">去导出</button>');
+  h+='<div class="card" style="margin-bottom:14px"><div class="card-b"><div class="row">'+
+    '<div class="field" style="max-width:220px"><label>数据日期</label><input type="date" id="qDate" value="'+DAY+'"></div>'+
+    '<div class="field" style="flex:2"><label>当前运动员</label><div class="note" style="margin:0;padding:7px 10px">'+
+      esc(s.name)+'　已录入 '+rows.length+' 条训练 · '+(s.mind.some(x=>x.date===DAY)?'今日已打卡':'今日未打卡')+'</div></div>'+
+    '</div></div></div>';
+  h+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>每日打卡</h3>'+
+    '<span class="hint">字段来自配置包（'+CFG.dailyQ.length+' 项）</span></div><div class="card-b">'+
+    formHTML(CFG.dailyQ,"q.",m)+
+    '<div class="note">打卡字段决定工作台的「准备度」与「恢复域」；改了配置包，这里会同步变。</div></div></div>';
+  h+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>训练日志</h3>'+
+    '<span class="hint">负荷 = 时长 × RPE，可一次记多节课</span></div><div class="card-b">'+
+    '<table><thead><tr><th style="width:110px">时长(min)</th><th style="width:110px">RPE(1-10)</th>'+
+    '<th style="width:140px">类型</th><th>备注</th><th style="width:52px"></th></tr></thead><tbody id="logRows">'+
+    logRowsHTML()+'</tbody></table>'+
+    '<div class="row" style="margin-top:10px"><button class="btn" data-act="addlogrow">＋ 添加一节课</button>'+
+    '<button class="btn pri" data-act="savequick">保存本日数据</button></div></div></div>';
+  h+='<div class="card"><div class="card-h"><h3>最近 7 天</h3></div><div class="card-b">'+
+    '<table><thead><tr><th>日期</th><th>课程</th><th>总负荷</th><th>打卡</th><th>睡眠</th><th>疼痛</th></tr></thead><tbody>'+
+    Array.from({length:7},(_,i)=>{
+      const d=addDays(todayISO(),-i),ls=s.logs.filter(x=>x.date===d),mm=s.mind.find(x=>x.date===d);
+      return '<tr><td class="tnum">'+d+'</td><td class="tnum">'+ls.length+'</td><td class="tnum">'+
+        ls.reduce((n,x)=>n+(+x.dur||0)*(+x.rpe||0),0)+' AU</td><td>'+(mm?'<span class="tag g">已打卡</span>':'<span class="tag">未打卡</span>')+
+        '</td><td class="tnum">'+(mm&&mm.sleep!=null?mm.sleep:"—")+'</td><td class="tnum">'+(mm&&mm.pain!=null?mm.pain:"—")+'</td></tr>';
+    }).join("")+'</tbody></table></div></div>';
+  return h;
+}
+function viewWeekly(){
+  const s=cur(),wk=weekISO(),rec=s.weekly.find(x=>x.week===wk)||{};
+  return pageTitle("周期问卷","每周一次，用于观察主观状态与训练感受")+
+    '<div class="card"><div class="card-h"><h3>本周（'+wk+' 起）</h3>'+
+    '<span class="hint">字段来自配置包（'+CFG.weeklyQ.length+' 项）</span></div><div class="card-b">'+
+    formHTML(CFG.weeklyQ,"w.",rec)+
+    '<div class="row" style="margin-top:8px"><button class="btn pri" data-act="saveweekly">保存本周问卷</button>'+
+    '<button class="btn" data-act="nav" data-v="records">查看已存记录</button></div>'+
+    '<div class="note">周期问卷描述长期趋势，不直接参与每日强度调整，但会随采集包一并进入工作台。</div>'+
+    '</div></div>';
+}
+function weekISO(){const d=new Date(),wd=(d.getDay()+6)%7;return addDays(todayISO(),-wd);}
+function viewTests(){
+  const s=cur(),d=DAY,rec=s.tests.find(x=>x.date===d)||{};
+  const res=rec.res||{};
+  let h=pageTitle("体能测评","按测评基准录入；字段完全由配置包生成",
+    '<a class="btn sm" href="data-schema.html#dict">字段说明</a>');
+  h+='<div class="card" style="margin-bottom:14px"><div class="card-b"><div class="row">'+
+    '<div class="field" style="max-width:220px"><label>测评日期</label><input type="date" id="tDate" value="'+d+'"></div>'+
+    '<div class="field" style="flex:2"><label>说明</label><div class="note" style="margin:0;padding:7px 10px">'+
+    '只需要填测过的项目；留空不会影响已填项目的评分。基准锚点来自工作台「规则配置 → 体能测评基准」。</div></div>'+
+    '</div></div></div>';
+  const groups={};
+  (CFG.tests||[]).forEach(t=>{(groups[t.q]=groups[t.q]||[]).push(t);});
+  h+=Object.keys(groups).map(q=>{
+    const qn=(CFG.qual||[]).find(x=>x.id===q);
+    return '<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>'+esc(qn?qn.n:q)+'</h3>'+
+      '<span class="hint">'+groups[q].length+' 项</span></div><div class="card-b"><div class="grid g3">'+
+      groups[q].map(t=>'<div class="field"><label>'+esc(t.n)+'（'+esc(t.unit||"")+'）</label>'+
+        '<input type="number" step="any" data-t="'+esc(t.id)+'" value="'+esc(res[t.id]==null?"":res[t.id])+'" placeholder="留空=未测">'+
+        '<div style="font-size:.68rem;color:var(--text-3);margin-top:2px">基准 '+(t.bench||[]).join(" / ")+'　'+esc(t.how||"")+'</div></div>').join("")+
+      '</div></div></div>';
+  }).join("");
+  h+='<div class="card"><div class="card-b"><button class="btn pri" data-act="savetests">保存本次测评</button>'+
+    '　<span class="hint">测评结果决定工作台的「体能域」与瓶颈判定</span></div></div>';
+  return h;
+}
+function viewWear(){
+  const s=cur(),recent=s.wear.slice().sort((a,b)=>a.date<b.date?1:-1).slice(0,14);
+  let h=pageTitle("穿戴设备数据","CSV 批量导入或手动补录；HRV / 静息心率会触发恢复预警");
+  h+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>CSV 批量导入</h3>'+
+    '<span class="hint">date,resting_hr,hrv,sleep_hours,steps,load</span></div><div class="card-b">'+
+    '<textarea id="wearCsv" placeholder="date,resting_hr,hrv,sleep_hours,steps,load&#10;2026-11-01,54,72,7.5,9000,480"></textarea>'+
+    '<div class="row" style="margin-top:8px"><input type="file" id="wearFile" accept=".csv,.txt" data-act="wearfile">'+
+    '<button class="btn pri" data-act="parsewear">解析并合并</button>'+
+    '<button class="btn" data-act="dlweartpl">下载 CSV 模板</button></div>'+
+    '<div id="wearOut" style="margin-top:8px"></div></div></div>';
+  h+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>手动补录一天</h3></div><div class="card-b">'+
+    '<div class="grid g3">'+
+    [["w_date","日期","date",DAY],["w_rhr","静息心率(bpm)","number",""],["w_hrv","HRV(ms)","number",""],
+     ["w_sleep","睡眠(h)","number",""],["w_steps","步数","number",""],["w_load","设备负荷","number",""]].map(f=>
+      '<div class="field"><label>'+f[1]+'</label><input type="'+f[2]+'" id="'+f[0]+'" value="'+esc(f[3])+'"></div>').join("")+
+    '</div><button class="btn pri" data-act="savewear">保存该日</button></div></div>';
+  h+='<div class="card"><div class="card-h"><h3>近期记录</h3><span class="hint">共 '+s.wear.length+' 条</span></div><div class="card-b">'+
+    (recent.length?'<table><thead><tr><th>日期</th><th>静息心率</th><th>HRV</th><th>睡眠</th><th>步数</th><th>负荷</th><th></th></tr></thead><tbody>'+
+      recent.map(w=>'<tr><td class="tnum">'+w.date+'</td><td class="tnum">'+(w.rhr??"—")+'</td>'+
+      '<td class="tnum">'+(w.hrv??"—")+'</td><td class="tnum">'+(w.sleepH??"—")+'</td>'+
+      '<td class="tnum">'+(w.steps??"—")+'</td><td class="tnum">'+(w.load??"—")+'</td>'+
+      '<td><button class="btn sm dang" data-act="delwear" data-d="'+w.date+'">删</button></td></tr>').join("")+'</tbody></table>'
+      :'<div class="empty">还没有穿戴数据</div>')+'</div></div>';
+  return h;
+}
+function viewVideo(){
+  const s=cur(),list=s.vids.slice().sort((a,b)=>a.date<b.date?1:-1);
+  let h=pageTitle("视频记录","记录视频与姿态 JSON 的对应关系；动作评分在工作台完成");
+  h+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>新增一条视频记录</h3></div><div class="card-b">'+
+    '<div class="grid g3">'+
+    '<div class="field"><label>日期</label><input type="date" id="v_date" value="'+DAY+'"></div>'+
+    '<div class="field"><label>技术</label><select id="v_tech">'+
+      (CFG.tech||[]).map(t=>'<option value="'+esc(t.id)+'">'+esc(t.n)+'</option>').join("")+'</select></div>'+
+    '<div class="field"><label>视频文件名</label><input type="text" id="v_file" placeholder="smash-1105.mp4"></div>'+
+    '<div class="field"><label>姿态 JSON 文件名</label><input type="text" id="v_pose" placeholder="smash-1105.pose.json"></div>'+
+    '<div class="field"><label>备注</label><input type="text" id="v_note" placeholder="选填：机位、回合序号"></div>'+
+    '</div><button class="btn pri" data-act="savevideo">保存记录</button></div></div>';
+  h+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>姿态解算流程</h3></div><div class="card-b">'+
+    '<div class="note">本机用随项目提供的 <b>yolo-pose-bridge.py</b> 把视频解算成 COCO-17 关键点 JSON：'+
+    '<br><code>python yolo-pose-bridge.py 你的视频.mp4 -o 输出.pose.json</code>'+
+    '<br>然后在「专项教练工作台 → 视频评估」导入这个 JSON，得到动作指标与水平分级；结果会写回成长档案并影响技术评分。'+
+    '<br>采集器只记录文件名，不保存视频本体，避免占满浏览器存储。</div></div></div>';
+  h+='<div class="card"><div class="card-h"><h3>已记录视频</h3><span class="hint">共 '+list.length+' 条</span></div><div class="card-b">'+
+    (list.length?'<table><thead><tr><th>日期</th><th>技术</th><th>视频</th><th>姿态 JSON</th><th>备注</th><th></th></tr></thead><tbody>'+
+      list.map(v=>'<tr><td class="tnum">'+v.date+'</td><td>'+esc((CFG.tech||[]).find(t=>t.id===v.tech)?.n||v.tech)+'</td>'+
+      '<td>'+esc(v.file||"—")+'</td><td>'+esc(v.pose||"—")+'</td><td>'+esc(v.note||"—")+'</td>'+
+      '<td><button class="btn sm dang" data-act="delvid" data-id="'+v.id+'">删</button></td></tr>').join("")+'</tbody></table>'
+      :'<div class="empty">还没有视频记录</div>')+'</div></div>';
+  return h;
+}
+function viewRecords(){
+  const s=cur(),arr=s[RECKEY]||[];
+  const names={logs:"训练日志",mind:"每日打卡",weekly:"周期问卷",wear:"穿戴数据",
+    tests:"体能测评",vids:"视频记录",levels:"定级记录"};
+  const cols={logs:["date","dur","rpe","type","note"],mind:Object.keys((CFG.dailyQ[0]||{})).length?
+    ["date"].concat(CFG.dailyQ.map(q=>q.k)):["date"],weekly:["week"].concat(CFG.weeklyQ.map(q=>q.k)),
+    wear:["date","rhr","hrv","sleepH","steps","load"],tests:["date","项数"],vids:["date","tech","file","pose","note"],
+    levels:["date","level"]};
+  const rows=arr.slice().sort((a,b)=>String(b.date||b.week||"").localeCompare(String(a.date||a.week||""))).slice(0,100);
+  let h=pageTitle("记录管理","查看、删除、切换运动员档案");
+  h+='<div class="card" style="margin-bottom:14px"><div class="card-b"><div class="row">'+
+    '<div class="field" style="max-width:240px"><label>数据类型</label><select id="recKey">'+
+      Object.keys(names).map(k=>'<option value="'+k+'" '+(k===RECKEY?"selected":"")+'>'+names[k]+'（'+s[k].length+'）</option>').join("")+
+    '</select></div>'+
+    '<div class="field" style="flex:2"><label>档案</label><div class="note" style="margin:0;padding:7px 10px">'+
+    esc(s.name)+' · ID '+esc(s.id)+' · 共 '+ST.subjects.length+' 个运动员档案，各自独立存储</div></div>'+
+    '</div></div></div>';
+  h+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>'+names[RECKEY]+'　'+arr.length+' 条</h3></div><div class="card-b">'+
+    (rows.length?'<div style="overflow-x:auto"><table><thead><tr>'+cols[RECKEY].map(c=>'<th>'+esc(c)+'</th>').join("")+
+      '<th></th></tr></thead><tbody>'+rows.map(r=>'<tr>'+cols[RECKEY].map(c=>{
+        let v=r[c];
+        if(c==="项数")v=Object.keys(r.res||{}).length;
+        if(v&&typeof v==="object")v=JSON.stringify(v).slice(0,60);
+        return '<td class="tnum">'+esc(v==null?"—":v)+'</td>';}).join("")+
+        '<td><button class="btn sm dang" data-act="delrec" data-id="'+esc(r.id||r.date||r.week)+'">删</button></td></tr>').join("")+
+      '</tbody></table></div>':'<div class="empty">这一类还没有记录</div>')+'</div></div>';
+  h+='<div class="card"><div class="card-h"><h3>档案操作</h3></div><div class="card-b"><div class="row">'+
+    '<button class="btn" data-act="newsubject">新增运动员</button>'+
+    '<button class="btn" data-act="renamesubject">重命名当前档案</button>'+
+    '<button class="btn dang" data-act="clearsubject">清空当前档案的全部数据</button></div>'+
+    '<div class="note">每个运动员一份独立采集包；导出时按人或按全体分别生成。</div></div></div>';
+  return h;
+}
+function quality(){
+  const s=cur(),d=todayISO(),days=[];for(let i=27;i>=0;i--)days.push(addDays(d,-i));
+  const issues=[];
+  const gap=days.filter(x=>!s.logs.some(l=>l.date===x)).length;
+  const gapM=days.filter(x=>!s.mind.some(m=>m.date===x)).length;
+  if(!s.logs.length)issues.push({lv:"high",t:"没有训练日志：工作台无法计算负荷与 ACWR。"});
+  else if(gap>14)issues.push({lv:"mid",t:"近 28 天有 "+gap+" 天没有训练记录（休息日也建议记一条 rest）。"});
+  if(!s.mind.length)issues.push({lv:"high",t:"没有每日打卡：准备度与恢复域会保持「未评估」。"});
+  else if(gapM>7)issues.push({lv:"mid",t:"打卡缺口 "+gapM+" 天。"});
+  if(!s.tests.length)issues.push({lv:"mid",t:"没有体能测评：体能域无法评估。"});
+  if(!s.wear.length)issues.push({lv:"mid",t:"没有穿戴数据：HRV / 静息心率预警不会触发。"});
+  const bad=s.logs.filter(l=>+l.rpe>10||+l.rpe<1||+l.dur>600).length+
+    s.mind.filter(m=>+m.sleep>14||+m.sleep<0||+m.pain>5).length;
+  if(bad)issues.push({lv:"high",t:"发现 "+bad+" 条超出合理范围的数据，导出前请核对。"});
+  ["mind","wear","tests"].forEach(k=>{
+    const seen={};let dup=0;s[k].forEach(x=>{if(seen[x.date])dup++;seen[x.date]=1;});
+    if(dup)issues.push({lv:"mid",t:k+" 有 "+dup+" 个重复日期。"});
+  });
+  const have=[s.logs.length,s.mind.length,s.wear.length,s.tests.length,s.vids.length].filter(Boolean).length;
+  return {issues:issues,score:Math.round(have/5*100),
+    counts:{logs:s.logs.length,mind:s.mind.length,weekly:s.weekly.length,
+      wear:s.wear.length,tests:s.tests.length,vids:s.vids.length}};
+}
+function packFor(s){
+  return {type:"bwb.collect",v:1,exportedAt:new Date().toISOString(),
+    subject:{name:s.name,id:s.id},cfgVersion:(ST.cfg&&ST.cfg.meta&&ST.cfg.meta.updated)||"default",
+    profile:s.profile||{},logs:s.logs,mind:s.mind,weekly:s.weekly,wear:s.wear,
+    tests:s.tests,vids:s.vids,levels:s.levels,skills:s.skills};
+}
+function viewSync(){
+  const s=cur(),q=quality(),c=q.counts;
+  let h=pageTitle("导出与同步","把采集包交给工作台，所有结论按你的真实数据重算");
+  h+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>数据质量自检</h3>'+
+    '<span class="hint">完成度 '+q.score+'%</span></div><div class="card-b">'+
+    '<div class="grid g4 keep2" style="margin-bottom:10px">'+
+    [["训练日志",c.logs],["每日打卡",c.mind],["穿戴数据",c.wear],["体能测评",c.tests]].map(x=>
+      '<div class="card"><div class="card-b"><div class="metric" style="border:0;background:transparent;padding:0">'+
+      '<div class="k">'+x[0]+'</div><div class="v">'+x[1]+'<u> 条</u></div></div></div></div>').join("")+'</div>'+
+    (q.issues.length?q.issues.map(i=>'<div class="note '+(i.lv==="high"?"dang":"warn")+'">'+esc(i.t)+'</div>').join("")
+      :'<div class="note ok">未发现缺失、重复或超范围数据，可以导出。</div>')+'</div></div>';
+  h+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>① 同步字段配置</h3>'+
+    '<span class="hint">保证两端题目、测评项、技术名一致</span></div><div class="card-b">'+
+    '<div class="note">当前字段：每日打卡 '+CFG.dailyQ.length+' 项 · 周期问卷 '+CFG.weeklyQ.length+' 项 · '+
+    '体能测评 '+CFG.tests.length+' 项 · 技术 '+(CFG.tech||[]).length+' 项。'+
+    (ST.cfg?'　来源：已导入的配置包 '+esc((ST.cfg.meta||{}).name||""):'　来源：内置默认配置（与工作台一致）')+'</div>'+
+    '<div class="row" style="margin-top:8px"><button class="btn pri" data-act="pickcfg">导入工作台配置包</button>'+
+    '<input type="file" id="cfgFile" accept=".json" data-act="cfgfile" style="display:none">'+
+    '<button class="btn" data-act="resetcfg">恢复内置默认</button></div>'+
+    '<div id="cfgOut" style="margin-top:8px"></div></div></div>';
+  h+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>② 导出采集包</h3>'+
+    '<span class="hint">工作台「数据接入」可直接导入</span></div><div class="card-b"><div class="row">'+
+    '<button class="btn pri" data-act="exportone">导出当前运动员（'+esc(s.name)+'）</button>'+
+    '<button class="btn" data-act="exportall">导出全部运动员（'+ST.subjects.length+' 人）</button>'+
+    '</div>'+
+    '<div class="row" style="margin-top:10px"><div class="field" style="max-width:240px"><label>CSV 分包类型</label>'+
+    '<select id="csvKind">'+[["logs","训练日志"],["mind","每日打卡"],["wear","穿戴数据"],
+      ["tests","体能测评"],["vids","视频记录"]].map(o=>'<option value="'+o[0]+'" '+(o[0]===CSVKIND?"selected":"")+'>'+o[1]+'</option>').join("")+
+    '</select></div><button class="btn" data-act="exportcsv">导出该类 CSV</button>'+
+    '<button class="btn" data-act="dltemplate">下载空白采集包模板</button></div>'+
+    '<div id="exportOut" style="margin-top:8px"></div></div></div>';
+  h+='<div class="card"><div class="card-h"><h3>③ 回到工作台</h3></div><div class="card-b">'+
+    '<div class="grid g3">'+
+    '<a class="tile" href="coach-workbench.html#data"><b>导入采集包</b><span>按 ID / 日期去重合并，不覆盖已有手工数据。</span><em>进入 #data →</em></a>'+
+    '<a class="tile" href="coach-workbench.html#cfg"><b>验证泛化能力</b><span>用 A / B 灵敏度验证检查不同输入是否产出不同结论，也可改参数与内容库。</span><em>进入 #cfg →</em></a>'+
+    '<a class="tile" href="data-schema.html"><b>数据规范与采集方案</b><span>字段字典、单位、频率、质量控制与多人命名约定。</span><em>查看 SOP →</em></a>'+
+    '</div></div></div>';
+  return h;
+}
+
+/* ===== 渲染 ===== */
+function renderTop(){
+  const s=cur(),q=quality();
+  el("topState").innerHTML='<span class="pill info">'+esc(s.name)+'</span>'+
+    '<span class="pill '+(q.score>=80?"ok":(q.score>=40?"warn":""))+'">数据完成度 '+q.score+'%</span>'+
+    '<span class="pill">'+s.logs.length+' 次训练 · '+s.mind.length+' 次打卡</span>';
+  el("subjectSel").innerHTML=ST.subjects.map((x,i)=>'<option value="'+i+'" '+(i===ST.active?"selected":"")+'>'+esc(x.name)+'</option>').join("");
+  el("tabbar").innerHTML=TABS.map(t=>'<button class="'+(VIEW===t.id?"on":"")+'" data-act="nav" data-v="'+t.id+'">'+t.n+'</button>').join("");
+}
+function render(){
+  TABS.forEach(t=>{
+    const sec=el("view-"+t.id);
+    sec.classList.toggle("on",VIEW===t.id);
+    let html="";
+    if(VIEW===t.id){
+      try{html=({quick:viewQuick,weekly:viewWeekly,tests:viewTests,wear:viewWear,
+        video:viewVideo,records:viewRecords,sync:viewSync})[t.id]();}
+      catch(e){html='<div class="note dang">渲染出错：'+esc(e.message)+'</div>';}
+    }
+    sec.innerHTML=html;
+  });
+  renderTop();
+}
+function go(v){VIEW=v;LOGROWS=[];try{history.replaceState(null,"","#"+v);}catch(e){}window.scrollTo(0,0);render();}
+
+/* ===== 数据操作 ===== */
+function parseCSV(txt){
+  const lines=String(txt).split(/\r?\n/).filter(x=>x.trim());
+  if(!lines.length)throw new Error("没有内容");
+  const head=lines[0].split(",").map(x=>x.trim().toLowerCase().replace(/^"|"$/g,""));
+  const map={date:["date","日期"],rhr:["resting_hr","rhr","静息心率"],hrv:["hrv","rMSSD".toLowerCase()],
+    sleepH:["sleep_hours","sleep","sleeph","睡眠"],steps:["steps","步数"],load:["load","负荷","training_load"]};
+  const idx={};Object.keys(map).forEach(k=>idx[k]=head.findIndex(h=>map[k].indexOf(h)>=0));
+  if(idx.date<0)throw new Error("缺少 date / 日期 列");
+  const out=[];
+  lines.slice(1).forEach(line=>{
+    const c=line.split(",").map(x=>x.trim().replace(/^"|"$/g,""));
+    const d=c[idx.date];if(!d)return;
+    const o={date:d};
+    [["rhr",idx.rhr],["hrv",idx.hrv],["sleepH",idx.sleepH],["steps",idx.steps],["load",idx.load]].forEach(p=>{
+      if(p[1]>=0&&c[p[1]]!==""&&!isNaN(+c[p[1]]))o[p[0]]=+c[p[1]];
+    });
+    out.push(o);
+  });
+  if(!out.length)throw new Error("没有解析到有效数据行");
+  return out;
+}
+function toCSV(arr,cols){
+  return cols.join(",")+"\n"+arr.map(r=>cols.map(c=>{
+    let v=r[c];if(v==null)v="";
+    if(typeof v==="object")v=JSON.stringify(v);
+    v=String(v).replace(/"/g,'""');
+    return /[,\n"]/.test(v)?'"'+v+'"':v;
+  }).join(",")).join("\n")+"\n";
+}
+function exportPack(all){
+  let data,name;
+  if(all){
+    data={type:"bwb.collect.batch",v:1,exportedAt:new Date().toISOString(),
+      subjects:ST.subjects.map(s=>Object.assign({},packFor(s),{name:s.name,id:s.id}))};
+    name="bwb-collect-all-"+todayISO()+".json";
+  }else{
+    data=packFor(cur());name="bwb-collect-"+cur().name.replace(/[\\/:*?"<>|]/g,"_")+"-"+todayISO()+".json";
+  }
+  dl(name,JSON.stringify(data,null,2));
+  toast(all?"已导出 "+ST.subjects.length+" 个运动员的批量采集包":"已导出 "+cur().name+" 的采集包");
+}
+function exportCSV(){
+  const s=cur(),arr=s[CSVKIND]||[];
+  let cols=[];
+  if(CSVKIND==="logs")cols=["date","dur","rpe","type","note"];
+  else if(CSVKIND==="mind")cols=["date"].concat(CFG.dailyQ.map(q=>q.k));
+  else if(CSVKIND==="wear")cols=["date","rhr","hrv","sleepH","steps","load"];
+  else if(CSVKIND==="tests")cols=["date"].concat(CFG.tests.map(t=>t.id));
+  else cols=["date","tech","file","pose","note"];
+  const rows=CSVKIND==="tests"?arr.map(t=>Object.assign({date:t.date},t.res||{})):arr;
+  dl("bwb-"+CSVKIND+"-"+s.name.replace(/[\\/:*?"<>|]/g,"_")+"-"+todayISO()+".csv",toCSV(rows,cols),"text/csv;charset=utf-8");
+  toast("已导出 "+arr.length+" 条 "+CSVKIND+" 记录");
+}
+function onCfgFile(file){
+  const fr=new FileReader();
+  fr.onload=()=>{
+    try{
+      const d=JSON.parse(fr.result);
+      if(!d||!Array.isArray(d.dailyQ)||!Array.isArray(d.tests))throw new Error("不是有效的 bwb.config 配置包（缺少 dailyQ / tests）");
+      ST.cfg=d;CFG=d;save();DRAFT={};render();
+      const o=el("cfgOut");
+      if(o)o.innerHTML='<div class="note ok">配置包已应用：打卡 '+d.dailyQ.length+' 项、测评 '+d.tests.length+
+        ' 项、技术 '+(d.tech||[]).length+' 项。表单已按新字段重建。</div>';
+      toast("字段已与工作台同步");
+    }catch(e){const o=el("cfgOut");if(o)o.innerHTML='<div class="note dang">导入失败：'+esc(e.message)+'</div>';}
+  };
+  fr.readAsText(file);
+}
+
+/* ===== 事件 ===== */
+document.addEventListener("click",function(e){
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const a=b.dataset.act,s=cur();
+  switch(a){
+    case "nav": go(b.dataset.v); break;
+    case "addlogrow": syncLogRows();LOGROWS.push({dur:60,rpe:6,type:"tech",note:""});render();break;
+    case "dellogrow": syncLogRows();LOGROWS.splice(+b.dataset.i,1);render();break;
+    case "savequick":{
+      const d=el("qDate").value||DAY;DAY=d;
+      const m=Object.assign({date:d},collectForm(CFG.dailyQ,"q."));
+      syncLogRows();
+      s.mind=s.mind.filter(x=>x.date!==d);s.mind.push(m);
+      s.logs=s.logs.filter(x=>x.date!==d);
+      LOGROWS.filter(r=>+r.dur>0&&+r.rpe>0).forEach(r=>s.logs.push(
+        {id:uid(),date:d,dur:+r.dur,rpe:+r.rpe,type:r.type,note:r.note}));
+      LOGROWS=[];clearDraft("q.");save();render();toast("已保存 "+d+" 的打卡与 "+s.logs.filter(x=>x.date===d).length+" 条训练");
+      break;
+    }
+    case "saveweekly":{
+      const wk=weekISO(),o=Object.assign({date:todayISO(),week:wk},collectForm(CFG.weeklyQ,"w."));
+      s.weekly=s.weekly.filter(x=>x.week!==wk);s.weekly.push(o);clearDraft("w.");save();render();toast("本周问卷已保存");break;
+    }
+    case "savetests":{
+      const d=el("tDate").value||DAY,res={};
+      document.querySelectorAll("[data-t]").forEach(n=>{if(n.value!=="")res[n.dataset.t]=parseFloat(n.value);});
+      if(!Object.keys(res).length){toast("至少填写一项测评值");break;}
+      s.tests=s.tests.filter(x=>x.date!==d);s.tests.push({id:uid(),date:d,res:res});
+      save();render();toast("已保存 "+Object.keys(res).length+" 项测评");break;
+    }
+    case "parsewear":{
+      try{
+        const rows=parseCSV(el("wearCsv").value);
+        rows.forEach(r=>{s.wear=s.wear.filter(x=>x.date!==r.date);s.wear.push(r);});
+        save();render();
+        const o=el("wearOut");if(o)o.innerHTML='<div class="note ok">已合并 '+rows.length+' 条穿戴数据。</div>';
+      }catch(err){const o=el("wearOut");if(o)o.innerHTML='<div class="note dang">'+esc(err.message)+'</div>';}
+      break;
+    }
+    case "savewear":{
+      const d=el("w_date").value||todayISO(),o={date:d};
+      [["w_rhr","rhr"],["w_hrv","hrv"],["w_sleep","sleepH"],["w_steps","steps"],["w_load","load"]].forEach(p=>{
+        const v=el(p[0]).value;if(v!=="")o[p[1]]=parseFloat(v);});
+      s.wear=s.wear.filter(x=>x.date!==d);s.wear.push(o);save();render();toast("已保存 "+d+" 穿戴数据");break;
+    }
+    case "delwear": s.wear=s.wear.filter(x=>x.date!==b.dataset.d);save();render();break;
+    case "dlweartpl":{
+      const head="date,resting_hr,hrv,sleep_hours,steps,load\n";
+      const rows=[];for(let i=6;i>=0;i--)rows.push([addDays(todayISO(),-i),55,70,7.5,8500,""].join(","));
+      dl("bwb-wear-template.csv",head+rows.join("\n")+"\n","text/csv;charset=utf-8");
+      toast("CSV 模板已下载");break;
+    }
+    case "savevideo":{
+      const v={id:uid(),date:el("v_date").value||DAY,tech:el("v_tech").value,
+        file:el("v_file").value,pose:el("v_pose").value,note:el("v_note").value};
+      if(!v.file&&!v.pose){toast("请至少填一个文件名");break;}
+      s.vids.push(v);save();render();toast("视频记录已保存");break;
+    }
+    case "delvid": s.vids=s.vids.filter(x=>x.id!==b.dataset.id);save();render();break;
+    case "delrec":{
+      const id=b.dataset.id;
+      s[RECKEY]=s[RECKEY].filter(x=>String(x.id||x.date||x.week)!==String(id));
+      save();render();toast("已删除");break;
+    }
+    case "clearsubject":{
+      if(confirm("清空「"+s.name+"」的全部采集数据？此操作不可撤销，建议先导出采集包。")){
+        const n=s.name,id=s.id,ns=newSubject(n);ns.id=id;
+        ST.subjects[ST.active]=ns;LOGROWS=[];save();render();toast("已清空 "+n+" 的数据");
+      }
+      break;
+    }
+    case "newsubject":{
+      const n=prompt("新运动员姓名 / 编号：","运动员 "+(ST.subjects.length+1));
+      if(n&&n.trim()){ST.subjects.push(newSubject(n.trim()));ST.active=ST.subjects.length-1;
+        LOGROWS=[];DRAFT={};save();render();toast("已新增并切换到 "+n.trim());}
+      break;
+    }
+    case "renamesubject":{
+      const n=prompt("修改当前档案名称：",s.name);
+      if(n&&n.trim()){s.name=n.trim();save();render();toast("已改名");}
+      break;
+    }
+    case "delsubject":{
+      if(ST.subjects.length<=1){toast("至少保留一个档案");break;}
+      if(confirm("删除档案「"+s.name+"」及其全部数据？")){
+        ST.subjects.splice(ST.active,1);ST.active=0;LOGROWS=[];save();render();toast("已删除");}
+      break;
+    }
+    case "pickcfg": el("cfgFile").click(); break;
+    case "resetcfg": ST.cfg=null;CFG=DEFAULT_CFG;DRAFT={};save();render();toast("已恢复内置默认字段");break;
+    case "exportone": exportPack(false); break;
+    case "exportall": exportPack(true); break;
+    case "exportcsv": exportCSV(); break;
+    case "dltemplate":{
+      dl("bwb-collect-template.json",JSON.stringify({
+        type:"bwb.collect",v:1,exportedAt:new Date().toISOString(),
+        subject:{name:"",id:""},logs:[],mind:[],weekly:[],wear:[],tests:[],vids:[],levels:[],skills:{}
+      },null,2));toast("空白采集包模板已下载");break;
+    }
+  }
+});
+document.addEventListener("change",function(e){
+  const t=e.target;
+  if(t.id==="qDate"){syncLogRows();LOGROWS=[];DAY=t.value;render();}
+  if(t.id==="tDate"){DAY=t.value;}
+  if(t.id==="recKey"){RECKEY=t.value;render();}
+  if(t.id==="csvKind"){CSVKIND=t.value;}
+  if(t.id==="subjectSel"){ST.active=parseInt(t.value)||0;LOGROWS=[];DRAFT={};save();render();}
+  if(t.dataset&&t.dataset.act==="wearfile"&&t.files&&t.files[0]){
+    const fr=new FileReader();fr.onload=()=>{el("wearCsv").value=fr.result;toast("CSV 已载入，点「解析并合并」");};fr.readAsText(t.files[0]);
+  }
+  if(t.dataset&&t.dataset.act==="cfgfile"&&t.files&&t.files[0])onCfgFile(t.files[0]);
+});
+document.addEventListener("input",function(e){
+  const t=e.target;
+  if(t.dataset&&t.dataset.f)DRAFT[t.dataset.f]=t.value;
+});
+load();
+try{const h=String(location.hash||"").replace(/^#/,"");if(TABS.some(t=>t.id===h))VIEW=h;}catch(e){}
+try{window.addEventListener("hashchange",function(){
+  const h=String(location.hash||"").replace(/^#/,"");if(TABS.some(t=>t.id===h)){VIEW=h;LOGROWS=[];render();}
+});}catch(e){}
+render();
+</script>
+</body>
+</html>
