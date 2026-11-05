@@ -10,10 +10,16 @@ yolo-pose-bridge.py —— 羽毛球动作视频的本地姿态解算 + 骨架�
 
 安装依赖（只需一次）：
     pip install opencv-python numpy
+    pip install imageio-ffmpeg     # 可选，但强烈建议：把输出转成浏览器可播的 H.264
 
 默认引擎 onnx 使用随项目提供的 yolo11n-pose.onnx（YOLO11n-pose，COCO-17），
 由 OpenCV 自带 DNN 模块推理，不需要 torch、不需要 ultralytics、不需要联网下载权重。
 这是「拿来就能产出骨架」的推荐路径；模型文件缺失时可执行 --fetch-model 重新获取。
+
+OpenCV 自带编码器只能写 mp4v（MPEG-4 Part 2），浏览器基本不支持。因此脚本在写完
+MP4 后会自动用 ffmpeg 转成 H.264 / yuv420p / faststart，并把原视频音轨合回去，
+产出的 MP4 在浏览器、微信、系统播放器里都能直接播。没有 ffmpeg 时会保留 mp4v
+并给出提示；可用 --no-h264 显式跳过转码。
 
 基本用法：
     # 只产出 JSON
@@ -45,6 +51,7 @@ yolo-pose-bridge.py —— 羽毛球动作视频的本地姿态解算 + 骨架�
     --bg               叠加背景：video=原视频（默认）/ plain=浅色纯骨架
     --pose-json        从已有姿态 JSON 生成骨架视频，跳过姿态推理
     --no-ids           骨架视频不显示关键点编号
+    --no-h264          跳过 H.264 转码，保留 OpenCV 原生的 mp4v 编码
     --codec            输出 fourcc，默认 mp4v；avi 可试 XVID
     --engine           auto（默认）/ onnx / ultralytics
     --model            模型文件；默认 onnx 用脚本同目录的 yolo11n-pose.onnx，
@@ -83,6 +90,7 @@ COCO-17 关键点顺序：
 import argparse
 import json
 import os
+import subprocess
 import sys
 
 # COCO-17 骨架连线（与工作台 coach-workbench.html 的 COCO_BONES 完全一致）
@@ -116,6 +124,7 @@ def parse_args():
                     help="叠加原视频 / 浅色纯骨架背景")
     ap.add_argument("--pose-json", default=None, help="从已有姿态 JSON 生成骨架视频（跳过模型）")
     ap.add_argument("--no-ids", action="store_true", help="不显示关键点编号")
+    ap.add_argument("--no-h264", action="store_true", help="跳过 H.264 转码（保留 mp4v）")
     ap.add_argument("--codec", default="mp4v", help="输出视频 fourcc（默认 mp4v）")
     ap.add_argument("--engine", choices=["auto", "onnx", "ultralytics"], default="auto",
                     help="姿态推理引擎（默认 auto：优先 ONNX / OpenCV DNN）")
@@ -416,8 +425,62 @@ def skeleton_path(video_path):
     return os.path.splitext(video_path)[0] + "_skeleton.mp4"
 
 
+def find_ffmpeg():
+    """优先用系统 ffmpeg，其次用 imageio-ffmpeg 自带的静态 ffmpeg。"""
+    import shutil
+    exe = shutil.which("ffmpeg")
+    if exe:
+        return exe
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        return None
+
+
+def transcode_h264(out_path, video_path=None, ffmpeg=None):
+    """把 mp4v 转成浏览器可播的 H.264，并把原视频音轨合回去。
+
+    OpenCV 官方 wheel 不带 H.264 编码器（缺 openh264 DLL），只能写 MPEG-4 Part 2，
+    Chromium / 微信内置播放器基本放不了。这一步是「视频能正常打开」的关键。
+    """
+    ff = ffmpeg or find_ffmpeg()
+    if not ff:
+        print("提示：未找到 ffmpeg，输出仍为 mp4v 编码，浏览器可能无法播放。\n"
+              "      执行 pip install imageio-ffmpeg 后重跑即可自动转成 H.264。")
+        return False
+    tmp = os.path.splitext(out_path)[0] + ".h264.tmp.mp4"
+    cmd = [ff, "-y", "-loglevel", "error", "-i", out_path]
+    if video_path and os.path.isfile(video_path):
+        # 不用 -shortest：原视频音轨往往比画面短几十毫秒，会裁掉最后几帧。
+        # 也不加 apad（无限补静音会让 ffmpeg 永不结束）；以视频流为准保留全部帧，
+        # 音轨提前结束即可。
+        cmd += ["-i", video_path, "-map", "0:v:0", "-map", "1:a:0?",
+                "-c:a", "aac", "-b:a", "128k"]
+    else:
+        cmd += ["-map", "0:v:0"]
+    cmd += ["-c:v", "libx264", "-preset", "medium", "-crf", "20",
+            "-pix_fmt", "yuv420p", "-movflags", "+faststart", tmp]
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+    except subprocess.TimeoutExpired:
+        print("提示：H.264 转码超时（5 分钟），已保留 mp4v。")
+        return False
+    except (OSError, subprocess.SubprocessError) as e:
+        print("提示：ffmpeg 不可用，已保留 mp4v：%s" % e)
+        return False
+    if r.returncode != 0 or not os.path.isfile(tmp) or os.path.getsize(tmp) < 1000:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+        print("提示：H.264 转码失败，已保留 mp4v：%s" % (r.stderr or "")[:200])
+        return False
+    os.replace(tmp, out_path)
+    print("已转为 H.264 / AAC（浏览器可直接播放）：%s" % out_path)
+    return True
+
+
 def write_overlay(cv2, video_path, pose, out_path, bg="video",
-                  codec="mp4v", show_ids=True):
+                  codec="mp4v", show_ids=True, h264=False):
     """按 pose.frames 的时间戳回读原视频帧，叠加骨架后写成 MP4。"""
     cap = open_video(video_path, cv2)
     W = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) or pose.get("width") or 1280)
@@ -492,6 +555,8 @@ def write_overlay(cv2, video_path, pose, out_path, bg="video",
     writer.release()
     if written:
         print("\n完成：骨架分析视频 %d 帧 → %s" % (written, out_path))
+        if h264 and codec == "mp4v":
+            transcode_h264(out_path, video_path)
     return written
 
 
@@ -515,7 +580,8 @@ def main():
         with open(args.pose_json, "r", encoding="utf-8") as f:
             pose = json.load(f)
         out = args.overlay_out or skeleton_path(args.video)
-        n = write_overlay(cv2, args.video, pose, out, args.bg, args.codec, not args.no_ids)
+        n = write_overlay(cv2, args.video, pose, out, args.bg, args.codec,
+                          not args.no_ids, not args.no_h264)
         if not n:
             sys.exit("未能写出任何帧：检查视频是否可解码、JSON 的 t 是否落在视频时长内。")
         print("接下来：把该 MP4 用于复盘，或在 coach-workbench.html「视频评估」导入 JSON 查看指标。")
@@ -594,7 +660,7 @@ def main():
     if want_overlay:
         out = args.overlay_out or skeleton_path(args.video)
         n = write_overlay(cv2, args.video, payload, out, args.bg,
-                          args.codec, not args.no_ids)
+                          args.codec, not args.no_ids, not args.no_h264)
         if not n:
             sys.exit("骨架视频未写出任何帧，JSON 已正常生成。")
     print("接下来：打开 coach-workbench.html →「视频评估」→ 导入 JSON；"

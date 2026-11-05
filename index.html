@@ -150,7 +150,7 @@ footer a{color:var(--accent);font-weight:700}
       <a class="tile" href="coach-workbench.html#video"><span class="ti"><svg class="ic"><use href="#i-video"/></svg></span><b>浏览器内骨架回放</b><span>导入 COCO-17 姿态 JSON 后逐帧叠加骨架；原视频叠加 / 纯骨架、0.5×–2× 回放、时间轴拖动、片段裁剪、轨迹与关键点开关。</span><em>进入 #video</em></a>
       <a class="tile" href="coach-workbench.html#video"><span class="ti"><svg class="ic"><use href="#i-video"/></svg></span><b>导出 WebM / 帧图</b><span>「导出骨架分析视频（WebM）」按真实时间录制回放；「保存当前帧 PNG」可截取单帧讲评。没有姿态数据时可用内置像素分析的重心 / 能量轨迹视频。</span><em>进入 #video</em></a>
       <a class="tile" href="data-schema.html#skeleton"><span class="ti"><svg class="ic"><use href="#i-doc"/></svg></span><b>姿态 JSON 与产出规范</b><span>COCO-17 字段、<code>width/height</code> 贴合原画面、<code>_pose.json</code> / <code>_skeleton.mp4</code> / <code>bwb-skeleton-*.webm</code> 命名与两条产出路径。</span><em>查看规范</em></a>
-      <a class="tile" href="yolo-pose-bridge.py"><span class="ti"><svg class="ic"><use href="#i-data"/></svg></span><b>本地 MP4 批量产出</b><span>默认 ONNX + OpenCV DNN，只需 <code>opencv-python</code> / <code>numpy</code>、无需 torch；<code>--overlay</code> 边解算边写 MP4，<code>--pose-json</code> 从已有 JSON 重出，<code>--bg plain</code> 输出纯骨架背景。H.265 视频也能解。</span><em>查看脚本源码</em></a>
+      <a class="tile" href="yolo-pose-bridge.py"><span class="ti"><svg class="ic"><use href="#i-data"/></svg></span><b>本地 MP4 批量产出</b><span>默认 ONNX + OpenCV DNN，只需 <code>opencv-python</code> / <code>numpy</code>、无需 torch；<code>--overlay</code> 边解算边写 MP4 并自动转 <b>H.264</b>（浏览器可直接播放），<code>--pose-json</code> 从已有 JSON 重出，<code>--bg plain</code> 输出纯骨架背景。H.265 视频也能解。</span><em>查看脚本源码</em></a>
     </div>
   </section>
 

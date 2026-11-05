@@ -450,7 +450,7 @@ function viewVideo(){
     '</div><button class="btn pri" data-act="savevideo">保存记录</button></div></div>';
   h+='<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>姿态解算流程</h3></div><div class="card-b">'+
     '<div class="note">本机用随项目提供的 <b>yolo-pose-bridge.py</b> 把视频解算成 COCO-17 关键点 JSON：'+
-    '<br><code>pip install opencv-python numpy</code>　<code>python yolo-pose-bridge.py 你的视频.mp4 -o 输出.pose.json</code>'+
+    '<br><code>pip install opencv-python numpy imageio-ffmpeg</code>　<code>python yolo-pose-bridge.py 你的视频.mp4 -o 输出.pose.json</code>'+
     '<br>然后在「专项教练工作台 → 视频评估」导入这个 JSON，得到动作指标与水平分级；结果会写回成长档案并影响技术评分。'+
     '<br><b>骨架分析视频：</b>工作台视频页可回放叠加骨架并导出 <code>bwb-skeleton-*.webm</code> / 当前帧 PNG；本地执行 <code>python yolo-pose-bridge.py 视频.mp4 --overlay</code> 可直接产出 <code>*_skeleton.mp4</code>，用 <code>--pose-json 已有.json</code> 还能跳过模型重出视频。'+
     '<br>采集器只记录文件名，不保存视频本体与骨架视频，避免占满浏览器存储。</div></div></div>';

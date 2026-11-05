@@ -328,11 +328,11 @@ ol.plain li,ul.plain li{margin:3px 0}
 <li>容许直接传数组、<code>{frames:[...]}</code> 或 <code>{data:[...]}</code>，工作台统一归一化</li></ul></div>
 <div><div style="font-weight:700;margin-bottom:6px">两条产出路径</div><ul class="plain">
 <li><b>浏览器</b>：视频评估 → 骨架分析视频 → 叠加原视频 / 纯骨架 → 导出 <code>bwb-skeleton-&lt;技术&gt;-&lt;日期&gt;.webm</code>，或 <code>bwb-skeleton-frame-&lt;日期&gt;.png</code></li>
-<li><b>本地脚本</b>：<code>pip install opencv-python numpy</code> 后执行 <code>yolo-pose-bridge.py 视频.mp4 --overlay</code> 输出 <code>&lt;视频名&gt;_skeleton.mp4</code>；默认 ONNX 引擎、模型随项目提供，无需 torch；<code>--pose-json</code> 可从已有 JSON 重出，<code>--bg plain</code> 纯骨架背景，<code>--no-ids</code> 关编号</li>
+<li><b>本地脚本</b>：<code>pip install opencv-python numpy imageio-ffmpeg</code> 后执行 <code>yolo-pose-bridge.py 视频.mp4 --overlay</code> 输出 <code>&lt;视频名&gt;_skeleton.mp4</code>；默认 ONNX 引擎、模型随项目提供，无需 torch；<code>--pose-json</code> 可从已有 JSON 重出，<code>--bg plain</code> 纯骨架背景，<code>--no-ids</code> 关编号</li>
 <li>默认 JSON 为 <code>&lt;视频名&gt;_pose.json</code>；<code>-o</code> / <code>--overlay-out</code> 可自定义路径</li>
 <li>WebM 由 <code>canvas.captureStream(30)</code> + <code>MediaRecorder</code> 按真实时间录制，页面需保持前台；不支持时改用 MP4 路径</li></ul></div>
 </div>
-<div class="note" style="margin-top:10px">没有安装本地依赖也能用：视频页「载入示例骨架（无需视频）」生成示例 COCO-17 序列，或用内置像素分析生成重心 / 能量轨迹视频。两者都可播放、拖动时间轴、设置片段起止秒并导出。<b>编码提示：</b>浏览器能否播放取决于自身解码器，H.265/HEVC（常见于微信导出的 MP4）在部分浏览器里打不开；本地脚本用 OpenCV 顺序解码，H.264 与 H.265 都能产出骨架 MP4，此时应直接走本地脚本路径。</div>
+<div class="note" style="margin-top:10px">没有安装本地依赖也能用：视频页「载入示例骨架（无需视频）」生成示例 COCO-17 序列，或用内置像素分析生成重心 / 能量轨迹视频。两者都可播放、拖动时间轴、设置片段起止秒并导出。<b>编码提示：</b>输入侧，H.265/HEVC（常见于微信导出的 MP4）在部分浏览器里打不开，本地脚本用 OpenCV 顺序解码，H.264 与 H.265 都能处理；输出侧，OpenCV 只能写 <code>mp4v</code>，浏览器基本不支持，脚本会用 ffmpeg 自动转成 <b>H.264 / yuv420p / faststart</b> 并合回原音轨，因此装 <code>imageio-ffmpeg</code> 才能保证产出的视频在浏览器、微信、系统播放器里都能直接打开（<code>--no-h264</code> 可跳过）。</div>
 </div></div>
 
 <div class="card" style="margin-bottom:14px"><div class="card-h"><h3>质量控制规则</h3></div><div class="card-b"><div class="grid g2">

@@ -35,7 +35,7 @@
 - 真实姿态解算用随项目提供的 `yolo-pose-bridge.py`。**默认走 ONNX + OpenCV DNN**，只需 `opencv-python` 和 `numpy`，不需要 torch / ultralytics，也不需要联网下载权重（模型 `yolo11n-pose.onnx` 随仓库提供）：
 
   ```bash
-  pip install opencv-python numpy
+  pip install opencv-python numpy imageio-ffmpeg
   python yolo-pose-bridge.py 你的视频.mp4 -o 输出.pose.json --overlay
   ```
 
@@ -57,7 +57,7 @@
 本地脚本用法（默认 `onnx` 引擎，模型随仓库提供）：
 
 ```bash
-pip install opencv-python numpy
+pip install opencv-python numpy imageio-ffmpeg
 
 # 模式 A：解算 JSON，并同时产出骨架 MP4
 python yolo-pose-bridge.py 你的视频.mp4 -o 输出.pose.json --overlay
@@ -70,9 +70,9 @@ python yolo-pose-bridge.py --fetch-model
 python yolo-pose-bridge.py 你的视频.mp4 --engine ultralytics --model yolov8n-pose.pt --overlay
 ```
 
-关键参数：`--overlay` 额外生成 MP4；`--overlay-out` 指定 MP4 路径（隐含 `--overlay`）；`--bg video|plain` 叠加原视频或浅色纯骨架背景；`--pose-json` 从已有 JSON 生成骨架视频、跳过姿态推理；`--no-ids` 关闭关键点编号；`--codec` 指定 fourcc（默认 `mp4v`）；`--stride N` 每 N 帧解算一帧（输出帧率自动按抽样比调整）；`--conf` 置信阈值（默认 0.35）；`--engine auto|onnx|ultralytics`。默认输出 `<视频名>_pose.json` 与 `<视频名>_skeleton.mp4`。JSON 顶层含 `video`、`fps`、`width`、`height`、`model`、`engine`、`stride`、`srcFps`、`frames:[{t,kps}]`；`width/height` 供工作台把骨架精确贴回原画面，`stride` 让 MP4 回放保持真实时长。
+关键参数：`--overlay` 额外生成 MP4；`--overlay-out` 指定 MP4 路径（隐含 `--overlay`）；`--bg video|plain` 叠加原视频或浅色纯骨架背景；`--pose-json` 从已有 JSON 生成骨架视频、跳过姿态推理；`--no-ids` 关闭关键点编号；`--no-h264` 跳过自动转码；`--codec` 指定 fourcc（默认 `mp4v`）；`--stride N` 每 N 帧解算一帧（输出帧率自动按抽样比调整）；`--conf` 置信阈值（默认 0.35）；`--engine auto|onnx|ultralytics`。默认输出 `<视频名>_pose.json` 与 `<视频名>_skeleton.mp4`。JSON 顶层含 `video`、`fps`、`width`、`height`、`model`、`engine`、`stride`、`srcFps`、`frames:[{t,kps}]`；`width/height` 供工作台把骨架精确贴回原画面，`stride` 让 MP4 回放保持真实时长。
 
-**编码兼容**：浏览器端 `<video>` 依赖浏览器自身的解码能力，H.265/HEVC 的微信视频在部分浏览器里无法播放。本地脚本用 OpenCV 顺序解码，H.264 与 H.265 都能处理；若浏览器不支持，直接用上面的 MP4 路径，或先把视频转成 H.264。
+**编码兼容**：浏览器端 `<video>` 依赖浏览器自身的解码能力，H.265/HEVC 的微信视频在部分浏览器里无法播放；本地脚本用 OpenCV 顺序解码，H.264 与 H.265 都能处理。**输出编码**同样重要：OpenCV 官方 wheel 只能写 `mp4v`（MPEG-4 Part 2），Chromium / 微信内置播放器基本不支持。因此脚本写完 MP4 后会自动调用 ffmpeg（`imageio-ffmpeg` 自带的静态版本即可）转成 **H.264 / yuv420p / faststart**，并把原视频音轨合回去，保证浏览器、微信、系统播放器都能直接打开；没有 ffmpeg 时会保留 mp4v 并打印提示，可用 `--no-h264` 显式跳过转码。
 
 ## 等级体系
 
@@ -91,6 +91,7 @@ python yolo-pose-bridge.py 你的视频.mp4 --engine ultralytics --model yolov8n
 - 真实姿态 JSON 消费链路：48 用例（归一化 / 包围盒 / 坐标变换 / 姿态评分 / 骨架卡片渲染）—— 0 失败
 - `yolo-pose-bridge.py`：`py_compile`、`--help`、`BONES` 配色、`draw_skeleton()`、`write_overlay()`、`--pose-json`、ONNX 引擎分发、坐标还原、抽样帧率 —— 0 失败
 - **真实训练视频端到端验证**：3 段 H.265/HEVC 微信视频（1280×720 / 720×1280 / 1280×720，30fps，85 / 138 / 254 帧）全部产出骨架 MP4 与姿态 JSON；477/477 帧检出人体，每帧可见关键点最少 13、平均 16.2–17.0；三个 MP4 均可解码且帧数一致。产出的真实姿态 JSON 在工作台归一化、姿态评分、骨架卡片渲染链路 48 用例 —— 0 失败
+- 输出编码核验：6 个骨架 MP4（3 段叠加 + 3 段纯骨架）全部为 H.264 High / yuv420p + AAC 音轨，帧数 85 / 138 / 254 与原视频一致，浏览器可直接播放
 - 全站静态审计：16 个 HTML、167 个链接与锚点全部可达，50 + 25 个点击型动作处理器全覆盖，外部 CSS/JS/图片依赖 0，所有内联脚本 `node --check` 通过
 - 浏览器端 WebM 导出依赖 `MediaRecorder` / `canvas.captureStream()`，需在真实浏览器中验证；不支持的浏览器请改用 `--overlay` 生成 MP4
 
