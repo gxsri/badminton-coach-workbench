@@ -129,7 +129,7 @@ footer a{color:var(--accent);font-weight:700}
       <div>
         <h3>专项教练工作台</h3>
         <p>技术 / 体能 / 康复三大内容体系，专业与简单双模式，训练日志、问卷自评、穿戴数据、视频评估，自动判定瓶颈并生成 4 周突破计划。单文件、零依赖、可断网。</p>
-        <ul><li>中羽 0-7 级定级问卷</li><li>YOLO 姿态解算</li><li>ACWR 负荷与伤病预警</li><li>每日打卡沉淀</li></ul>
+        <ul><li>中羽 0-7 级定级问卷</li><li>YOLO 姿态解算 + 骨架分析视频</li><li>ACWR 负荷与伤病预警</li><li>每日打卡沉淀</li></ul>
       </div>
       <span class="cta">打开工作台 <svg class="ic" style="width:15px;height:15px"><use href="#i-arrow"/></svg></span>
     </a>
@@ -145,13 +145,23 @@ footer a{color:var(--accent);font-weight:700}
   </section>
 
   <section>
+    <h2 id="skeleton">骨架分析视频 <span class="hint">评分之外，把骨架画回画面并导出视频</span></h2>
+    <div class="tiles">
+      <a class="tile" href="coach-workbench.html#video"><span class="ti"><svg class="ic"><use href="#i-video"/></svg></span><b>浏览器内骨架回放</b><span>导入 COCO-17 姿态 JSON 后逐帧叠加骨架；原视频叠加 / 纯骨架、0.5×–2× 回放、时间轴拖动、片段裁剪、轨迹与关键点开关。</span><em>进入 #video</em></a>
+      <a class="tile" href="coach-workbench.html#video"><span class="ti"><svg class="ic"><use href="#i-video"/></svg></span><b>导出 WebM / 帧图</b><span>「导出骨架分析视频（WebM）」按真实时间录制回放；「保存当前帧 PNG」可截取单帧讲评。没有姿态数据时可用内置像素分析的重心 / 能量轨迹视频。</span><em>进入 #video</em></a>
+      <a class="tile" href="data-schema.html#skeleton"><span class="ti"><svg class="ic"><use href="#i-doc"/></svg></span><b>姿态 JSON 与产出规范</b><span>COCO-17 字段、<code>width/height</code> 贴合原画面、<code>_pose.json</code> / <code>_skeleton.mp4</code> / <code>bwb-skeleton-*.webm</code> 命名与两条产出路径。</span><em>查看规范</em></a>
+      <a class="tile" href="yolo-pose-bridge.py"><span class="ti"><svg class="ic"><use href="#i-data"/></svg></span><b>本地 MP4 批量产出</b><span>默认 ONNX + OpenCV DNN，只需 <code>opencv-python</code> / <code>numpy</code>、无需 torch；<code>--overlay</code> 边解算边写 MP4，<code>--pose-json</code> 从已有 JSON 重出，<code>--bg plain</code> 输出纯骨架背景。H.265 视频也能解。</span><em>查看脚本源码</em></a>
+    </div>
+  </section>
+
+  <section>
     <h2>功能直达 <span class="hint">每张卡片都直达工作台对应模块</span></h2>
     <div class="tiles">
       <a class="tile" href="coach-workbench.html#today"><span class="ti"><svg class="ic"><use href="#i-today"/></svg></span><b>今日执行清单</b><span>周期化课表、负荷微调、预康复与打卡；简单模式只看要做什么。</span><em>进入 #today</em></a>
       <a class="tile" href="coach-workbench.html#level"><span class="ti"><svg class="ic"><use href="#i-level"/></svg></span><b>等级定级问卷</b><span>参考中羽在线 0-7 级分级帖，11 题得到等级、十维画像与突破重点。</span><em>进入 #level</em></a>
       <a class="tile" href="coach-workbench.html#lib"><span class="ti"><svg class="ic"><use href="#i-lib"/></svg></span><b>技术 / 体能 / 康复库</b><span>7 项技术动作要领、配套五项素质训练、8 个部位预康复处方。</span><em>进入 #lib</em></a>
       <a class="tile" href="coach-workbench.html#log"><span class="ti"><svg class="ic"><use href="#i-log"/></svg></span><b>训练记录与自评</b><span>手动日志、每日 / 周期问卷、16 项体能测评基准。</span><em>进入 #log</em></a>
-      <a class="tile" href="coach-workbench.html#video"><span class="ti"><svg class="ic"><use href="#i-video"/></svg></span><b>视频动作评估</b><span>内置像素运动分析 + YOLO 姿态 JSON，输出角度指标与水平分级。</span><em>进入 #video</em></a>
+      <a class="tile" href="coach-workbench.html#video"><span class="ti"><svg class="ic"><use href="#i-video"/></svg></span><b>视频动作评估</b><span>内置像素运动分析 + YOLO 姿态 JSON，输出角度指标、水平分级与骨架分析视频（WebM / PNG）。</span><em>进入 #video</em></a>
       <a class="tile" href="coach-workbench.html#data"><span class="ti"><svg class="ic"><use href="#i-data"/></svg></span><b>穿戴数据接入</b><span>CSV / JSON 导入心率、HRV、睡眠、步数、训练负荷，支持备份迁移。</span><em>进入 #data</em></a>
       <a class="tile" href="coach-workbench.html#diag"><span class="ti"><svg class="ic"><use href="#i-diag"/></svg></span><b>瓶颈诊断</b><span>自动判断技术 / 体能 / 恢复限制因素，输出预警与 4 周突破计划。</span><em>进入 #diag</em></a>
       <a class="tile" href="coach-workbench.html#profile"><span class="ti"><svg class="ic"><use href="#i-profile"/></svg></span><b>个人档案</b><span>身体参数、每周频次、目标等级、各项技术基线与数据管理。</span><em>进入 #profile</em></a>
@@ -165,7 +175,7 @@ footer a{color:var(--accent);font-weight:700}
       <a class="step" href="coach-workbench.html#level"><span class="sn">STEP 1</span><b>定级</b><span>填问卷，得到中羽等级与技术基线</span></a>
       <a class="step" href="coach-workbench.html#today"><span class="sn">STEP 2</span><b>执行</b><span>照今日清单训练，完成后打卡</span></a>
       <a class="step" href="coach-workbench.html#log"><span class="sn">STEP 3</span><b>记录</b><span>训练日志 + 每日问卷 + 穿戴数据</span></a>
-      <a class="step" href="coach-workbench.html#video"><span class="sn">STEP 4</span><b>拍视频</b><span>上传动作或导入姿态 JSON 做评估</span></a>
+      <a class="step" href="coach-workbench.html#video"><span class="sn">STEP 4</span><b>拍视频</b><span>导入姿态 JSON 做评估，回放并导出骨架分析视频</span></a>
       <a class="step" href="coach-workbench.html#diag"><span class="sn">STEP 5</span><b>诊断</b><span>看瓶颈、预警与下阶段突破计划</span></a>
     </div>
   </section>
@@ -184,7 +194,7 @@ footer a{color:var(--accent);font-weight:700}
       <a class="doc" href="tracking-and-parent-letter.html"><b>成长追踪与家长信</b><span>阶段追踪表与可直接使用的家长沟通模板。</span><em>打开模板</em></a>
       <a class="doc" href="test-report.html"><b>系统测试报告</b><span>内容准确性、功能完整性与 UI 检查的验证记录。</span><em>查看报告</em></a>
       <a class="doc" href="coach-manual-7to16.html"><b>教练手册（初版 · 归档）</b><span>已整合进 v2 速查手册，仅作历史版本留存。</span><em>查看归档</em></a>
-      <a class="doc" href="yolo-pose-bridge.py"><b>YOLO 姿态桥接脚本</b><span>本地把训练视频解算成 COCO-17 关键点 JSON，供视频评估页导入。</span><em>查看脚本源码</em></a>
+      <a class="doc" href="yolo-pose-bridge.py"><b>姿态解算与骨架视频脚本</b><span>本地把训练视频解算成 COCO-17 关键点 JSON，并用 --overlay 直接写出骨架分析 MP4；内置 ONNX 引擎，无需 torch。</span><em>查看脚本源码</em></a>
     </div>
   </section>
 
@@ -214,11 +224,12 @@ footer a{color:var(--accent);font-weight:700}
       <div><b>打开 index.html</b><span>双击本文件即可，无需服务器、无需 npm、无需联网。</span></div>
       <div><b>先做等级定级</b><span>问卷结果会自动写入技术基线与目标等级，今日清单随之调整。</span></div>
       <div><b>每天打卡</b><span>训练后记录时长与 RPE，并填每日问卷；有穿戴设备可导入 CSV。</span></div>
-      <div><b>拍视频 + 看诊断</b><span>视频评估可先点「载入示例姿态数据」试用；诊断页给出瓶颈与预警。</span></div>
+      <div><b>拍视频 + 看诊断</b><span>视频评估可先点「载入示例骨架（无需视频）」试用；诊断页给出瓶颈与预警。</span></div>
+      <div><b>导出骨架视频</b><span>视频页「骨架分析视频」可回放、拖时间轴、导出 WebM 或当前帧 PNG；要 MP4 用 yolo-pose-bridge.py --overlay。</span></div>
       <div><b>多人 / 批量采集</b><span>用数据采集器在手机或场边录入，导出采集包 → 工作台「数据接入」合并去重。</span></div>
       <div><b>改规则、做验证</b><span>在「规则配置」修改内容库与阈值，用 A/B 灵敏度验证确认输入变化真的改变输出。</span></div>
     </div>
-    <div class="note" style="margin-top:12px"><b>数据说明：</b>所有记录保存在浏览器 localStorage，不上传任何服务器。换设备请用工作台「数据接入 → 导出备份」迁移；采集器与工作台通过配置包保持字段一致。空数据时系统显示「未评估」，不会用默认分数冒充真实状态。YOLO 真实姿态解算需要本机安装 <code>ultralytics</code> 与 <code>opencv-python</code> 后运行 yolo-pose-bridge.py；不装也能用内置像素分析或示例数据。</div>
+    <div class="note" style="margin-top:12px"><b>数据说明：</b>所有记录保存在浏览器 localStorage，不上传任何服务器。换设备请用工作台「数据接入 → 导出备份」迁移；采集器与工作台通过配置包保持字段一致。空数据时系统显示「未评估」，不会用默认分数冒充真实状态。真实姿态解算只需本机安装 <code>opencv-python</code> 与 <code>numpy</code> 后运行 yolo-pose-bridge.py（模型 yolo11n-pose.onnx 随项目提供，无需 torch）；不装也能用内置像素分析或示例骨架。H.265/HEVC 视频在部分浏览器里无法直接播放，此时请用本地脚本产出 MP4。浏览器 WebM 导出依赖 <code>MediaRecorder</code>，不支持时同样改用 MP4。</div>
   </section>
 
   <section>
@@ -241,7 +252,8 @@ footer a{color:var(--accent);font-weight:700}
         <tr><td><a href="poster-cheatsheet.html">poster-cheatsheet.html</a></td><td>海报速查表</td><td>打印物料</td></tr>
         <tr><td><a href="tracking-and-parent-letter.html">tracking-and-parent-letter.html</a></td><td>成长追踪与家长信模板</td><td>打印物料</td></tr>
         <tr><td><a href="test-report.html">test-report.html</a></td><td>系统测试与质量报告</td><td>静态文档</td></tr>
-        <tr><td><a href="yolo-pose-bridge.py">yolo-pose-bridge.py</a></td><td>本地 YOLOv8-pose 视频解算桥接脚本</td><td>可选 Python 工具</td></tr>
+        <tr><td><a href="yolo-pose-bridge.py">yolo-pose-bridge.py</a></td><td>本地姿态解算桥接脚本（COCO-17 JSON + 骨架分析 MP4）</td><td>可选 Python 工具</td></tr>
+        <tr><td><a href="yolo11n-pose.onnx">yolo11n-pose.onnx</a></td><td>默认姿态模型（YOLO11n-pose，COCO-17），供桥接脚本用 OpenCV DNN 离线推理</td><td>模型文件</td></tr>
         <tr><td><a href="reasonix.toml">reasonix.toml</a></td><td>项目配置</td><td>配置</td></tr>
       </tbody>
     </table>

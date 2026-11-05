@@ -5,3 +5,11 @@ __pycache__/
 # 以下划线开头的都是本机临时测试 / 上传辅助脚本，不入库
 _*
 .reasonix/
+.workbuddy/
+
+# 本机真实训练视频的骨架分析结果含个人影像，绝不入库
+skeleton-output/
+skeleton-preview.html
+*.pose.json
+*_skeleton.mp4
+*_plain.mp4

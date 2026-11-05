@@ -188,6 +188,15 @@ svg.chart{width:100%;height:auto;display:block;overflow:visible}
 
 .progressline{height:6px;background:var(--surface-3);border-radius:99px;overflow:hidden;margin-top:8px}
 .progressline i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--teal));transition:width .3s}
+.skelStage{position:relative;background:#0f1420;border-radius:10px;overflow:hidden;line-height:0}
+.skelStage canvas{display:block;width:100%;height:auto;background:var(--surface-2)}
+.skelBar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:10px}
+.skelBar input[type=range]{flex:1;min-width:150px;accent-color:var(--accent)}
+.skelMini{font-size:.72rem;color:var(--text-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.skelGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:0 12px}
+.skelOpts{display:flex;gap:16px;flex-wrap:wrap;margin:4px 0 10px}
+.skelOpts label{display:flex;align-items:center;gap:5px;font-size:.76rem;font-weight:600;color:var(--text-2);white-space:nowrap;cursor:pointer}
+@media(max-width:680px){.skelGrid{grid-template-columns:repeat(2,1fr)}}
 
 footer{max-width:1280px;margin:22px auto;padding:16px 18px 30px;color:var(--text-3);font-size:.72rem;border-top:1px solid var(--line)}
 
@@ -1283,7 +1292,7 @@ function breakthrough(bn){
 const TABS=[{id:"today",n:"今日",i:"today"},{id:"level",n:"等级定级",i:"check"},{id:"lib",n:"内容库",i:"lib"},{id:"log",n:"训练记录",i:"log"},
   {id:"video",n:"视频评估",i:"video"},{id:"data",n:"数据接入",i:"data"},{id:"diag",n:"瓶颈诊断",i:"diag"},{id:"cfg",n:"规则配置",i:"gear"},{id:"profile",n:"档案",i:"profile"}];
 let VIEW="today", LIBTAB="tech", LIBTECH="clear", LEVEL_LAST=null;
-let VIDSTATE={tech:"clear",frames:null,meta:null,videoURL:null,result:null,engine:"pixel"};
+let VIDSTATE={tech:"clear",frames:null,meta:null,videoURL:null,result:null,engine:"pixel",pose:null,motion:null};
 
 function el(id){return document.getElementById(id);}
 function toast(m){const t=el("toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("on"),2200);}
@@ -1683,8 +1692,10 @@ function viewVideo(){
     '<div class="row" style="margin-top:10px"><button class="btn pri" data-act="runpix">'+icon("up",14)+'开始内置分析</button>'+
     '<button class="btn" data-act="nav" data-v="log">手动补录数据</button></div>'+
     '<div id="vidProg" style="margin-top:10px"></div></div></div>'+
+    '<div class="card" style="margin-top:14px"><div class="card-h"><h3>骨架分析视频</h3>'+
+      '<span class="hint">叠加回放 · 导出 WebM / 帧图</span></div><div class="card-b" id="skelBody">'+skelBodyHTML()+'</div></div>'+
     '<div class="card" style="margin-top:14px"><div class="card-h"><h3>YOLO 姿态解算结果导入</h3></div><div class="card-b">'+
-    '<div class="note">已在本目录提供 <b>yolo-pose-bridge.py</b>：本地运行 <code>python yolo-pose-bridge.py 视频.mp4 -o result.json</code>（需 <code>pip install ultralytics</code>），产出 COCO-17 关键点 JSON，再在这里导入即可得到真实关节角度评估。</div>'+
+    '<div class="note">已在本目录提供 <b>yolo-pose-bridge.py</b>：本地运行 <code>python yolo-pose-bridge.py 视频.mp4 -o result.json --overlay</code>（需 <code>pip install ultralytics opencv-python</code>），一次得到 COCO-17 关键点 JSON <b>和带骨架的 MP4 视频</b>。JSON 导入后即可在这里播放、逐帧核对并导出 WebM 骨架分析视频。</div>'+
     '<input type="file" id="yoFile" accept=".json" data-act="yolofile">'+
     '<textarea id="yoText" placeholder="也可以直接粘贴 JSON 内容" style="margin-top:8px"></textarea>'+
     '<div class="row" style="margin-top:8px"><button class="btn" data-act="yolopaste">解析粘贴的 JSON</button>'+
@@ -1718,7 +1729,7 @@ async function grabFrames(file,maxFrames){
   const url=URL.createObjectURL(file);
   const video=document.createElement("video");
   video.src=url;video.muted=true;video.playsInline=true;video.preload="auto";
-  await new Promise((res,rej)=>{video.onloadedmetadata=res;video.onerror=()=>rej(new Error("浏览器无法解码该视频，请换成 H.264 编码的 MP4/MOV 再试"));});
+  await new Promise((res,rej)=>{video.onloadedmetadata=res;video.onerror=()=>rej(new Error("浏览器无法解码该视频（常见于 H.265/HEVC 微信视频）。请用本地脚本 python yolo-pose-bridge.py 视频.mp4 --overlay 产出骨架 MP4，或先转成 H.264 再试"));});
   const dur=Math.min(video.duration||5,45);
   const n=Math.min(maxFrames||90,Math.max(24,Math.round(dur*8)));
   const W=80,H=60,cv=document.createElement("canvas");cv.width=W;cv.height=H;
@@ -1799,6 +1810,7 @@ function analyzePixels(data,techId){
   });
   const score=Math.round(clamp(num/den,0,100));
   return {tech:techId,engine:"pixel",score:score,metrics:metrics,dur:round(dur,1),frames:F,
+    motion:{cent:cent,energy:energy,dur:dur,W:W,H:H},
     note:"共采样 "+F+" 帧（"+round(dur,1)+"s）。内置引擎通过帧间运动能量、重心轨迹与左右能量分布对动作进行粗粒度评估，能反映连贯性、爆发性与对称性，但不能替代关键的关节角度；如需精确角度请导入 YOLO 姿态 JSON。"};
 }
 /* YOLO 姿态分析 */
@@ -2193,11 +2205,14 @@ function render(){
     }else sec.innerHTML="";
   });
   renderTop();
-  if(VIEW==="video"&&VIDSTATE.videoURL){
-    const pv=el("vidPreview");
-    if(pv&&!pv.querySelector("video")&&VIDSTATE.fileRef){
-      pv.innerHTML='<div class="videoWrap"><video controls src="'+VIDSTATE.videoURL+'"></video></div>';
+  if(VIEW==="video"){
+    if(VIDSTATE.videoURL){
+      const pv=el("vidPreview");
+      if(pv&&!pv.querySelector("video")&&VIDSTATE.fileRef){
+        pv.innerHTML='<div class="videoWrap"><video controls src="'+VIDSTATE.videoURL+'"></video></div>';
+      }
     }
+    skelBind();
   }
 }
 function renderKeepScroll(){
@@ -2322,13 +2337,20 @@ document.addEventListener("click",function(e){
     case "demopose":{
       const tech=(el("vidTech")&&el("vidTech").value)||VIDSTATE.tech;
       try{
-        const r=analyzeYolo(demoPoseFrames(),tech);
-        VIDSTATE.result=r; el("vidResult").innerHTML=renderResult(r);
-        toast("示例姿态评估完成："+r.score+" 分，可点「存入成长档案」");
+        const json=demoPoseFrames();
+        const r=analyzeYolo(json,tech);
+        VIDSTATE.result=r;VIDSTATE.pose=normalizePoseJson(json);
+        const vr=el("vidResult");if(vr)vr.innerHTML=renderResult(r);
+        skelRefresh();
+        toast("示例骨架已载入："+r.score+" 分，可播放 / 导出骨架分析视频");
       }catch(err){ toast("示例分析失败："+err.message); }
       break;
     }
     case "dldemo": downloadDemoPose(); break;
+    case "skelplay": SKEL.playing?skelPause():skelPlay(true); break;
+    case "skelexport": skelStartRecord(); break;
+    case "skelstop": skelStopRecord(); break;
+    case "skelpng": skelExportFrame(); break;
     case "saveprofile": saveProfile(); break;
   }
 });
@@ -2357,6 +2379,12 @@ document.addEventListener("change",function(e){
     AB_STATE[t.dataset.ab][t.dataset.k]=parseFloat(t.value);
   }
   if(t.id==="vidTech"){VIDSTATE.tech=t.value;}
+  if(t.id==="skelSeek"){skelSeekTo(t.value);}
+  if(t.id==="skelMode"){SKEL.mode=t.value;skelDraw(SKEL.lastT);}
+  if(t.id==="skelSpeed"){SKEL.speed=parseFloat(t.value)||1;}
+  if(t.id==="skelStart"){const r=skelRange();SKEL.startT=clamp(parseFloat(t.value)||r.t0,r.t0,SKEL.endT-.05);skelSeekTo(SKEL.startT);}
+  if(t.id==="skelEnd"){const r=skelRange();SKEL.endT=clamp(parseFloat(t.value)||r.t1,SKEL.startT+.05,r.t1);}
+  if(t.dataset&&t.dataset.skopt){SKEL[t.dataset.skopt]=t.checked;skelDraw(SKEL.lastT);}
   if(t.dataset&&t.dataset.sk){ DB.skills[t.dataset.sk]=parseInt(t.value); const s=el("sk-"+t.dataset.sk); if(s)s.textContent=t.value; save(); }
 });
 document.addEventListener("input",function(e){
@@ -2381,23 +2409,27 @@ function saveProfile(){
 }
 function onVideoFile(file){
   if(VIDSTATE.videoURL)URL.revokeObjectURL(VIDSTATE.videoURL);
-  VIDSTATE.videoURL=URL.createObjectURL(file); VIDSTATE.fileRef=file; VIDSTATE.result=null;
+  VIDSTATE.videoURL=URL.createObjectURL(file);VIDSTATE.fileRef=file;VIDSTATE.result=null;
   const pv=el("vidPreview");
   if(pv)pv.innerHTML='<div class="videoWrap"><video controls src="'+VIDSTATE.videoURL+'"></video></div>'+
     '<div style="font-size:.76rem;color:var(--text-3);margin-top:6px">'+esc(file.name)+'　'+round(file.size/1048576,2)+' MB</div>';
-  const pr=el("vidProg"); if(pr)pr.innerHTML='<div class="note">视频已就绪，点击「开始内置分析」即可（全程本地处理）。</div>';
+  const pr=el("vidProg");if(pr)pr.innerHTML='<div class="note">视频已就绪，可「开始内置分析」生成轨迹视频；导入对应姿态 JSON 后可生成骨架视频。'+
+    '<br><span style="color:var(--text-3)">H.265 / HEVC 视频（如微信导出的 MP4）在部分浏览器里无法播放：此时改用本地脚本 '+
+    '<code>python yolo-pose-bridge.py 视频.mp4 --overlay</code> 直接产出骨架 MP4，或先转成 H.264。</span></div>';
+  skelRefresh();
 }
 async function runPixel(){
   if(!VIDSTATE.fileRef){toast("请先选择视频文件");return;}
-  const pr=el("vidProg"); if(pr)pr.innerHTML='<div class="note">正在逐帧采样…<div class="progressline"><i style="width:35%"></i></div></div>';
+  const pr=el("vidProg");if(pr)pr.innerHTML='<div class="note">正在逐帧采样…<div class="progressline"><i style="width:35%"></i></div></div>';
   try{
     const data=await grabFrames(VIDSTATE.fileRef,90);
     if(pr)pr.innerHTML='<div class="note">采样完成 '+data.frames.length+' 帧，正在计算运动学特征…<div class="progressline"><i style="width:75%"></i></div></div>';
     const tech=(el("vidTech")&&el("vidTech").value)||VIDSTATE.tech;
     const res=analyzePixels(data,tech);
-    VIDSTATE.result=res;
-    el("vidResult").innerHTML=renderResult(res);
-    if(pr)pr.innerHTML='<div class="note ok">分析完成，综合得分 '+res.score+'。可在右侧「存入成长档案」。</div>';
+    VIDSTATE.result=res;VIDSTATE.motion=res.motion||null;
+    const vr=el("vidResult");if(vr)vr.innerHTML=renderResult(res);
+    skelRefresh();
+    if(pr)pr.innerHTML='<div class="note ok">分析完成，综合得分 '+res.score+'。已生成重心 / 能量轨迹视频，可在「骨架分析视频」中播放或导出。</div>';
   }catch(err){
     if(pr)pr.innerHTML='<div class="note dang">分析失败：'+esc(err.message)+'</div>';
     toast("分析失败："+err.message);
@@ -2419,11 +2451,11 @@ function handleYolo(txt){
     const tech=(el("vidTech")&&el("vidTech").value)||VIDSTATE.tech;
     const res=analyzeYolo(json,tech);
     VIDSTATE.result=res;
-    el("vidResult").innerHTML=renderResult(res);
-    toast("YOLO 姿态评估完成："+res.score+" 分");
-  }catch(e){
-    toast("解析失败："+e.message);
-  }
+    try{VIDSTATE.pose=normalizePoseJson(json);}catch(e){VIDSTATE.pose=null;}
+    const vr=el("vidResult");if(vr)vr.innerHTML=renderResult(res);
+    skelRefresh();
+    toast("YOLO 姿态评估完成："+res.score+" 分"+(VIDSTATE.pose?"，骨架分析视频已就绪":""));
+  }catch(e){toast("解析失败："+e.message);}
 }
 function demoPoseFrames(){
   const arr=[],cx=200;
@@ -3022,6 +3054,317 @@ function viewCfg(){
     '<div class="note">当前技术基线：'+Object.keys(DB.skills).length+' / '+TECH.length+' 项已评估。'+
     '没有评估的技术显示为「—」，不会用默认分数冒充。</div></div></div>';
   return html;
+}
+
+
+/* ==================== 骨架分析视频引擎 ====================
+   把 COCO-17 关键点序列 / 像素运动轨迹画回画面，并用 canvas.captureStream
+   + MediaRecorder 录成可下载的 WebM。全部本地完成，无需任何依赖。          */
+const COCO_BONES=[
+  [0,1],[0,2],[1,3],[2,4],[5,6],
+  [5,7],[7,9],[6,8],[8,10],[5,11],[6,12],[11,12],
+  [11,13],[13,15],[12,14],[14,16]
+];
+const COCO_LEFT=[1,3,5,7,9,11,13,15], COCO_RIGHT=[2,4,6,8,10,12,14,16];
+function boneColor(a,b){
+  if(COCO_LEFT.indexOf(a)>=0&&COCO_LEFT.indexOf(b)>=0)return "#2563eb";
+  if(COCO_RIGHT.indexOf(a)>=0&&COCO_RIGHT.indexOf(b)>=0)return "#dc2626";
+  return "#0d9488";
+}
+let SKEL={playing:false,recording:false,raf:0,rec:null,chunks:[],video:null,hasVideo:false,
+  mode:"overlay",speed:1,startT:0,endT:0,recStart:0,recEnd:0,wall0:0,t0:0,lastT:0,
+  showTrail:true,showPoints:true,showIds:false,showHud:true};
+
+function normalizePoseJson(json){
+  const raw=Array.isArray(json)?json:(json.frames||json.data||null);
+  if(!raw||!raw.length)throw new Error("需要 {frames:[{t,kps}]} 结构");
+  const frames=raw.map(f=>({t:Number(f.t!=null?f.t:(f.time||0)),
+    kps:f.kps||f.keypoints||f.landmarks||[]}))
+    .filter(f=>Array.isArray(f.kps)&&f.kps.length>=13).sort((a,b)=>a.t-b.t);
+  if(frames.length<4)throw new Error("有效帧不足 4 帧");
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9,n=0;
+  frames.forEach(f=>f.kps.forEach(p=>{
+    if(!p||p.length<2||(p[2]!=null&&p[2]<=0.15))return;
+    n++;x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);
+    y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]);
+  }));
+  if(!n)throw new Error("没有可见关键点");
+  const pad=Math.max(x1-x0,y1-y0,10)*.12;
+  const dt=(frames[frames.length-1].t-frames[0].t)/Math.max(1,frames.length-1);
+  return {frames:frames,box:{x:x0-pad,y:y0-pad,w:(x1-x0)+pad*2,h:(y1-y0)+pad*2},
+    width:Number(json.width)||null,height:Number(json.height)||null,
+    fps:Number(json.fps)||(dt>0?round(1/dt,2):30),
+    source:String(json.model||"yolo"),name:String(json.video||"pose.json"),
+    t0:frames[0].t,t1:frames[frames.length-1].t};
+}
+function poseFrameAt(pose,t){
+  const F=pose.frames;let lo=0,hi=F.length-1;
+  while(lo<hi){const m=(lo+hi)>>1;if(F[m].t<t)lo=m+1;else hi=m;}
+  if(lo>0&&Math.abs(F[lo-1].t-t)<Math.abs(F[lo].t-t))lo--;
+  return {f:F[lo],i:lo};
+}
+function poseTransform(pose,cw,ch){
+  let vb;
+  if(pose.width&&pose.height)vb={x:0,y:0,w:pose.width,h:pose.height};
+  else if(SKEL.hasVideo&&SKEL.video&&SKEL.video.videoWidth)
+    vb={x:0,y:0,w:SKEL.video.videoWidth,h:SKEL.video.videoHeight};
+  else vb=pose.box;
+  const sc=Math.min(cw/Math.max(1,vb.w),ch/Math.max(1,vb.h));
+  return {s:sc,ox:(cw-vb.w*sc)/2-vb.x*sc,oy:(ch-vb.h*sc)/2-vb.y*sc};
+}
+function skelRange(){
+  if(VIDSTATE.pose)return {t0:VIDSTATE.pose.t0,t1:Math.max(VIDSTATE.pose.t0+.2,VIDSTATE.pose.t1)};
+  if(VIDSTATE.motion)return {t0:0,t1:Math.max(.5,VIDSTATE.motion.dur||5)};
+  return {t0:0,t1:0};
+}
+function drawHud(ctx,cw,ch,lines){
+  const pad=10,lh=17,w=Math.min(cw-2*pad,360),h=lines.length*lh+12;
+  ctx.fillStyle="rgba(15,20,32,.76)";ctx.fillRect(pad,pad,w,h);
+  ctx.font="600 12px -apple-system,Segoe UI,Microsoft YaHei,sans-serif";
+  ctx.fillStyle="#fff";ctx.textBaseline="middle";
+  lines.forEach((v,k)=>ctx.fillText(String(v).slice(0,52),pad+8,pad+11+lh*k));
+}
+function drawPoseFrame(ctx,pose,t,cw,ch){
+  const hit=poseFrameAt(pose,t),f=hit.f,i=hit.i,tr=poseTransform(pose,cw,ch);
+  const P=k=>{const p=f.kps[k];
+    return p&&p.length>=2&&(p[2]==null||p[2]>0.15)?[tr.ox+p[0]*tr.s,tr.oy+p[1]*tr.s]:null;};
+  if(SKEL.showTrail){
+    const k=10,from=Math.max(0,i-16);
+    ctx.lineWidth=2.6;ctx.lineCap="round";
+    for(let j=from;j<i;j++){
+      const a=pose.frames[j].kps[k],b=pose.frames[j+1].kps[k];
+      if(!a||!b||(a[2]!=null&&a[2]<=.15)||(b[2]!=null&&b[2]<=.15))continue;
+      const alpha=(.2+.8*(j-from)/Math.max(1,i-from)).toFixed(2);
+      ctx.strokeStyle="rgba(251,113,133,"+alpha+")";
+      ctx.beginPath();ctx.moveTo(tr.ox+a[0]*tr.s,tr.oy+a[1]*tr.s);
+      ctx.lineTo(tr.ox+b[0]*tr.s,tr.oy+b[1]*tr.s);ctx.stroke();
+    }
+  }
+  COCO_BONES.forEach(pair=>{
+    const A=P(pair[0]),B=P(pair[1]);if(!A||!B)return;
+    const line=(color,width)=>{ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineCap="round";
+      ctx.beginPath();ctx.moveTo(A[0],A[1]);ctx.lineTo(B[0],B[1]);ctx.stroke();};
+    line("rgba(255,255,255,.9)",6.5);line(boneColor(pair[0],pair[1]),3.2);
+  });
+  if(SKEL.showPoints){
+    for(let k=0;k<17;k++){
+      const q=P(k);if(!q)continue;
+      ctx.beginPath();ctx.arc(q[0],q[1],4,0,Math.PI*2);
+      ctx.fillStyle=boneColor(k,k);ctx.fill();
+      ctx.lineWidth=1.6;ctx.strokeStyle="#fff";ctx.stroke();
+      if(SKEL.showIds){
+        ctx.font="700 10px ui-monospace,Consolas,monospace";
+        ctx.fillStyle="#16203a";ctx.textBaseline="middle";
+        ctx.fillText(String(k),q[0]+6,q[1]-6);
+      }
+    }
+  }
+  if(SKEL.showHud){
+    const tech=techById(VIDSTATE.result?VIDSTATE.result.tech:VIDSTATE.tech);
+    const r=VIDSTATE.result;
+    const lines=["骨架分析 · "+((tech&&tech.n)||"技术")+" · "+pose.source,
+      "t "+round(t,2)+"s　帧 "+i+" / "+pose.frames.length+"　"+round(pose.fps,1)+" fps",
+      "综合 "+(r?r.score:"—")+" 分　引擎 "+(r&&r.engine==="yolo"?"YOLO 姿态":"内置像素")];
+    if(r&&r.metrics&&r.metrics.length){
+      const w=r.metrics.slice().sort((a,b)=>a.score-b.score)[0];
+      if(w)lines.push("最弱环节："+w.n+" "+w.score+" 分");
+    }
+    drawHud(ctx,cw,ch,lines);
+  }
+}
+function drawMotionFrame(ctx,m,t,cw,ch){
+  const n=m.cent.length;if(!n)return;
+  const i=clamp(Math.floor(t/Math.max(m.dur,1e-3)*n),0,n-1);
+  if(SKEL.showTrail){
+    const from=Math.max(1,i-32);ctx.lineWidth=3;ctx.lineCap="round";
+    for(let j=from;j<=i;j++){
+      const a=m.cent[j-1],b=m.cent[j];if(!a||!b)continue;
+      const alpha=(.2+.8*(j-from)/Math.max(1,i-from)).toFixed(2);
+      ctx.strokeStyle="rgba(63,81,181,"+alpha+")";
+      ctx.beginPath();ctx.moveTo(a.x/m.W*cw,a.y/m.H*ch);
+      ctx.lineTo(b.x/m.W*cw,b.y/m.H*ch);ctx.stroke();
+    }
+    const p=m.cent[i];
+    ctx.beginPath();ctx.arc(p.x/m.W*cw,p.y/m.H*ch,7,0,Math.PI*2);
+    ctx.fillStyle="#dc2626";ctx.fill();ctx.lineWidth=2;ctx.strokeStyle="#fff";ctx.stroke();
+  }
+  const e=m.energy[Math.min(i,m.energy.length-1)]||0,eMax=Math.max.apply(null,m.energy)||1;
+  ctx.fillStyle="rgba(15,20,32,.74)";ctx.fillRect(0,ch-26,cw,26);
+  ctx.fillStyle="#6572cd";ctx.fillRect(0,ch-7,cw*clamp(e/eMax,0,1),7);
+  if(SKEL.showHud)drawHud(ctx,cw,ch,[
+    "运动轨迹分析 · 重心 / 帧间能量",
+    "t "+round(t,2)+"s　采样 "+n+" 帧　能量 "+round(e,1),
+    "综合 "+(VIDSTATE.result?VIDSTATE.result.score:"—")+" 分 · 内置像素引擎（无骨架关键点）"]);
+}
+function skelDraw(t){
+  const c=el("skelCanvas");if(!c)return;
+  const ctx=c.getContext("2d");if(!ctx)return;
+  SKEL.lastT=t;const cw=c.width,ch=c.height,v=SKEL.video;
+  if(SKEL.mode==="overlay"&&v&&SKEL.hasVideo&&v.readyState>=2){
+    try{ctx.drawImage(v,0,0,cw,ch);ctx.fillStyle="rgba(10,16,30,.16)";ctx.fillRect(0,0,cw,ch);}catch(e){}
+  }else{
+    ctx.fillStyle="#f8fafc";ctx.fillRect(0,0,cw,ch);
+    ctx.strokeStyle="#e2e8f0";ctx.lineWidth=1;
+    for(let x=0;x<cw;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,ch);ctx.stroke();}
+    for(let y=0;y<ch;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cw,y);ctx.stroke();}
+  }
+  if(VIDSTATE.pose)drawPoseFrame(ctx,VIDSTATE.pose,t,cw,ch);
+  else if(VIDSTATE.motion)drawMotionFrame(ctx,VIDSTATE.motion,t,cw,ch);
+  const bar=el("skelSeek");
+  if(bar&&(!document.activeElement||document.activeElement!==bar))bar.value=t;
+  const lab=el("skelTime");if(lab)lab.textContent=round(t,2)+"s / "+round(SKEL.endT,2)+"s";
+}
+function skelSetStatus(h){const n=el("skelStat");if(n)n.innerHTML=h;}
+function skelPause(){
+  SKEL.playing=false;
+  try{cancelAnimationFrame(SKEL.raf);}catch(e){}
+  if(SKEL.hasVideo&&SKEL.video){try{SKEL.video.pause();}catch(e){}}
+  const b=el("skelPlay");if(b)b.textContent="播放";
+}
+function skelPlay(fromStart){
+  const r=skelRange();
+  if(fromStart)SKEL.lastT=SKEL.startT;
+  SKEL.playing=true;
+  if(SKEL.hasVideo&&SKEL.video){
+    try{SKEL.video.currentTime=SKEL.startT;SKEL.video.play();}catch(e){}
+  }else{SKEL.wall0=(window.performance||Date).now();SKEL.t0=SKEL.startT;}
+  const b=el("skelPlay");if(b)b.textContent="暂停";
+  try{cancelAnimationFrame(SKEL.raf);SKEL.raf=requestAnimationFrame(skelLoop);}catch(e){}
+}
+function skelLoop(){
+  if(!SKEL.playing&&!SKEL.recording)return;
+  let t;
+  if(SKEL.hasVideo&&SKEL.video&&SKEL.video.readyState>=2)t=SKEL.video.currentTime;
+  else t=SKEL.t0+((window.performance||Date).now()-SKEL.wall0)/1000*SKEL.speed;
+  if(SKEL.recording){
+    const pr=clamp((t-SKEL.recStart)/Math.max(.01,SKEL.recEnd-SKEL.recStart),0,1);
+    const bar=el("skelProgress");if(bar)bar.style.width=Math.round(pr*100)+"%";
+    if(t>=SKEL.recEnd){skelStopRecord();return;}
+  }
+  if(t>=SKEL.endT){skelDraw(SKEL.endT);skelPause();return;}
+  skelDraw(t);
+  if(SKEL.playing||SKEL.recording){
+    try{SKEL.raf=requestAnimationFrame(skelLoop);}catch(e){}
+  }
+}
+function skelSeekTo(t){
+  const r=skelRange();t=clamp(Number(t)||0,r.t0,r.t1);
+  if(SKEL.hasVideo&&SKEL.video){try{SKEL.video.currentTime=t;}catch(e){}}
+  skelDraw(t);
+}
+function downloadBlob(blob,name){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+}
+function skelStartRecord(){
+  const c=el("skelCanvas");
+  if(!c||!c.captureStream||!window.MediaRecorder){
+    skelSetStatus('<div class="note warn">当前浏览器不支持 Canvas 录制。请用本地脚本 '+
+      '<code>yolo-pose-bridge.py --overlay</code> 生成 MP4，或先「保存当前帧 PNG」。</div>');return;
+  }
+  let mime="";
+  ["video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm"].some(m=>{
+    try{if(window.MediaRecorder.isTypeSupported(m)){mime=m;return true;}}catch(e){}return false;});
+  if(!mime){skelSetStatus('<div class="note warn">没有可用的 WebM 编码器，请改用本地脚本生成 MP4。</div>');return;}
+  try{
+    const stream=c.captureStream(30);
+    SKEL.chunks=[];
+    SKEL.rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:2500000});
+    SKEL.rec.ondataavailable=e=>{if(e.data&&e.data.size)SKEL.chunks.push(e.data);};
+    SKEL.rec.onstop=()=>{
+      const blob=new Blob(SKEL.chunks,{type:mime});
+      const tech=(VIDSTATE.result&&VIDSTATE.result.tech)||VIDSTATE.tech;
+      downloadBlob(blob,"bwb-skeleton-"+tech+"-"+todayISO()+".webm");
+      try{stream.getTracks().forEach(x=>x.stop());}catch(e){}
+      SKEL.rec=null;SKEL.recording=false;
+      skelSetStatus('<div class="note ok">骨架分析视频已导出（'+round(blob.size/1048576,2)+
+        ' MB，'+round(SKEL.recEnd-SKEL.recStart,1)+'s）。文件保存在浏览器下载目录。</div>');
+      toast("骨架分析视频已导出");
+    };
+    SKEL.rec.start(200);
+    SKEL.recording=true;SKEL.recStart=SKEL.startT;SKEL.recEnd=SKEL.endT;
+    const bar=el("skelProgress");if(bar)bar.style.width="0%";
+    skelSetStatus('<div class="note">正在录制 '+round(SKEL.recEnd-SKEL.recStart,1)+
+      's 片段，按真实时间进行，请保持本页在前台。</div>');
+    skelPlay(true);
+  }catch(e){skelSetStatus('<div class="note dang">录制启动失败：'+esc(e.message)+'</div>');}
+}
+function skelStopRecord(){
+  if(SKEL.rec&&SKEL.rec.state!=="inactive"){try{SKEL.rec.stop();}catch(e){}}
+  skelPause();SKEL.recording=false;
+  skelSetStatus('<div class="note">录制已停止，正在生成文件…</div>');
+}
+function skelExportFrame(){
+  const c=el("skelCanvas");if(!c)return;
+  try{
+    const a=document.createElement("a");
+    a.href=c.toDataURL("image/png");a.download="bwb-skeleton-frame-"+todayISO()+".png";a.click();
+    toast("当前帧已保存为 PNG");
+  }catch(e){toast("保存失败："+e.message);}
+}
+function skelBodyHTML(){
+  const has=!!(VIDSTATE.pose||VIDSTATE.motion),r=skelRange();
+  const src=VIDSTATE.pose?("COCO-17 骨架 · "+VIDSTATE.pose.frames.length+" 帧"):
+    (VIDSTATE.motion?("重心 / 运动能量轨迹 · "+VIDSTATE.motion.cent.length+" 帧"):"无");
+  let h='<div class="note">把分析结果画回画面并录成视频：<b>叠加原视频</b>可核对骨架是否贴合人体，'+
+    '<b>纯骨架</b>便于看清动作链路。导入 YOLO 姿态 JSON 得到骨架；只做内置像素分析时得到重心与能量轨迹。'+
+    '导出为 WebM（按真实时间录制）；大批量或需要 MP4 请用 <code>yolo-pose-bridge.py --overlay</code>。</div>';
+  if(!has){
+    h+='<div class="row" style="margin-top:10px">'+
+      '<button class="btn pri" data-act="demopose">载入示例骨架（无需视频）</button>'+
+      (VIDSTATE.fileRef?'<button class="btn" data-act="runpix">用内置分析生成轨迹视频</button>':"")+
+      '</div><div class="empty">'+icon("video",34)+'还没有姿态 / 运动数据</div>';
+    return h;
+  }
+  h+='<div class="skelGrid" style="margin-top:10px">'+
+    '<div class="field"><label>画面模式</label><select id="skelMode">'+
+      '<option value="overlay" '+(SKEL.mode==="overlay"?"selected":"")+'>叠加原视频</option>'+
+      '<option value="clean" '+(SKEL.mode==="clean"?"selected":"")+'>纯骨架 / 纯轨迹</option></select></div>'+
+    '<div class="field"><label>回放速度</label><select id="skelSpeed">'+
+      [0.5,1,1.5,2].map(v=>'<option value="'+v+'" '+(SKEL.speed===v?"selected":"")+'>'+v+'×</option>').join("")+'</select></div>'+
+    '<div class="field"><label>片段起点 (s)</label><input type="number" id="skelStart" step="0.1" min="'+round(r.t0,2)+'" max="'+round(r.t1,2)+'" value="'+round(SKEL.startT>r.t0?SKEL.startT:r.t0,2)+'"></div>'+
+    '<div class="field"><label>片段终点 (s)</label><input type="number" id="skelEnd" step="0.1" min="'+round(r.t0,2)+'" max="'+round(r.t1,2)+'" value="'+round(SKEL.endT<=r.t1&&SKEL.endT>r.t0?SKEL.endT:r.t1,2)+'"></div>'+
+    '</div>';
+  h+='<div class="skelOpts">'+
+    [["showTrail","运动轨迹"],["showPoints","关键点"],["showIds","关键点编号"],["showHud","数据面板"]].map(o=>
+      '<label><input type="checkbox" data-skopt="'+o[0]+'" '+(SKEL[o[0]]?"checked":"")+'>'+o[1]+'</label>').join("")+'</div>';
+  h+='<div class="skelStage"><canvas id="skelCanvas" width="720" height="405"></canvas></div>';
+  if(VIDSTATE.videoURL)h+='<video id="skelVideo" src="'+esc(VIDSTATE.videoURL)+'" muted playsinline preload="auto" style="display:none"></video>';
+  h+='<div class="skelBar"><button class="btn sm pri" data-act="skelplay" id="skelPlay">播放</button>'+
+    '<input type="range" id="skelSeek" min="'+round(r.t0,3)+'" max="'+round(r.t1,3)+'" step="0.01" value="'+round(r.t0,3)+'">'+
+    '<span class="skelMini" id="skelTime">'+round(r.t0,2)+'s / '+round(r.t1,2)+'s</span></div>';
+  h+='<div class="row" style="margin-top:10px">'+
+    '<button class="btn pri" data-act="skelexport">导出骨架分析视频（WebM）</button>'+
+    '<button class="btn" data-act="skelstop">停止录制</button>'+
+    '<button class="btn" data-act="skelpng">保存当前帧 PNG</button></div>';
+  h+='<div class="progressline" style="margin-top:10px"><i id="skelProgress" style="width:0%"></i></div>';
+  h+='<div id="skelStat" style="margin-top:8px"><div class="note" style="margin:0">数据源：'+esc(src)+
+    '　片段 '+round(r.t0,2)+'–'+round(r.t1,2)+'s。可拖动时间轴逐帧检查，或设置起止秒导出片段。</div></div>';
+  return h;
+}
+function skelRefresh(){
+  const b=el("skelBody");if(!b)return;
+  skelPause();b.innerHTML=skelBodyHTML();skelBind();
+}
+function skelBind(){
+  const r=skelRange();
+  if(!(SKEL.startT>r.t0&&SKEL.startT<r.t1))SKEL.startT=r.t0;
+  if(!(SKEL.endT>SKEL.startT&&SKEL.endT<=r.t1+.001))SKEL.endT=r.t1;
+  const v=el("skelVideo");
+  SKEL.video=v||null;SKEL.hasVideo=!!(v&&VIDSTATE.videoURL);
+  const fit=()=>{
+    const c=el("skelCanvas");if(!c)return;
+    if(SKEL.hasVideo&&v.videoWidth){
+      const ratio=(v.videoWidth/v.videoHeight)||(16/9);
+      c.width=Math.min(720,Math.max(320,v.videoWidth));
+      c.height=Math.max(180,Math.round(c.width/ratio));
+    }else{c.width=720;c.height=405;}
+    const bar=el("skelSeek");if(bar){bar.min=r.t0;bar.max=r.t1;bar.value=SKEL.startT;}
+    skelDraw(SKEL.startT);
+  };
+  if(v){if(v.readyState>=1)fit();else try{v.addEventListener("loadedmetadata",fit,{once:true});}catch(e){fit();}}
+  else fit();
 }
 
 /* ---------- 初始化 ---------- */
